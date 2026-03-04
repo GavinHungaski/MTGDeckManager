@@ -1,0 +1,33 @@
+.search-header {
+  width: 100%;
+  min-height: 80px;
+  background-color: lightgrey;
+  flex-grow: 0;
+
+  position: sticky;
+  top: 6vh;
+  z-index: 5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.results-display {
+  width: 100%;
+  background-color: gray;
+  flex-grow: 15;
+  padding: 5px;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 0fr));
+  grid-auto-rows: 350px;
+  gap: 5px;
+  justify-content: center;
+}
+
+.card-img {
+  width: 250px;
+  height: 350px;
+}

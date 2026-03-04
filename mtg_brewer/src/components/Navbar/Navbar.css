@@ -1,0 +1,24 @@
+nav {
+  width: 100%;
+  min-height: 6vh;
+  background: linear-gradient(
+    90deg,
+    rgba(36, 36, 36, 1) 0%,
+    rgba(150, 150, 150, 1) 100%
+  );
+  padding-left: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 15px;
+
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
