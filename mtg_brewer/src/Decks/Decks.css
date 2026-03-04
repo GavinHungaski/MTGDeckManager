@@ -19,3 +19,7 @@
 .deck-img:hover {
   cursor: pointer;
 }
+
+.difBg {
+  background: rgb(255, 98, 98);
+}

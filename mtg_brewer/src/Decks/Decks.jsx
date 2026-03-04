@@ -31,6 +31,9 @@ function Decks() {
         {decks.map((deck) => (
           <div className="deck-item" key={deck.id}>
             <h2 onClick={() => handleDeckClick(deck)}>{deck.name}</h2>
+            <button>
+              <span className="button-top difBg">Delete</span>
+            </button>
           </div>
         ))}
 
