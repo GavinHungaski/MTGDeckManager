@@ -46,8 +46,6 @@ function Decks() {
           </button>
         </div>
       </div>
-
-      <Outlet />
     </>
   );
 }
