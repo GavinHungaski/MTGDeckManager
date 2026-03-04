@@ -10,6 +10,7 @@ function Search() {
       const response = await fetch("https://api.scryfall.com/cards/random");
       if (!response.ok) throw new Error(`Status: ${response.status}`);
       const result = await response.json();
+      console.log(result);
       setCards((prev) => [...prev, result]);
     } catch (error) {
       console.error(error.message);

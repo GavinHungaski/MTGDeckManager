@@ -21,6 +21,7 @@ client.connect().catch((err) => {
   process.exit(1);
 });
 
+// Get all decks
 app.get("/api/decks", async (req, res) => {
   try {
     const result = await client.query(`
@@ -30,6 +31,29 @@ app.get("/api/decks", async (req, res) => {
     `);
 
     res.json(result.rows);
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+// Get a specific deck
+app.get("/api/decks/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await client.query(
+      `
+      SELECT id, name, commander
+      FROM decks
+      WHERE id = $1
+      `,
+      [id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Deck not found" });
+    }
+
+    res.json(result.rows[0]);
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
@@ -47,7 +71,7 @@ app.post("/api/deck", async (req, res) => {
 
     const result = await client.query(
       `INSERT INTO decks (name, commander) VALUES ($1, $2) RETURNING id, name`,
-      [name, JSON.stringify(commander)]
+      [name, JSON.stringify(commander)],
     );
 
     res.status(201).json(result.rows[0]);
