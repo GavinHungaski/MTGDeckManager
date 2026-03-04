@@ -10,7 +10,6 @@ function Search() {
       const response = await fetch("https://api.scryfall.com/cards/random");
       if (!response.ok) throw new Error(`Status: ${response.status}`);
       const result = await response.json();
-      console.log(result);
       setCards((prev) => [...prev, result]);
     } catch (error) {
       console.error(error.message);
@@ -24,6 +23,7 @@ function Search() {
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Status: ${response.status}`);
       const result = await response.json();
+      console.log(result);
 
       setCards((prev) => [...prev, ...result.data]);
       setNextPage(result.next_page || null);
@@ -76,7 +76,7 @@ function Search() {
           <div key={card.id} className="card-item">
             <img
               className="card-img"
-              src={card.image_uris?.normal || card.image_uris?.small}
+              src={card.image_uris?.normal || card.image_uris?.small || card.card_faces[0]?.image_uris?.normal}
               alt={card.name}
             />
           </div>
