@@ -30,13 +30,7 @@ function Decks() {
       <div className="deck-display">
         {decks.map((deck) => (
           <div className="deck-item" key={deck.id}>
-            <h2>{deck.name}</h2>
-            <img
-              className="deck-img"
-              src=""
-              alt="Deck IMG"
-              onClick={() => handleDeckClick(deck)}
-            />
+            <h2 onClick={() => handleDeckClick(deck)}>{deck.name}</h2>
           </div>
         ))}
 
