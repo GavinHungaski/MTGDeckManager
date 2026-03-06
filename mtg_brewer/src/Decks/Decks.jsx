@@ -19,6 +19,33 @@ function Decks() {
     navigate(`${deck.id}`);
   }
 
+  function deleteDeck(deckId) {
+    fetch(`http://localhost:4000/api/decks/${deckId}`, {
+      method: "DELETE",
+    })
+      .then(async (res) => {
+        let data;
+        try {
+          data = await res.json();
+        } catch {
+          throw new Error(
+            `Failed to parse response as JSON (status ${res.status})`,
+          );
+        }
+
+        if (!res.ok) {
+          throw new Error(data?.error || "Failed to delete deck");
+        }
+
+        return data;
+      })
+      .then((data) => {
+        console.log(data.message);
+        setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckId));
+      })
+      .catch((err) => console.error("Error deleting deck:", err));
+  }
+
   return (
     <>
       <NewDeckForm
@@ -31,7 +58,8 @@ function Decks() {
         {decks.map((deck) => (
           <div className="deck-item" key={deck.id}>
             <h2 onClick={() => handleDeckClick(deck)}>{deck.name}</h2>
-            <button>
+            (id: {deck.id})
+            <button onClick={() => deleteDeck(deck.id)}>
               <span className="button-top difBg">Delete</span>
             </button>
           </div>

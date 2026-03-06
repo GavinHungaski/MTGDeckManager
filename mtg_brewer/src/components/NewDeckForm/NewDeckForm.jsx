@@ -20,7 +20,7 @@ function NewDeckForm({ showNewDeckForm, closeNewDeckForm, addDeck }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: deckName,
-          commander: {selectedCommander} || { name: "TBD" },
+          commander: selectedCommander || { name: "TBD" },
         }),
       });
 

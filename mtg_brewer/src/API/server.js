@@ -60,35 +60,55 @@ app.get("/api/decks/:id", async (req, res) => {
   }
 });
 
-// Save a new deck
 app.post("/api/deck", async (req, res) => {
   try {
-    console.log("POST /api/deck body:", req.body);
     const { name, commander } = req.body;
 
-    if (!name || !commander) {
+    if (!name || !commander || !commander.name) {
       return res.status(400).json({ error: "Name and commander are required" });
     }
 
-    const result = await client.query(
+    // Start a transaction
+    await client.query("BEGIN");
+
+    const deckResult = await client.query(
       `INSERT INTO decks (name, commander) VALUES ($1, $2) RETURNING id, name`,
-      [name, JSON.stringify(commander)],
+      [name, JSON.stringify(commander)]
+    );
+    const deckId = deckResult.rows[0].id;
+
+    const cardResult = await client.query(
+      `INSERT INTO cards (name, card_data, is_commander)
+       VALUES ($1, $2, true)
+       ON CONFLICT (name) DO UPDATE SET card_data = EXCLUDED.card_data
+       RETURNING id`,
+      [commander.name, JSON.stringify(commander)]
+    );
+    const cardId = cardResult.rows[0].id;
+
+    await client.query(
+      `INSERT INTO deck_cards (deck_id, card_id) VALUES ($1, $2)`,
+      [deckId, cardId]
     );
 
-    res.status(201).json(result.rows[0]);
+    // Commit transaction
+    await client.query("COMMIT");
+
+    res.status(201).json(deckResult.rows[0]);
   } catch (err) {
+    await client.query("ROLLBACK");
     console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
   }
 });
+
 // Delete a specific deck
-app.delete("/api/decks/remove/:id", async (req, res) => {
+app.delete("/api/decks/:id", async (req, res) => {
   try {
     const { id } = req.params;
-
     const result = await client.query(
-      `DELETE FROM decks WHERE id = $1 RETURNING id, name`,
-      [id],
+      "DELETE FROM decks WHERE id = $1 RETURNING id, name",
+      [id]
     );
 
     if (result.rows.length === 0) {
