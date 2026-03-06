@@ -57,15 +57,18 @@ function Decks() {
       <div className="deck-display">
         {decks.map((deck) => (
           <div className="deck-item" key={deck.id}>
-            <h2 onClick={() => handleDeckClick(deck)}>{deck.name}</h2>
+            <h2>{deck.name}</h2>
             (id: {deck.id})
+            <button onClick={() => handleDeckClick(deck)}>
+              <span className="button-top">View</span>
+            </button>
             <button onClick={() => deleteDeck(deck.id)}>
               <span className="button-top difBg">Delete</span>
             </button>
           </div>
         ))}
 
-        <div className="deck-item">
+        <div className="new-deck-button">
           <button onClick={() => setShowNewDeckForm(true)}>
             <span className="button-top">New Deck</span>
           </button>
