@@ -1,0 +1,8 @@
+.deck-detail {
+    width: 100%;
+    min-height: 94vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

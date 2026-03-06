@@ -52,15 +52,29 @@ function CommanderAutocomplete({ onSelect }) {
 
   function handleSelect(card) {
     const image =
-      card.image_uris?.small ||
-      card.card_faces?.[0]?.image_uris?.small ||
+      card.image_uris?.normal ||
+      card.card_faces?.[0]?.image_uris?.normal ||
       null;
+
+    const types = 
+      card.type_line.split(/[ —]+/);
 
     const commanderData = {
       name: card.name,
       scryfall_id: card.id,
       image,
       color_identity: card.color_identity,
+      cmc: card.cmc,
+      mana_cost: card.mana_cost,
+      prices: card.prices || null,
+      power: card.power,
+      toughness: card.toughness,
+      types,
+      text_box: card.oracle_text,
+      legalities: card.legalities,
+      keywords: card.keywords,
+      rarity: card.rarity,
+      meta_rank: card.edhrec_rank,
     };
 
     onSelect(commanderData);
@@ -84,8 +98,8 @@ function CommanderAutocomplete({ onSelect }) {
           {!loading &&
             results.map((card) => {
               const image =
-                card.image_uris?.small ||
-                card.card_faces?.[0]?.image_uris?.small;
+                card.image_uris?.normal ||
+                card.card_faces?.[0]?.image_uris?.normal;
 
               return (
                 <div

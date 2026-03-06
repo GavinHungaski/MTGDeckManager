@@ -20,7 +20,8 @@ function DeckDetail() {
   if (!deck) return <div>Loading...</div>;
 
   return (
-    <div className="DeckDetail">
+    <div className="deck-detail">
+      
       <h1>{deck.name}</h1>
 
       {deck.commander?.image && (
@@ -31,6 +32,7 @@ function DeckDetail() {
       )}
 
       <p>Commander: {deck.commander?.name || "None"}</p>
+
     </div>
   );
 }
