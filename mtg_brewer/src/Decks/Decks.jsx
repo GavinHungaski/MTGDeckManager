@@ -65,7 +65,7 @@ function Decks() {
           </div>
         ))}
 
-        <div>
+        <div className="deck-item">
           <button onClick={() => setShowNewDeckForm(true)}>
             <span className="button-top">New Deck</span>
           </button>

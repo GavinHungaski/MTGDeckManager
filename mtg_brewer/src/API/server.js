@@ -60,6 +60,7 @@ app.get("/api/decks/:id", async (req, res) => {
   }
 });
 
+// Add a new deck
 app.post("/api/deck", async (req, res) => {
   try {
     const { name, commander } = req.body;
