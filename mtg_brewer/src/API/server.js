@@ -13,7 +13,11 @@ app.use(express.json());
 app.use(cors());
 
 const client = new Client({
-  connectionString: process.env.DATABASE_URL,
+  user: process.env.PGUSER,
+  password: process.env.PGPASSWORD,
+  host: process.env.PGHOST,
+  port: process.env.PGPORT,
+  database: process.env.PGDATABASE,
 });
 
 client.connect().catch((err) => {
@@ -22,7 +26,7 @@ client.connect().catch((err) => {
 });
 
 // Get all decks
-app.get("/api/decks", async (req, res) => {
+app.get("/api/decks", async (_, res) => {
   try {
     const result = await client.query(`
       SELECT id, name
@@ -74,7 +78,7 @@ app.post("/api/deck", async (req, res) => {
 
     const deckResult = await client.query(
       `INSERT INTO decks (name, commander) VALUES ($1, $2) RETURNING id, name`,
-      [name, JSON.stringify(commander)]
+      [name, JSON.stringify(commander)],
     );
     const deckId = deckResult.rows[0].id;
 
@@ -83,13 +87,13 @@ app.post("/api/deck", async (req, res) => {
        VALUES ($1, $2, true)
        ON CONFLICT (name) DO UPDATE SET card_data = EXCLUDED.card_data
        RETURNING id`,
-      [commander.name, JSON.stringify(commander)]
+      [commander.name, JSON.stringify(commander)],
     );
     const cardId = cardResult.rows[0].id;
 
     await client.query(
       `INSERT INTO deck_cards (deck_id, card_id) VALUES ($1, $2)`,
-      [deckId, cardId]
+      [deckId, cardId],
     );
 
     // Commit transaction
@@ -109,7 +113,7 @@ app.delete("/api/decks/:id", async (req, res) => {
     const { id } = req.params;
     const result = await client.query(
       "DELETE FROM decks WHERE id = $1 RETURNING id, name",
-      [id]
+      [id],
     );
 
     if (result.rows.length === 0) {
