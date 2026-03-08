@@ -76,18 +76,24 @@ function Search() {
           <div key={card.id} className="card-item">
             <img
               className="card-img"
-              src={card.image_uris?.normal || card.image_uris?.small || card.card_faces[0]?.image_uris?.normal}
+              src={
+                card.image_uris?.normal ||
+                card.image_uris?.small ||
+                card.card_faces[0]?.image_uris?.normal
+              }
               alt={card.name}
             />
           </div>
         ))}
       </div>
 
-      {nextPage && (
-        <button onClick={getMoreCards} className="get-more-button">
-          <span className="button-top">Load More</span>
-        </button>
-      )}
+      <div style={{ backgroundColor: "gray" }}>
+        {nextPage && (
+          <button onClick={getMoreCards} className="get-more-button">
+            <span className="button-top">Load More</span>
+          </button>
+        )}
+      </div>
     </>
   );
 }
