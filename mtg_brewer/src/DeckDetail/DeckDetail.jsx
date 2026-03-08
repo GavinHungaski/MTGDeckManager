@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import CardSearch from "../components/CardSearch/CardSearch.jsx";
 import "./DeckDetail.css";
 
 function DeckDetail() {
@@ -19,20 +20,22 @@ function DeckDetail() {
 
   if (!deck) return <div>Loading...</div>;
 
+  function addCard(card) {
+    console.log("Adding card to deck:", card);
+  }
+
   return (
     <div className="deck-detail">
-      
-      <h1>{deck.name}</h1>
-
-      {deck.commander?.image && (
-        <img
-          src={deck.commander.image}
-          alt={deck.commander.name}
-        />
-      )}
-
-      <p>Commander: {deck.commander?.name || "None"}</p>
-
+      <div className="info-side">
+        <h1>{deck.name}</h1>
+        {deck.commander?.image && (
+          <img src={deck.commander.image} alt={deck.commander.name} />
+        )}
+      </div>
+      <div className="card-view">
+        <h2>Cards:</h2>
+        <CardSearch onSelect={addCard} />
+      </div>
     </div>
   );
 }

@@ -1,8 +1,32 @@
 .deck-detail {
-    width: 100%;
-    min-height: 94vh;
+  width: 100%;
+  min-height: 94vh;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-side {
+  width: 30%;
+  height: 100%;
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  border: 1px solid black;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-view {
+  width: 70%;
+  height: 100%;
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  border: 1px solid black;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -127,6 +127,16 @@ app.delete("/api/decks/:id", async (req, res) => {
   }
 });
 
+// Add a card to a deck
+app.post("/api/decks/:id/card/:id", async (req, res) => {
+  try {
+    
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
