@@ -6,6 +6,7 @@ import "./DeckDetail.css";
 function DeckDetail() {
   const { deckId } = useParams();
   const [deck, setDeck] = useState(null);
+  const [cards, setCards] = useState([]);
 
   useEffect(() => {
     console.log("Fetching deckId:", deckId);
@@ -22,6 +23,7 @@ function DeckDetail() {
 
   function addCard(card) {
     console.log("Adding card to deck:", card);
+    setCards((prevCards) => [...prevCards, card]);
   }
 
   return (
@@ -32,9 +34,23 @@ function DeckDetail() {
           <img src={deck.commander.image} alt={deck.commander.name} />
         )}
       </div>
+
       <div className="card-view">
-        <h2>Cards:</h2>
-        <CardSearch onSelect={addCard} />
+        <div className="search-banner">
+          <h2>Cards:</h2>
+          <CardSearch addCard={addCard} />
+        </div>
+
+        <div className="card-dispay">
+          {cards.map((card) => {
+            return (
+              <div className="card-item" key={card.id}>
+                <h2>{card.name}</h2>
+                <img src={card.image} alt={card.name} />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
