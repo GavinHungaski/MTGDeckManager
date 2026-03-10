@@ -111,17 +111,31 @@ app.post("/api/deck", async (req, res) => {
 app.delete("/api/decks/:id", async (req, res) => {
   try {
     const { id } = req.params;
+    await client.query("BEGIN");
+
+    const deleteCardsQuery = `
+      DELETE FROM cards WHERE id IN (
+        SELECT card_id FROM deck_cards WHERE deck_id = $1
+      )`;
+    await client.query(deleteCardsQuery, [id]);
+
     const result = await client.query(
       "DELETE FROM decks WHERE id = $1 RETURNING id, name",
       [id],
     );
 
     if (result.rows.length === 0) {
+      await client.query("ROLLBACK");
       return res.status(404).json({ error: "Deck not found" });
     }
 
-    res.json({ message: "Deck deleted", deck: result.rows[0] });
+    await client.query("COMMIT");
+    res.json({
+      message: "Deck and its specific cards deleted",
+      deck: result.rows[0],
+    });
   } catch (err) {
+    await client.query("ROLLBACK");
     console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
   }
@@ -130,7 +144,6 @@ app.delete("/api/decks/:id", async (req, res) => {
 // Add a card to a deck
 app.post("/api/decks/:id/card/:id", async (req, res) => {
   try {
-    
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
