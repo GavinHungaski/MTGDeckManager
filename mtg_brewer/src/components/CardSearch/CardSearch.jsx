@@ -10,6 +10,16 @@ function CardSearch({ addCard }) {
   const wrapperRef = useRef(null);
   const debounceRef = useRef(null);
 
+  const SUPERTYPES = [
+    "Basic",
+    "Legendary",
+    "Snow",
+    "World",
+    "Ongoing",
+    "Elite",
+    "Host",
+  ];
+
   useEffect(() => {
     function handleClickOutside(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -51,13 +61,39 @@ function CardSearch({ addCard }) {
     return () => clearTimeout(debounceRef.current);
   }, [search]);
 
+  function parseTypeLine(typeLine) {
+    const [typePart, subPart] = typeLine.split(/[—-]/);
+
+    const words = typePart.trim().split(/\s+/);
+
+    const result = {
+      super: [],
+      type: [],
+      sub: [],
+    };
+
+    words.forEach((word) => {
+      if (SUPERTYPES.includes(word)) {
+        result.super.push(word);
+      } else {
+        result.type.push(word);
+      }
+    });
+
+    if (subPart) {
+      result.sub = subPart.trim().split(/\s+/);
+    }
+
+    return result;
+  }
+
   function handleSelect(card) {
     const image =
       card.image_uris?.normal ||
       card.card_faces?.[0]?.image_uris?.normal ||
       null;
 
-    const types = card.type_line.split(/[ —]+/);
+    const types = parseTypeLine(card.type_line);
 
     const cardData = {
       name: card.name,
@@ -77,7 +113,7 @@ function CardSearch({ addCard }) {
       meta_rank: card.edhrec_rank,
     };
 
-    addCard(cardData)
+    addCard(cardData);
     setSearch(card.name);
     setShowDropdown(false);
   }

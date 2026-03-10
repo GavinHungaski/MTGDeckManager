@@ -6,7 +6,20 @@ import "./DeckDetail.css";
 function DeckDetail() {
   const { deckId } = useParams();
   const [deck, setDeck] = useState(null);
+  const [groupBy, setGroupBy] = useState("type");
   const [cards, setCards] = useState([]);
+
+  const CARD_TYPES = [
+    "Artifact",
+    "Battle",
+    "Creature",
+    "Enchantment",
+    "Instant",
+    "Land",
+    "Planeswalker",
+    "Sorcery",
+    "Tribal",
+  ];
 
   useEffect(() => {
     console.log("Fetching deckId:", deckId);
@@ -26,6 +39,32 @@ function DeckDetail() {
     setCards((prevCards) => [...prevCards, card]);
   }
 
+  function groupCards(cards, groupBy) {
+    const groups = {};
+    cards.forEach((card) => {
+      let key;
+      if (groupBy == "type") {
+        key =
+          card.types.type.length == 0
+            ? "Other"
+            : card.types.type.length == 1
+              ? card.types.type[0]
+              : card.types.type.at(-1);
+      }
+      if (groupBy === "mana") {
+        key = card.cmc ?? 0;
+      }
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+      groups[key].push(card);
+    });
+    return groups;
+  }
+
+  const groupedCards = groupCards(cards, groupBy);
+  const categoryNames = Object.keys(groupedCards);
+
   return (
     <div className="deck-detail">
       <div className="info-side">
@@ -43,13 +82,31 @@ function DeckDetail() {
         <div className="search-banner">
           <h2>Cards:</h2>
           <CardSearch addCard={addCard} />
+          <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
+            <option value="type">Group by Type</option>
+            <option value="mana">Group by Mana Value</option>
+          </select>
         </div>
 
         <div className="card-display">
-          {cards.map((card) => {
+          {categoryNames.map((category) => {
             return (
-              <div className="card-item" key={card.id}>
-                <img className="viewing-img" src={card.image} alt={card.name} />
+              <div className="category" key={category}>
+                <h3>{category}</h3>
+
+                <div className="category-cards">
+                  {groupedCards[category].map((card) => {
+                    return (
+                      <div className="card-item" key={card.id}>
+                        <img
+                          className="viewing-img"
+                          src={card.image}
+                          alt={card.name}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             );
           })}
