@@ -45,7 +45,7 @@ function CardSearch({ addCard, color_identity = [] }) {
         const identityString = color_identity.join("").toLowerCase();
 
         const query = encodeURIComponent(
-          `${search} commander:${identityString}`,
+          `${search} id:${identityString} f:commander -is:digital`,
         );
         const url = `https://api.scryfall.com/cards/search?q=${query}`;
 
@@ -82,7 +82,7 @@ function CardSearch({ addCard, color_identity = [] }) {
     const types = leftWords.filter((w) => !SUPERTYPES.includes(w));
     const subtypes = right ? right.split(" ") : [];
 
-    const commanderData = {
+    const cardData = {
       name: card.name,
       scryfall_id: card.id,
       image,
@@ -104,7 +104,7 @@ function CardSearch({ addCard, color_identity = [] }) {
       meta_rank: card.edhrec_rank,
     };
 
-    onSelect(commanderData);
+    addCard(cardData);
     setSearch(card.name);
     setShowDropdown(false);
   }

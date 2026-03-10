@@ -19,7 +19,7 @@ function Search() {
   async function getList() {
     try {
       const url =
-        "https://api.scryfall.com/cards/search?q=t:legend+(t:creature+or+t:vehicle)";
+        "https://api.scryfall.com/cards/search?q=t:legend+(t:creature+or+t:vehicle)-is:digital";
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Status: ${response.status}`);
       const result = await response.json();
@@ -73,7 +73,7 @@ function Search() {
 
       <div className="results-display">
         {cards.map((card) => (
-          <div key={card.id} className="card-item">
+          <div key={card.id}>
             <img
               className="card-img"
               src={
