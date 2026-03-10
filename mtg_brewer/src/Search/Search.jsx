@@ -19,7 +19,7 @@ function Search() {
   async function getList() {
     try {
       const url =
-        "https://api.scryfall.com/cards/search?q=t:legend+(t:creature+or+t:vehicle)-is:digital";
+        "https://api.scryfall.com/cards/search?q=t:legend+(t:creature+or+t:vehicle) f:commander -is:digital";
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Status: ${response.status}`);
       const result = await response.json();
