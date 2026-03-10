@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router";
 import CardSearch from "../components/CardSearch/CardSearch.jsx";
 import "./DeckDetail.css";
@@ -32,38 +32,29 @@ function DeckDetail() {
       .catch((err) => console.error("Error fetching deck:", err));
   }, [deckId]);
 
-  if (!deck) return <div>Loading...</div>;
-
-  function addCard(card) {
-    console.log("Adding card to deck:", card);
-    setCards((prevCards) => [...prevCards, card]);
-  }
-
-  function groupCards(cards, groupBy) {
+  const groupedCards = useMemo(() => {
     const groups = {};
     cards.forEach((card) => {
-      let key;
-      if (groupBy == "type") {
-        key =
-          card.types.type.length == 0
-            ? "Other"
-            : card.types.type.length == 1
-              ? card.types.type[0]
-              : card.types.type.at(-1);
-      }
-      if (groupBy === "mana") {
+      let key = "Other";
+
+      if (groupBy === "type") {
+        const types = card.types?.type || [];
+        key = types.length === 0 ? "Other" : types[types.length - 1];
+      } else if (groupBy === "mana") {
         key = card.cmc ?? 0;
       }
-      if (!groups[key]) {
-        groups[key] = [];
-      }
+
+      if (!groups[key]) groups[key] = [];
       groups[key].push(card);
     });
     return groups;
-  }
+  }, [cards, groupBy]);
 
-  const groupedCards = groupCards(cards, groupBy);
-  const categoryNames = Object.keys(groupedCards);
+  if (!deck) return <div>Loading...</div>;
+
+  function addCard(card) {
+    setCards((prevCards) => [...prevCards, card]);
+  }
 
   return (
     <div className="deck-detail">
@@ -81,7 +72,11 @@ function DeckDetail() {
       <div className="card-view">
         <div className="search-banner">
           <h2>Cards:</h2>
-          <CardSearch addCard={addCard} />
+          <CardSearch
+            addCard={addCard}
+            color_identity={deck?.commander?.color_identity || []}
+          />
+
           <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
             <option value="type">Group by Type</option>
             <option value="mana">Group by Mana Value</option>
@@ -89,27 +84,37 @@ function DeckDetail() {
         </div>
 
         <div className="card-display">
-          {categoryNames.map((category) => {
-            return (
-              <div className="category" key={category}>
-                <h3>{category}</h3>
-
-                <div className="category-cards">
-                  {groupedCards[category].map((card) => {
-                    return (
-                      <div className="card-item" key={card.id}>
-                        <img
-                          className="viewing-img"
-                          src={card.image}
-                          alt={card.name}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
+          <div className="category">
+            <h3>Commander</h3>
+            <div className="category-cards">
+              <div className="card-item">
+                <img
+                  className="viewing-img"
+                  src={deck.commander.image}
+                  alt={deck.commander.name}
+                />
               </div>
-            );
-          })}
+            </div>
+          </div>
+
+          {Object.keys(groupedCards).map((category) => (
+            <div className="category" key={category}>
+              <h3>
+                {category} ({groupedCards[category].length})
+              </h3>
+              <div className="category-cards">
+                {groupedCards[category].map((card, idx) => (
+                  <div className="card-item" key={`${card.id}-${idx}`}>
+                    <img
+                      className="viewing-img"
+                      src={card.image}
+                      alt={card.name}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

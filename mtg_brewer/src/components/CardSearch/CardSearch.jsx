@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./CardSearch.css";
 
-function CardSearch({ addCard }) {
+function CardSearch({ addCard, color_identity = [] }) {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -26,13 +26,12 @@ function CardSearch({ addCard }) {
         setShowDropdown(false);
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
-    if (!search) {
+    if (search.length < 2) {
       setResults([]);
       return;
     }
@@ -43,49 +42,29 @@ function CardSearch({ addCard }) {
       try {
         setLoading(true);
 
-        const url = `https://api.scryfall.com/cards/search?q=${search}`;
+        const identityString = color_identity.join("").toLowerCase();
+
+        const query = encodeURIComponent(
+          `${search} commander:${identityString}`,
+        );
+        const url = `https://api.scryfall.com/cards/search?q=${query}`;
+
         const response = await fetch(url);
         if (!response.ok) throw new Error("Scryfall error");
 
         const data = await response.json();
-
         setResults(data.data.slice(0, 10));
         setShowDropdown(true);
       } catch (err) {
-        console.error(err);
+        console.error("Search error:", err);
+        setResults([]);
       } finally {
         setLoading(false);
       }
     }, 350);
 
     return () => clearTimeout(debounceRef.current);
-  }, [search]);
-
-  function parseTypeLine(typeLine) {
-    const [typePart, subPart] = typeLine.split(/[—-]/);
-
-    const words = typePart.trim().split(/\s+/);
-
-    const result = {
-      super: [],
-      type: [],
-      sub: [],
-    };
-
-    words.forEach((word) => {
-      if (SUPERTYPES.includes(word)) {
-        result.super.push(word);
-      } else {
-        result.type.push(word);
-      }
-    });
-
-    if (subPart) {
-      result.sub = subPart.trim().split(/\s+/);
-    }
-
-    return result;
-  }
+  }, [search, color_identity]);
 
   function handleSelect(card) {
     const image =
@@ -93,9 +72,17 @@ function CardSearch({ addCard }) {
       card.card_faces?.[0]?.image_uris?.normal ||
       null;
 
-    const types = parseTypeLine(card.type_line);
+    const typeLine = card.type_line || "";
 
-    const cardData = {
+    const [left, right] = typeLine.split("—").map((s) => s.trim());
+
+    const leftWords = left ? left.split(" ") : [];
+
+    const supertypes = leftWords.filter((w) => SUPERTYPES.includes(w));
+    const types = leftWords.filter((w) => !SUPERTYPES.includes(w));
+    const subtypes = right ? right.split(" ") : [];
+
+    const commanderData = {
       name: card.name,
       scryfall_id: card.id,
       image,
@@ -105,7 +92,11 @@ function CardSearch({ addCard }) {
       prices: card.prices || null,
       power: card.power,
       toughness: card.toughness,
-      types,
+      types: {
+        super: supertypes,
+        type: types,
+        sub: subtypes,
+      },
       text_box: card.oracle_text,
       legalities: card.legalities,
       keywords: card.keywords,
@@ -113,47 +104,51 @@ function CardSearch({ addCard }) {
       meta_rank: card.edhrec_rank,
     };
 
-    addCard(cardData);
+    onSelect(commanderData);
     setSearch(card.name);
     setShowDropdown(false);
   }
 
   return (
-    <div className="card-search">
+    <div className="card-search" ref={wrapperRef}>
       <input
         type="text"
         value={search}
         placeholder="Search card..."
         onChange={(e) => setSearch(e.target.value)}
+        onFocus={() => search && setShowDropdown(true)}
       />
 
       {showDropdown && (
         <div className="dropdown">
           {loading && <div className="dropdown-item">Loading...</div>}
 
-          {!loading &&
-            results.map((card) => {
-              const image =
-                card.image_uris?.normal ||
-                card.card_faces?.[0]?.image_uris?.normal;
-
-              return (
-                <div
-                  key={card.id}
-                  className="dropdown-item"
-                  onClick={() => handleSelect(card)}
-                >
-                  {image && (
-                    <img
-                      src={image}
-                      alt={card.name}
-                      className="dropdown-image"
-                    />
-                  )}
-                  <span>{card.name}</span>
-                </div>
-              );
-            })}
+          {!loading && results.length > 0
+            ? results.map((card) => {
+                const image =
+                  card.image_uris?.small ||
+                  card.card_faces?.[0]?.image_uris?.small;
+                return (
+                  <div
+                    key={card.id}
+                    className="dropdown-item"
+                    onClick={() => handleSelect(card)}
+                  >
+                    {image && (
+                      <img
+                        src={image}
+                        alt={card.name}
+                        className="dropdown-image"
+                      />
+                    )}
+                    <span>{card.name}</span>
+                  </div>
+                );
+              })
+            : !loading &&
+              search && (
+                <div className="dropdown-item">No legal cards found</div>
+              )}
         </div>
       )}
     </div>

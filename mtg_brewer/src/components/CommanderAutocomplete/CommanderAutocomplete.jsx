@@ -9,6 +9,16 @@ function CommanderAutocomplete({ onSelect }) {
   const wrapperRef = useRef(null);
   const debounceRef = useRef(null);
 
+  const SUPERTYPES = [
+    "Basic",
+    "Legendary",
+    "Snow",
+    "World",
+    "Ongoing",
+    "Elite",
+    "Host",
+  ];
+
   useEffect(() => {
     function handleClickOutside(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -56,8 +66,15 @@ function CommanderAutocomplete({ onSelect }) {
       card.card_faces?.[0]?.image_uris?.normal ||
       null;
 
-    const types = 
-      card.type_line.split(/[ —]+/);
+    const typeLine = card.type_line || "";
+
+    const [left, right] = typeLine.split("—").map((s) => s.trim());
+
+    const leftWords = left ? left.split(" ") : [];
+
+    const supertypes = leftWords.filter((w) => SUPERTYPES.includes(w));
+    const types = leftWords.filter((w) => !SUPERTYPES.includes(w));
+    const subtypes = right ? right.split(" ") : [];
 
     const commanderData = {
       name: card.name,
@@ -69,7 +86,11 @@ function CommanderAutocomplete({ onSelect }) {
       prices: card.prices || null,
       power: card.power,
       toughness: card.toughness,
-      types,
+      types: {
+        super: supertypes,
+        type: types,
+        sub: subtypes,
+      },
       text_box: card.oracle_text,
       legalities: card.legalities,
       keywords: card.keywords,
