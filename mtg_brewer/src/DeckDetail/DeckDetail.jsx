@@ -31,7 +31,11 @@ function DeckDetail() {
       <div className="info-side">
         <h1>{deck.name}</h1>
         {deck.commander?.image && (
-          <img src={deck.commander.image} alt={deck.commander.name} />
+          <img
+            className="viewing-img"
+            src={deck.commander.image}
+            alt={deck.commander.name}
+          />
         )}
       </div>
 
@@ -41,12 +45,11 @@ function DeckDetail() {
           <CardSearch addCard={addCard} />
         </div>
 
-        <div className="card-dispay">
+        <div className="card-display">
           {cards.map((card) => {
             return (
               <div className="card-item" key={card.id}>
-                <h2>{card.name}</h2>
-                <img src={card.image} alt={card.name} />
+                <img className="viewing-img" src={card.image} alt={card.name} />
               </div>
             );
           })}
