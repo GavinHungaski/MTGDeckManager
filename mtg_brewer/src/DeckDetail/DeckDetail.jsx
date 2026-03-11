@@ -8,6 +8,8 @@ function DeckDetail() {
   const [deck, setDeck] = useState(null);
   const [groupBy, setGroupBy] = useState("type");
   const [cards, setCards] = useState([]);
+  const [commander, setCommander] = useState(null);
+  const [viewingCard, setViewingCard] = useState(null);
 
   const CARD_TYPES = [
     "Artifact",
@@ -22,28 +24,39 @@ function DeckDetail() {
   ];
 
   useEffect(() => {
-    console.log("Fetching deckId:", deckId);
-    fetch(`http://localhost:4000/api/decks/${deckId}`)
-      .then((res) => {
+    if (!deckId) return;
+    const fetchDeckData = async () => {
+      try {
+        const res = await fetch(`http://localhost:4000/api/decks/${deckId}`);
         if (!res.ok) throw new Error("Failed to fetch deck");
-        return res.json();
-      })
-      .then((data) => setDeck(data))
-      .catch((err) => console.error("Error fetching deck:", err));
+        const data = await res.json();
+        const flattenedCards = data.cards.map((card) => ({
+          ...card.card_data,
+          id: card.id,
+          is_commander: card.is_commander,
+        }));
+        setDeck({ id: data.id, name: data.name });
+        setCards(flattenedCards);
+        setCommander(data.commander);
+      } catch (err) {
+        console.error("Error fetching deck:", err);
+      }
+    };
+    fetchDeckData();
   }, [deckId]);
 
   const groupedCards = useMemo(() => {
+    if (!cards || !Array.isArray(cards)) return {};
     const groups = {};
-    cards.forEach((card) => {
+    const libraryCards = cards.filter((card) => !card.is_commander);
+    libraryCards.forEach((card) => {
       let key = "Other";
-
       if (groupBy === "type") {
         const types = card.types?.type || [];
         key = types.length === 0 ? "Other" : types[types.length - 1];
       } else if (groupBy === "mana") {
         key = card.cmc ?? 0;
       }
-
       if (!groups[key]) groups[key] = [];
       groups[key].push(card);
     });
@@ -52,19 +65,38 @@ function DeckDetail() {
 
   if (!deck) return <div>Loading...</div>;
 
-  function addCard(card) {
-    setCards((prevCards) => [...prevCards, card]);
+  async function addCard(card) {
+    try {
+      const res = await fetch(
+        `http://localhost:4000/api/decks/${deckId}/card`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: card.name,
+            card_data: card,
+            is_commander: false,
+          }),
+        },
+      );
+      if (!res.ok) throw new Error("Network response was not ok");
+      const newCard = await res.json();
+      setCards((prevCards) => [...prevCards, newCard]);
+      console.log(newCard);
+    } catch (er) {
+      console.error("Error fetching card:", err);
+    }
   }
 
   return (
     <div className="deck-detail">
       <div className="info-side">
         <h1>{deck.name}</h1>
-        {deck.commander?.image && (
+        {commander?.image && (
           <img
             className="viewing-img"
-            src={deck.commander.image}
-            alt={deck.commander.name}
+            src={commander.image}
+            alt={commander.name}
           />
         )}
       </div>
@@ -74,7 +106,7 @@ function DeckDetail() {
           <h2>Cards:</h2>
           <CardSearch
             addCard={addCard}
-            color_identity={deck?.commander?.color_identity || []}
+            color_identity={commander?.color_identity || []}
           />
 
           <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
@@ -90,8 +122,8 @@ function DeckDetail() {
               <div className="card-item">
                 <img
                   className="viewing-img"
-                  src={deck.commander.image}
-                  alt={deck.commander.name}
+                  src={commander.image}
+                  alt={commander.name}
                 />
               </div>
             </div>
