@@ -114,7 +114,7 @@ function CardSearch({ addCard, color_identity = [] }) {
       <input
         type="text"
         value={search}
-        placeholder="Search cards..."
+        placeholder="Search cards . . ."
         onChange={(e) => setSearch(e.target.value)}
         onFocus={() => search && setShowDropdown(true)}
       />

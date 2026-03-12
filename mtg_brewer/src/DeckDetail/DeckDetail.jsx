@@ -38,6 +38,7 @@ function DeckDetail() {
         setDeck({ id: data.id, name: data.name });
         setCards(flattenedCards);
         setCommander(data.commander);
+        setViewingCard(data.commander);
       } catch (err) {
         console.error("Error fetching deck:", err);
       }
