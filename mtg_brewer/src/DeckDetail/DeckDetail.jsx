@@ -7,6 +7,7 @@ function DeckDetail() {
   const { deckId } = useParams();
   const [deck, setDeck] = useState(null);
   const [groupBy, setGroupBy] = useState("type");
+  const [sortBy, setSortBy] = useState("mana");
   const [cards, setCards] = useState([]);
   const [commander, setCommander] = useState(null);
   const [viewingCard, setViewingCard] = useState(null);
@@ -61,8 +62,26 @@ function DeckDetail() {
       if (!groups[key]) groups[key] = [];
       groups[key].push(card);
     });
+
+    Object.keys(groups).forEach((key) => {
+      groups[key].sort((a, b) => {
+        if (sortBy === "mana") {
+          return (a.cmc ?? 0) - (b.cmc ?? 0) || a.name.localeCompare(b.name);
+        } else if (sortBy === "price") {
+          const priceA = parseFloat(a.prices?.usd) || 0;
+          const priceB = parseFloat(b.prices?.usd) || 0;
+          return priceB - priceA || a.name.localeCompare(b.name);
+        } else if (sortBy === "type") {
+          const typeA = a.types?.type?.[0] || "";
+          const typeB = b.types?.type?.[0] || "";
+          return typeA.localeCompare(typeB) || a.name.localeCompare(b.name);
+        }
+        return a.name.localeCompare(b.name);
+      });
+    });
+
     return groups;
-  }, [cards, groupBy]);
+  }, [cards, groupBy, sortBy]);
 
   if (!deck) return <div>Loading...</div>;
 
@@ -109,11 +128,15 @@ function DeckDetail() {
             addCard={addCard}
             color_identity={commander?.color_identity || []}
           />
-          <span>Size: {cards.length}</span>
           <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
-            <option value="type">Types</option>
-            <option value="mana">Mana Value</option>
+            <option value="type">Group by Types</option>
+            <option value="mana">Group By Mana Value</option>
           </select>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="mana">Sort by Mana Value</option>
+            <option value="types">Sort by Types</option>
+          </select>
+          <span>Count: {cards.length}</span>
         </div>
 
         <div className="card-display">
