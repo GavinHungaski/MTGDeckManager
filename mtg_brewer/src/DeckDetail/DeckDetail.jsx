@@ -108,11 +108,11 @@ function DeckDetail() {
             addCard={addCard}
             color_identity={commander?.color_identity || []}
           />
-          <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
-            <option value="type">Group by Type</option>
-            <option value="mana">Group by Mana Value</option>
-          </select>
           <span>Size: {cards.length}</span>
+          <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
+            <option value="type">Types</option>
+            <option value="mana">Mana Value</option>
+          </select>
         </div>
 
         <div className="card-display">
