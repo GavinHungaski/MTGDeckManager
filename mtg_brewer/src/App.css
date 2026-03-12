@@ -1,4 +1,7 @@
-html, body, #root, .app-layout {
+html,
+body,
+#root,
+.app-layout {
   height: 100%;
   margin: 0;
 }
@@ -47,4 +50,12 @@ button:hover .button-top {
 }
 button:active .button-top {
   transform: translateY(0);
+}
+
+.roboto-font {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
 }

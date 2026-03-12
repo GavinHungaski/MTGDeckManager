@@ -109,7 +109,7 @@ function DeckDetail() {
   return (
     <div className="deck-detail">
       <div className="info-side">
-        <h1>{deck.name}</h1>
+        <h1 className="roboto-font">{deck.name}</h1>
         {viewingCard?.image && (
           <img
             className="viewing-img"
@@ -117,11 +117,11 @@ function DeckDetail() {
             alt={viewingCard.name}
           />
         )}
-        <span>${viewingCard?.prices?.usd}</span>
+        <span className="roboto-font">${viewingCard?.prices?.usd}</span>
       </div>
 
       <div className="card-view">
-        <div className="search-banner">
+        <div className="search-banner roboto-font">
           <CardSearch
             addCard={addCard}
             color_identity={commander?.color_identity || []}
@@ -139,7 +139,7 @@ function DeckDetail() {
 
         <div className="card-display">
           <div className="category">
-            <h3>Commander</h3>
+            <h3 className="roboto-font">Commander</h3>
             <div className="category-cards">
               <div className="card-item">
                 <img
@@ -154,7 +154,7 @@ function DeckDetail() {
 
           {Object.keys(groupedCards).map((category) => (
             <div className="category" key={category}>
-              <h3>
+              <h3 className="roboto-font">
                 {category} ({groupedCards[category].length})
               </h3>
               <div className="category-cards">
