@@ -123,6 +123,7 @@
 .category-cards {
   display: flex;
   align-items: flex-start;
+  flex-direction: column;
 }
 
 /* ---------- CARD ITEM ---------- */
@@ -137,11 +138,12 @@
 }
 
 .card-item:not(:first-child) {
-  margin-left: -130px;
+  margin-left: 0;
+  margin-top: -220px;
 }
 
-.card-item:hover {
-  transform: translateY(-10px) scale(1.05);
+.card-item:hover ~ .card-item {
+  transform: translateY(220px);
 }
 
 /* ---------- CARD IMAGE ---------- */
