@@ -82,7 +82,7 @@ function DeckDetail() {
       );
       if (!res.ok) throw new Error("Network response was not ok");
       const newCard = await res.json();
-      setCards((prevCards) => [...prevCards, newCard]);
+      setCards((prevCards) => [...prevCards, newCard.card_data]);
       console.log(newCard);
     } catch (er) {
       console.error("Error fetching card:", err);

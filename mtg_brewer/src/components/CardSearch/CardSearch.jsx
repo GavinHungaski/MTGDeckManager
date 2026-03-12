@@ -105,7 +105,7 @@ function CardSearch({ addCard, color_identity = [] }) {
     };
 
     addCard(cardData);
-    setSearch(card.name);
+    setSearch("");
     setShowDropdown(false);
   }
 
