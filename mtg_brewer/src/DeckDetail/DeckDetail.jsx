@@ -92,27 +92,27 @@ function DeckDetail() {
     <div className="deck-detail">
       <div className="info-side">
         <h1>{deck.name}</h1>
-        {commander?.image && (
+        {viewingCard?.image && (
           <img
             className="viewing-img"
-            src={commander.image}
-            alt={commander.name}
+            src={viewingCard.image}
+            alt={viewingCard.name}
           />
         )}
+        <span>${viewingCard?.prices?.usd}</span>
       </div>
 
       <div className="card-view">
         <div className="search-banner">
-          <h2>Cards:</h2>
           <CardSearch
             addCard={addCard}
             color_identity={commander?.color_identity || []}
           />
-
           <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
             <option value="type">Group by Type</option>
             <option value="mana">Group by Mana Value</option>
           </select>
+          <span>Size: {cards.length}</span>
         </div>
 
         <div className="card-display">
@@ -124,6 +124,7 @@ function DeckDetail() {
                   className="viewing-img"
                   src={commander.image}
                   alt={commander.name}
+                  onMouseEnter={() => setViewingCard(commander)}
                 />
               </div>
             </div>
@@ -141,6 +142,7 @@ function DeckDetail() {
                       className="viewing-img"
                       src={card.image}
                       alt={card.name}
+                      onMouseEnter={() => setViewingCard(card)}
                     />
                   </div>
                 ))}
