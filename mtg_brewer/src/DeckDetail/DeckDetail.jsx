@@ -62,7 +62,6 @@ function DeckDetail() {
       if (!groups[key]) groups[key] = [];
       groups[key].push(card);
     });
-
     Object.keys(groups).forEach((key) => {
       groups[key].sort((a, b) => {
         if (sortBy === "mana") {
@@ -79,7 +78,6 @@ function DeckDetail() {
         return a.name.localeCompare(b.name);
       });
     });
-
     return groups;
   }, [cards, groupBy, sortBy]);
 
