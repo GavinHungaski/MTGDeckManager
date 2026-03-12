@@ -51,7 +51,7 @@ function DeckDetail() {
   useEffect(() => {
     let totalPrice = 0.0;
     cards.forEach((card) => {
-      totalPrice = totalPrice + Number(card.prices.usd)
+      totalPrice = totalPrice + Number(card.prices.usd);
     });
     setTotalPrice(totalPrice);
   }, [cards]);
