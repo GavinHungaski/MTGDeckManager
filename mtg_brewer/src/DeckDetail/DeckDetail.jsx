@@ -11,6 +11,7 @@ function DeckDetail() {
   const [cards, setCards] = useState([]);
   const [commander, setCommander] = useState(null);
   const [viewingCard, setViewingCard] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(0.0);
 
   const CARD_TYPES = [
     "Artifact",
@@ -46,6 +47,14 @@ function DeckDetail() {
     };
     fetchDeckData();
   }, [deckId]);
+
+  useEffect(() => {
+    let totalPrice = 0.0;
+    cards.forEach((card) => {
+      totalPrice = totalPrice + Number(card.prices.usd)
+    });
+    setTotalPrice(totalPrice);
+  }, [cards]);
 
   const groupedCards = useMemo(() => {
     if (!cards || !Array.isArray(cards)) return {};
@@ -109,7 +118,7 @@ function DeckDetail() {
   return (
     <div className="deck-detail">
       <div className="info-side">
-        <h1 className="roboto-font">{deck.name}</h1>
+        <h1 className="roboto-font deck-name">{deck.name}</h1>
         {viewingCard?.image && (
           <img
             className="viewing-img"
@@ -134,12 +143,13 @@ function DeckDetail() {
             <option value="mana">Sort by Mana Value</option>
             <option value="types">Sort by Types</option>
           </select>
-          <span>Count: {cards.length}</span>
+          <span>#: {cards.length}</span>
+          <span>$: {totalPrice}</span>
         </div>
 
         <div className="card-display">
           <div className="category">
-            <h3 className="roboto-font">Commander</h3>
+            <span className="roboto-font">Commander</span>
             <div className="category-cards">
               <div className="card-item">
                 <img
@@ -154,9 +164,9 @@ function DeckDetail() {
 
           {Object.keys(groupedCards).map((category) => (
             <div className="category" key={category}>
-              <h3 className="roboto-font">
+              <span className="roboto-font">
                 {category} ({groupedCards[category].length})
-              </h3>
+              </span>
               <div className="category-cards">
                 {groupedCards[category].map((card, idx) => (
                   <div className="card-item" key={`${card.id}-${idx}`}>

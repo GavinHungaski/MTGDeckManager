@@ -37,6 +37,11 @@
   margin: 0;
 }
 
+.deck-name {
+  width: 100%;
+  border-bottom: 1px solid #d1d1d1;
+}
+
 /* ---------- CARD AREA ---------- */
 
 .card-view {
