@@ -239,3 +239,15 @@
 .card-display::-webkit-scrollbar-thumb:hover {
   background: #aaa;
 }
+
+/* ---------- Invalid Color Identity ---------- */
+
+.card-item.invalid-identity {
+  outline: 3px solid #dc3545;
+  outline-offset: -3px;
+  border-radius: 10px;
+}
+
+.card-item.invalid-identity .viewing-img {
+  filter: sepia(0.5) hue-rotate(-50deg) saturate(2);
+}

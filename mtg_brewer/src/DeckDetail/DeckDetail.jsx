@@ -170,18 +170,26 @@ function DeckDetail() {
                 {category} ({groupedCards[category].length})
               </span>
               <div className="category-cards">
-                {groupedCards[category].map((card, idx) => (
-                  <div className="card-item" key={`${card.id}-${idx}`}>
-                    <img
-                      className="viewing-img"
-                      src={card.image}
-                      alt={card.name}
-                      onMouseEnter={() => setViewingCard(card)}
-                    />
-                    <DeleteCardBtn />
-                    <SetCommanderBtn />
-                  </div>
-                ))}
+                {groupedCards[category].map((card, idx) => {
+                  const isInvalid = !card.color_identity?.every((color) =>
+                    commander?.color_identity?.includes(color),
+                  );
+                  return (
+                    <div
+                      className={`card-item ${isInvalid ? "invalid-identity" : ""}`}
+                      key={`${card.id}-${idx}`}
+                    >
+                      <img
+                        className="viewing-img"
+                        src={card.image}
+                        alt={card.name}
+                        onMouseEnter={() => setViewingCard(card)}
+                      />
+                      <DeleteCardBtn />
+                      <SetCommanderBtn />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}
