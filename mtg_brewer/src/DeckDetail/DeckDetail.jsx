@@ -1,6 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router";
 import CardSearch from "../components/CardSearch/CardSearch.jsx";
+import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
+import SetCommanderBtn from "../components/SetCommanderBtn.jsx";
 import "./DeckDetail.css";
 
 function DeckDetail() {
@@ -176,6 +178,8 @@ function DeckDetail() {
                       alt={card.name}
                       onMouseEnter={() => setViewingCard(card)}
                     />
+                    <DeleteCardBtn />
+                    <SetCommanderBtn />
                   </div>
                 ))}
               </div>
