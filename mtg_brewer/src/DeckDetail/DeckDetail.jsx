@@ -154,8 +154,12 @@ function DeckDetail() {
             <option value="mana">Sort by Mana Value</option>
             <option value="types">Sort by Types</option>
           </select>
-          <span>Count: {cards.length}</span>
-          <span>Cost: ${totalPrice}</span>
+          <span>
+            Count: <b>{cards.length}</b>
+          </span>
+          <span>
+            Cost: <b>${totalPrice}</b>
+          </span>
         </div>
 
         <div className="card-display">
