@@ -180,13 +180,10 @@ function DeckDetail() {
               </span>
               <div className="category-cards">
                 {groupedCards[category].map((card) => {
-                  const superTypes = card.types?.super || [];
-                  const coreTypes = card.types?.type || [];
-                  const isLegendary = superTypes.includes("Legendary");
-                  const isCreatureOrVehicle =
-                    coreTypes.includes("Creature") ||
-                    coreTypes.includes("Vehicle");
-                  const canBeCommander = isLegendary && isCreatureOrVehicle;
+                  const canBeCommander =
+                    card.types?.super.includes("Legendary") &&
+                    (card.types?.type.includes("Creature") ||
+                      card.types?.sub.includes("Vehicle"));
                   const isInvalid = !card.color_identity?.every((color) =>
                     commander?.color_identity?.includes(color),
                   );
