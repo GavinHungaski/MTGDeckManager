@@ -50,8 +50,10 @@ function DeckDetail() {
   }, [deckId]);
 
   const totalPrice = useMemo(() => {
-  return cards.reduce((sum, card) => sum + (parseFloat(card.prices?.usd) || 0), 0).toFixed(2);
-}, [cards]);
+    return cards
+      .reduce((sum, card) => sum + (parseFloat(card.prices?.usd) || 0), 0)
+      .toFixed(2);
+  }, [cards]);
 
   const groupedCards = useMemo(() => {
     if (!cards || !Array.isArray(cards)) return {};
@@ -119,6 +121,9 @@ function DeckDetail() {
 
   function handleRemoveCard(cardId) {
     setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
+    if (viewingCard.id === cardId) {
+      setViewingCard(commander);
+    }
   }
 
   return (
@@ -174,7 +179,14 @@ function DeckDetail() {
                 {category} ({groupedCards[category].length})
               </span>
               <div className="category-cards">
-                {groupedCards[category].map((card, idx) => {
+                {groupedCards[category].map((card) => {
+                  const superTypes = card.types?.super || [];
+                  const coreTypes = card.types?.type || [];
+                  const isLegendary = superTypes.includes("Legendary");
+                  const isCreatureOrVehicle =
+                    coreTypes.includes("Creature") ||
+                    coreTypes.includes("Vehicle");
+                  const canBeCommander = isLegendary && isCreatureOrVehicle;
                   const isInvalid = !card.color_identity?.every((color) =>
                     commander?.color_identity?.includes(color),
                   );
@@ -194,7 +206,7 @@ function DeckDetail() {
                         cardId={card.id}
                         onDelete={handleRemoveCard}
                       />
-                      <SetCommanderBtn />
+                      {canBeCommander && <SetCommanderBtn />}
                     </div>
                   );
                 })}
