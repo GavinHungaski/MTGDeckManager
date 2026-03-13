@@ -13,7 +13,6 @@ function DeckDetail() {
   const [cards, setCards] = useState([]);
   const [commander, setCommander] = useState(null);
   const [viewingCard, setViewingCard] = useState(null);
-  const [totalPrice, setTotalPrice] = useState(0.0);
 
   const CARD_TYPES = [
     "Artifact",
@@ -50,13 +49,9 @@ function DeckDetail() {
     fetchDeckData();
   }, [deckId]);
 
-  useEffect(() => {
-    let totalPrice = 0.0;
-    cards.forEach((card) => {
-      totalPrice = totalPrice + Number(card.prices.usd);
-    });
-    setTotalPrice(totalPrice);
-  }, [cards]);
+  const totalPrice = useMemo(() => {
+  return cards.reduce((sum, card) => sum + (parseFloat(card.prices?.usd) || 0), 0).toFixed(2);
+}, [cards]);
 
   const groupedCards = useMemo(() => {
     if (!cards || !Array.isArray(cards)) return {};
@@ -110,11 +105,20 @@ function DeckDetail() {
       );
       if (!res.ok) throw new Error("Network response was not ok");
       const newCard = await res.json();
-      setCards((prevCards) => [...prevCards, newCard.card_data]);
-      console.log(newCard);
-    } catch (er) {
-      console.error("Error fetching card:", err);
+      const cardToState = {
+        ...newCard.card_data,
+        id: newCard.id,
+        is_commander: newCard.is_commander,
+      };
+
+      setCards((prevCards) => [...prevCards, cardToState]);
+    } catch (err) {
+      console.error("Error adding card:", err);
     }
+  }
+
+  function handleRemoveCard(cardId) {
+    setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
   }
 
   return (
@@ -177,7 +181,7 @@ function DeckDetail() {
                   return (
                     <div
                       className={`card-item ${isInvalid ? "invalid-identity" : ""}`}
-                      key={`${card.id}-${idx}`}
+                      key={card.id}
                     >
                       <img
                         className="viewing-img"
@@ -185,7 +189,11 @@ function DeckDetail() {
                         alt={card.name}
                         onMouseEnter={() => setViewingCard(card)}
                       />
-                      <DeleteCardBtn />
+                      <DeleteCardBtn
+                        deckId={deck.id}
+                        cardId={card.id}
+                        onDelete={handleRemoveCard}
+                      />
                       <SetCommanderBtn />
                     </div>
                   );

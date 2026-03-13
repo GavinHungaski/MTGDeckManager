@@ -181,6 +181,24 @@ app.post("/api/decks/:deckId/card", async (req, res) => {
   }
 });
 
+// Delete a specific card
+app.delete("/api/decks/:deckId/card/:cardId", async (req, res) => {
+  try {
+    const { cardId } = req.params;
+    const result = await client.query(
+      `DELETE FROM cards WHERE id = $1 RETURNING id`,
+      [cardId],
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Card not found" });
+    }
+    res.status(204).send();
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
