@@ -77,7 +77,7 @@ function DeckDetail() {
         } else if (sortBy === "price") {
           const priceA = parseFloat(a.prices?.usd) || 0;
           const priceB = parseFloat(b.prices?.usd) || 0;
-          return priceB - priceA || a.name.localeCompare(b.name);
+          return priceA - priceB || a.name.localeCompare(b.name);
         } else if (sortBy === "type") {
           const typeA = a.types?.type?.[0] || "";
           const typeB = b.types?.type?.[0] || "";
