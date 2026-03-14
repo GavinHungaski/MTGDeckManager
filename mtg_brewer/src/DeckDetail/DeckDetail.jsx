@@ -112,7 +112,6 @@ function DeckDetail() {
         id: newCard.id,
         is_commander: newCard.is_commander,
       };
-
       setCards((prevCards) => [...prevCards, cardToState]);
     } catch (err) {
       console.error("Error adding card:", err);
