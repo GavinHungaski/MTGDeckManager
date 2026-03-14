@@ -14,18 +14,6 @@ function DeckDetail() {
   const [commander, setCommander] = useState(null);
   const [viewingCard, setViewingCard] = useState(null);
 
-  const CARD_TYPES = [
-    "Artifact",
-    "Battle",
-    "Creature",
-    "Enchantment",
-    "Instant",
-    "Land",
-    "Planeswalker",
-    "Sorcery",
-    "Tribal",
-  ];
-
   useEffect(() => {
     if (!deckId) return;
     const fetchDeckData = async () => {
