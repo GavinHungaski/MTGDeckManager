@@ -78,6 +78,7 @@ function CommanderAutocomplete({ onSelect }) {
 
     const commanderData = {
       name: card.name,
+      scryfall_id: card.scryfall_id,
       image,
       color_identity: card.color_identity,
       cmc: card.cmc,
