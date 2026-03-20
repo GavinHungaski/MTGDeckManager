@@ -156,7 +156,9 @@ function DeckDetail() {
   return (
     <div className="deck-detail">
       <div className="info-side">
-        <h1 className="roboto-font deck-name">{deck.name}</h1>
+        <h1 className="roboto-font deck-name">
+          <b>{deck.name}</b>
+        </h1>
         {viewingCard?.image && (
           <img
             className="viewing-img"
@@ -192,7 +194,9 @@ function DeckDetail() {
 
         <div className="card-display">
           <div className="category">
-            <span className="roboto-font">Commander</span>
+            <span className="roboto-font">
+              <b>Commander</b>
+            </span>
             <div className="category-cards">
               <div className="card-item">
                 <img
@@ -208,7 +212,7 @@ function DeckDetail() {
           {Object.keys(groupedCards).map((category) => (
             <div className="category" key={category}>
               <span className="roboto-font">
-                {category} (
+                <b>{category}</b>(
                 {groupedCards[category].reduce(
                   (sum, card) => sum + card.count,
                   0,
