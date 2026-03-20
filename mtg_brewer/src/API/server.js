@@ -52,34 +52,50 @@ app.get("/api/decks/:id", async (req, res) => {
       SELECT 
         d.id AS deck_id, 
         d.name AS deck_name, 
-        d.commander,
+        d.created_at,
+
+        dc.is_commander,
+        dc.count,
+
         c.id AS card_id, 
         c.name AS card_name, 
-        c.card_data,
-        c.is_commander AS is_commander
+        c.card_data
+
       FROM decks d
-      LEFT JOIN deck_cards dc ON d.id = dc.deck_id
-      LEFT JOIN cards c ON dc.card_id = c.id
+        LEFT JOIN deck_cards dc ON d.id = dc.deck_id
+        LEFT JOIN cards c ON dc.card_id = c.id
       WHERE d.id = $1
       `,
       [id],
     );
-    if (result.rows.length === 0) {
+    if (result.rows.length === 0)
       return res.status(404).json({ error: "Deck not found" });
-    }
+
+    const rows = result.rows;
+    const cards = rows
+      .filter((r) => r.card_id)
+      .map((r) => ({
+        id: r.card_id,
+        name: r.card_name,
+        card_data: r.card_data,
+        count: r.count || 1,
+        is_commander: r.is_commander,
+      }));
+    const commanderRow = rows.find((r) => r.is_commander === true);
     const deck = {
-      id: result.rows[0].deck_id,
-      name: result.rows[0].deck_name,
-      commander: result.rows[0].commander,
-      cards: result.rows[0].card_id
-        ? result.rows.map((row) => ({
-            id: row.card_id,
-            name: row.card_name,
-            card_data: row.card_data,
-            is_commander: row.is_commander,
-          }))
-        : [],
+      id: rows[0].deck_id,
+      name: rows[0].deck_name,
+      created_at: rows[0].created_at,
+      commander: commanderRow
+        ? {
+            id: commanderRow.card_id,
+            name: commanderRow.card_name,
+            card_data: commanderRow.card_data,
+          }
+        : null,
+      cards,
     };
+
     res.json(deck);
   } catch (err) {
     console.error("Database error:", err);
