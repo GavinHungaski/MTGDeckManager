@@ -109,6 +109,9 @@ app.post("/api/deck", async (req, res) => {
   try {
     const { name, commander } = req.body;
     if (!name || !commander?.name || !commander?.scryfall_id) {
+      console.log(name);
+      console.log(commander.name);
+      console.log(commander.scryfall_id);
       return res.status(400).json({ error: "Name and commander are required" });
     }
     client = await pool.connect();

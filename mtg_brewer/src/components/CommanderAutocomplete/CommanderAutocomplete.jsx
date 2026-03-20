@@ -78,7 +78,7 @@ function CommanderAutocomplete({ onSelect }) {
 
     const commanderData = {
       name: card.name,
-      scryfall_id: card.scryfall_id,
+      scryfall_id: card.id,
       image,
       color_identity: card.color_identity,
       cmc: card.cmc,
@@ -97,6 +97,7 @@ function CommanderAutocomplete({ onSelect }) {
       rarity: card.rarity,
       meta_rank: card.edhrec_rank,
     };
+    console.log(card);
 
     onSelect(commanderData);
     setSearch(card.name);
