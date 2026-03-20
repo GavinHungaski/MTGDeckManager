@@ -157,7 +157,7 @@ function DeckDetail() {
           </select>
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
             <option value="mana">Sort by Mana Value</option>
-            <option value="types">Sort by Types</option>
+            <option value="type">Sort by Types</option>
             <option value="price">Sort by Price</option>
           </select>
           <span>
