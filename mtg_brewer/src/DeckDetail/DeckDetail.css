@@ -166,7 +166,8 @@
 /* ---------- BUTTON SHARED STYLES ---------- */
 
 .card-delete-btn,
-.set-commander-btn {
+.set-commander-btn,
+.card-count {
   position: absolute;
   right: 10px;
   width: 34px;
@@ -206,6 +207,14 @@
   color: #ffd700;
 }
 
+/* ---------- Card Count (Top Left-ish) ---------- */
+
+.card-count {
+  top: 15%;
+  transform: translateY(-50%) scale(0.8);
+  color: #7dff71;
+}
+
 /* ---------- HOVER STATES ---------- */
 
 .card-item:hover .card-delete-btn,
@@ -213,6 +222,13 @@
   opacity: 1;
   visibility: visible;
   transform: translateY(-50%) scale(1);
+}
+
+.card-item:hover .card-count {
+  opacity: 1;
+  visibility: visible;
+  font-size: larger;
+  cursor: default;
 }
 
 .card-delete-btn:hover {

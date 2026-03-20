@@ -185,7 +185,12 @@ function DeckDetail() {
           {Object.keys(groupedCards).map((category) => (
             <div className="category" key={category}>
               <span className="roboto-font">
-                {category} ({groupedCards[category].length})
+                {category} (
+                {groupedCards[category].reduce(
+                  (sum, card) => sum + card.count,
+                  0,
+                )}
+                )
               </span>
               <div className="category-cards">
                 {groupedCards[category].map((card) => {
@@ -207,7 +212,7 @@ function DeckDetail() {
                         alt={card.name}
                         onMouseEnter={() => setViewingCard(card)}
                       />
-                      <span>{card.count}</span>
+                      <span className="card-count">{card.count}</span>
                       <DeleteCardBtn
                         deckId={deck.id}
                         cardId={card.id}
