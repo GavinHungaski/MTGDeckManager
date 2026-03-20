@@ -137,9 +137,18 @@ function DeckDetail() {
     }
   }
 
-  function handleRemoveCard(cardId) {
-    setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
-    if (viewingCard.id === cardId) {
+  function handleRemoveCard(cardToRemove) {
+    setCards((prev) => {
+      const existing = prev.find((c) => c.name === cardToRemove.name);
+      if (!existing) return prev;
+      if (existing.count > 1) {
+        return prev.map((c) =>
+          c.name === cardToRemove.name ? { ...c, count: c.count - 1 } : c,
+        );
+      }
+      return prev.filter((c) => c.name !== cardToRemove.name);
+    });
+    if (viewingCard?.name === cardToRemove.name) {
       setViewingCard(commander);
     }
   }
@@ -230,6 +239,7 @@ function DeckDetail() {
                       <DeleteCardBtn
                         deckId={deck.id}
                         cardId={card.id}
+                        card={card}
                         onDelete={handleRemoveCard}
                       />
                       {canBeCommander && <SetCommanderBtn />}

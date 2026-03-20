@@ -1,6 +1,6 @@
 import React from "react";
 
-function DeleteCardBtn({ deckId, cardId, onDelete }) {
+function DeleteCardBtn({ deckId, cardId, card, onDelete }) {
   const handleDelete = async () => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this card?",
@@ -21,7 +21,7 @@ function DeleteCardBtn({ deckId, cardId, onDelete }) {
         throw new Error(data.error || `Error: ${response.status}`);
       }
       if (onDelete) {
-        onDelete(cardId);
+        onDelete(card);
       }
     } catch (err) {
       console.error("Error deleting card:", err.message);
