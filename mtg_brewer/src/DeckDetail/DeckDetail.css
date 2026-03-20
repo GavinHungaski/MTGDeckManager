@@ -155,10 +155,8 @@
 
 .viewing-img {
   width: 100%;
-  border-radius: 10px;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   display: block;
   transition: box-shadow 0.2s ease;
 }
