@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-const pool = require("./scripts/db");
+const pool = require("./db");
 
 const PORT = 4000;
 const app = express();
