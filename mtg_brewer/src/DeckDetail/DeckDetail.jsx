@@ -200,7 +200,7 @@ function DeckDetail() {
             <div className="category-cards">
               <div className="card-item">
                 <img
-                  className="viewing-img"
+                  className="card-item-image"
                   src={commander.image}
                   alt={commander.name}
                   onMouseEnter={() => setViewingCard(commander)}
@@ -233,7 +233,7 @@ function DeckDetail() {
                       key={card.id}
                     >
                       <img
-                        className="viewing-img"
+                        className="card-item-image"
                         src={card.image}
                         alt={card.name}
                         onMouseEnter={() => setViewingCard(card)}

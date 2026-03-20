@@ -161,6 +161,14 @@
   transition: box-shadow 0.2s ease;
 }
 
+/* ---------- CARD ITEM IMAGE ---------- */
+
+.card-item-image {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+}
+
 /* ---------- BUTTON SHARED STYLES ---------- */
 
 .card-delete-btn,
