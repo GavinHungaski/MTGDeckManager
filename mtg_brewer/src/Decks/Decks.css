@@ -12,8 +12,9 @@
 }
 
 .deck-item {
-    background: lightblue;
-    border-radius: 15px;
+  background: lightblue;
+  border: 2px solid black;
+  border-radius: 15px;
 }
 
 .difBg {
@@ -21,8 +22,6 @@
 }
 
 .new-deck-button {
-  border: 1px solid black;
-  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -11,7 +11,10 @@ function Decks() {
   useEffect(() => {
     fetch("http://localhost:4000/api/decks")
       .then((res) => res.json())
-      .then((data) => setDecks(data))
+      .then((data) => {
+        setDecks(data);
+        console.log(data);
+      })
       .catch((err) => console.error("Error fetching decks:", err));
   }, []);
 
@@ -58,10 +61,15 @@ function Decks() {
         {decks.map((deck) => (
           <div className="deck-item" key={deck.id}>
             <h2>{deck.name}</h2>
-            (id: {deck.id})
+            <hr />
+            <span>id: {deck.id}</span>
+            <hr />
+            <span>{Date(deck.created_at)}</span>
+            <hr />
             <button onClick={() => handleDeckClick(deck)}>
               <span className="button-top">View</span>
             </button>
+            <hr />
             <button onClick={() => deleteDeck(deck.id)}>
               <span className="button-top difBg">Delete</span>
             </button>

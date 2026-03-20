@@ -84,7 +84,6 @@ function CardSearch({ addCard, color_identity = [] }) {
 
     const cardData = {
       name: card.name,
-      scryfall_id: card.id,
       image,
       color_identity: card.color_identity,
       cmc: card.cmc,
