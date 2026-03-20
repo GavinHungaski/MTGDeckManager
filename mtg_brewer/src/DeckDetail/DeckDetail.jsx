@@ -122,13 +122,10 @@ function DeckDetail() {
       const newCard = await res.json();
       const formattedCard = formatCard(newCard);
       setCards((prev) => {
-        const existing = prev.find(
-          (c) => c.scryfall_id === formattedCard.scryfall_id,
-        );
+        const existing = prev.find((c) => c.name === formattedCard.name);
         if (existing) {
-          console.log("Dupe Detected!");
           return prev.map((c) =>
-            c.scryfall_id === formattedCard.scryfall_id
+            c.name === formattedCard.name
               ? { ...c, count: formattedCard.count }
               : c,
           );
