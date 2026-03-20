@@ -212,12 +212,11 @@ function DeckDetail() {
           {Object.keys(groupedCards).map((category) => (
             <div className="category" key={category}>
               <span className="roboto-font">
-                <b>{category}</b> (
+                <b>{category}</b>{" "}
                 {groupedCards[category].reduce(
                   (sum, card) => sum + card.count,
                   0,
                 )}
-                )
               </span>
               <div className="category-cards">
                 {groupedCards[category].map((card) => {
