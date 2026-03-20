@@ -13,7 +13,6 @@ function Decks() {
       .then((res) => res.json())
       .then((data) => {
         setDecks(data);
-        console.log(data);
       })
       .catch((err) => console.error("Error fetching decks:", err));
   }, []);

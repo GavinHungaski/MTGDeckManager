@@ -97,7 +97,6 @@ function CommanderAutocomplete({ onSelect }) {
       rarity: card.rarity,
       meta_rank: card.edhrec_rank,
     };
-    console.log(card);
 
     onSelect(commanderData);
     setSearch(card.name);
