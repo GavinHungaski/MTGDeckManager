@@ -45,7 +45,7 @@ function CardSearch({ addCard, color_identity = [] }) {
         const identityString = color_identity.join("").toLowerCase();
 
         const query = encodeURIComponent(
-          `${search} id:${identityString} f:commander -is:digital`,
+          `!"${search}" OR ${search} id:${identityString} f:commander -is:digital`,
         );
         const url = `https://api.scryfall.com/cards/search?q=${query}`;
 
@@ -53,7 +53,17 @@ function CardSearch({ addCard, color_identity = [] }) {
         if (!response.ok) throw new Error("Scryfall error");
 
         const data = await response.json();
-        setResults(data.data.slice(0, 10));
+
+        const sorted = data.data.sort((a, b) => {
+          const aExact = a.name.toLowerCase() === search.toLowerCase();
+          const bExact = b.name.toLowerCase() === search.toLowerCase();
+
+          if (aExact && !bExact) return -1;
+          if (!aExact && bExact) return 1;
+          return 0;
+        });
+
+        setResults(sorted.slice(0, 10));
         setShowDropdown(true);
       } catch (err) {
         console.error("Search error:", err);
