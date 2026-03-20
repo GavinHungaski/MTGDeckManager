@@ -81,18 +81,22 @@ app.get("/api/decks/:id", async (req, res) => {
         count: r.count || 1,
         is_commander: r.is_commander,
       }));
-    const commanderRow = rows.find((r) => r.is_commander === true);
+    const commander = rows.find((r) => r.is_commander);
     const deck = {
       id: rows[0].deck_id,
       name: rows[0].deck_name,
       created_at: rows[0].created_at,
-      commander: commanderRow
+
+      commander: commander
         ? {
-            id: commanderRow.card_id,
-            name: commanderRow.card_name,
-            card_data: commanderRow.card_data,
+            id: commander.card_id,
+            name: commander.card_name,
+            card_data: commander.card_data,
+            count: commander.count || 1,
+            is_commander: true,
           }
         : null,
+
       cards,
     };
 

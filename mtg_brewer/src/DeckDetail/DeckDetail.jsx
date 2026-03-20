@@ -21,6 +21,7 @@ function DeckDetail() {
         const res = await fetch(`http://localhost:4000/api/decks/${deckId}`);
         if (!res.ok) throw new Error("Failed to fetch deck");
         const data = await res.json();
+        console.log(data);
         const formattedCards = data.cards.map(formatCard);
         const formattedCommander = {
           id: data.commander.id,
@@ -39,7 +40,7 @@ function DeckDetail() {
   }, [deckId]);
 
   const formatCard = (card) => {
-    const data = CanvasGradient.card_data;
+    const data = card.card_data;
     return {
       id: card.id,
       name: card.name,
@@ -107,6 +108,7 @@ function DeckDetail() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: card.name,
+            scryfall_id: card.scryfall_id,
             card_data: card,
             is_commander: false,
           }),
@@ -114,12 +116,8 @@ function DeckDetail() {
       );
       if (!res.ok) throw new Error("Network response was not ok");
       const newCard = await res.json();
-      const cardToState = {
-        ...newCard.card_data,
-        id: newCard.id,
-        is_commander: newCard.is_commander,
-      };
-      setCards((prevCards) => [...prevCards, cardToState]);
+      const formattedCard = formatCard(newCard);
+      setCards((prevCards) => [...prevCards, formattedCard]);
     } catch (err) {
       console.error("Error adding card:", err);
     }
@@ -209,6 +207,7 @@ function DeckDetail() {
                         alt={card.name}
                         onMouseEnter={() => setViewingCard(card)}
                       />
+                      <span>{card.count}</span>
                       <DeleteCardBtn
                         deckId={deck.id}
                         cardId={card.id}
