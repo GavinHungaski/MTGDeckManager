@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { Client } from "pg";
+import { Pool } from "pg";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.use(cors());
 
-const client = new Client({
+const pool = new Pool({
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   host: process.env.PGHOST,
@@ -20,7 +20,8 @@ const client = new Client({
   database: process.env.PGDATABASE,
 });
 
-client.connect().catch((err) => {
+// Quick check to see if the db is working
+pool.connect().catch((err) => {
   console.error("Failed to connect to PostgreSQL:", err);
   process.exit(1);
 });
@@ -28,12 +29,11 @@ client.connect().catch((err) => {
 // Get all decks
 app.get("/api/decks", async (_, res) => {
   try {
-    const result = await client.query(`
+    const result = await pool.query(`
       SELECT id, name
       FROM decks
       ORDER BY id
     `);
-
     res.json(result.rows);
   } catch (err) {
     console.error("Database error:", err);
@@ -45,7 +45,7 @@ app.get("/api/decks", async (_, res) => {
 app.get("/api/decks/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await client.query(
+    const result = await pool.query(
       `
       SELECT 
         d.id AS deck_id, 
@@ -87,13 +87,14 @@ app.get("/api/decks/:id", async (req, res) => {
 
 // Add a new deck
 app.post("/api/deck", async (req, res) => {
+  let client;
   try {
     const { name, commander } = req.body;
     if (!name || !commander || !commander.name) {
       return res.status(400).json({ error: "Name and commander are required" });
     }
-    // Start a transaction
-    await client.query("BEGIN");
+    client = await pool.connect();
+    await client.query("BEGIN"); // BEGIN TRANSACTION
     const deckResult = await client.query(
       `INSERT INTO decks (name, commander) VALUES ($1, $2) RETURNING id, name`,
       [name, JSON.stringify(commander)],
@@ -111,21 +112,24 @@ app.post("/api/deck", async (req, res) => {
       `INSERT INTO deck_cards (deck_id, card_id) VALUES ($1, $2)`,
       [deckId, cardId],
     );
-    // Commit transaction
-    await client.query("COMMIT");
+    await client.query("COMMIT"); // COMMIT TRANSACTION
     res.status(201).json(deckResult.rows[0]);
   } catch (err) {
-    await client.query("ROLLBACK");
+    if (client) await client.query("ROLLBACK");
     console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
+  } finally {
+    if (client) client.release();
   }
 });
 
 // Delete a specific deck
 app.delete("/api/decks/:id", async (req, res) => {
+  let client;
   try {
     const { id } = req.params;
-    await client.query("BEGIN");
+    client = await pool.connect();
+    await client.query("BEGIN"); // BEGIN TRANSACTION
     const deleteCardsQuery = `
       DELETE FROM cards WHERE id IN (
         SELECT card_id FROM deck_cards WHERE deck_id = $1
@@ -139,25 +143,28 @@ app.delete("/api/decks/:id", async (req, res) => {
       await client.query("ROLLBACK");
       return res.status(404).json({ error: "Deck not found" });
     }
-    await client.query("COMMIT");
+    await client.query("COMMIT"); // COMMIT TRANSACTION
     res.json({
       message: "Deck and its specific cards deleted",
       deck: result.rows[0],
     });
   } catch (err) {
-    await client.query("ROLLBACK");
+    if (client) await client.query("ROLLBACK");
     console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
+  } finally {
+    if (client) client.release();
   }
 });
 
 // Add a card to a deck
 app.post("/api/decks/:deckId/card", async (req, res) => {
+  let client;
   try {
     const { deckId } = req.params;
     const { name, card_data, is_commander } = req.body;
-    await client.query("BEGIN");
-
+    client = await pool.connect();
+    await client.query("BEGIN"); // BEGIN TRANSACTION
     const cardResult = await client.query(
       `INSERT INTO cards (name, card_data, is_commander)
        VALUES ($1, $2, $3)
@@ -171,13 +178,14 @@ app.post("/api/decks/:deckId/card", async (req, res) => {
        ON CONFLICT DO NOTHING`,
       [deckId, cardId],
     );
-
-    await client.query("COMMIT");
+    await client.query("COMMIT"); // COMMIT TRANSACTION
     res.status(201).json({ id: cardId, name, card_data });
   } catch (err) {
-    await client.query("ROLLBACK");
+    if (client) await client.query("ROLLBACK");
     console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
+  } finally {
+    if (client) client.release();
   }
 });
 
@@ -185,7 +193,7 @@ app.post("/api/decks/:deckId/card", async (req, res) => {
 app.delete("/api/decks/:deckId/card/:cardId", async (req, res) => {
   try {
     const { cardId } = req.params;
-    const result = await client.query(
+    const result = await pool.query(
       `DELETE FROM cards WHERE id = $1 RETURNING id`,
       [cardId],
     );
