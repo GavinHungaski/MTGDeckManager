@@ -59,7 +59,11 @@ function DeckDetail() {
 
   const totalPrice = useMemo(() => {
     return cards
-      .reduce((sum, card) => sum + (parseFloat(card.prices?.usd) || 0), 0)
+      .reduce((sum, card) => {
+        const price = Number(card.prices?.usd) || 0;
+        const count = card.count || 1;
+        return sum + price * count;
+      }, 0)
       .toFixed(2);
   }, [cards]);
 
