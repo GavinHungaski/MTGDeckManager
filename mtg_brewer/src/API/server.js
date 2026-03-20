@@ -108,29 +108,35 @@ app.post("/api/deck", async (req, res) => {
   let client;
   try {
     const { name, commander } = req.body;
-    if (!name || !commander || !commander.name) {
+    if (!name || !commander?.name || !commander?.scryfall_id) {
       return res.status(400).json({ error: "Name and commander are required" });
     }
     client = await pool.connect();
+
     await client.query("BEGIN"); // BEGIN TRANSACTION
     const deckResult = await client.query(
-      `INSERT INTO decks (name, commander) VALUES ($1, $2) RETURNING id, name`,
-      [name, JSON.stringify(commander)],
+      `INSERT INTO decks (name)
+      VALUES ($1)
+      RETURNING id, name, created_at`,
+      [name],
     );
     const deckId = deckResult.rows[0].id;
     const cardResult = await client.query(
-      `INSERT INTO cards (name, card_data, is_commander)
-       VALUES ($1, $2, true)
-       ON CONFLICT (name) DO UPDATE SET card_data = EXCLUDED.card_data
+      `INSERT INTO cards (name, scryfall_id, card_data)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (scryfall_id)
+       DO UPDATE SET card_data = EXCLUDED.card_data
        RETURNING id`,
-      [commander.name, JSON.stringify(commander)],
+      [commander.name, commander.scryfall_id, commander],
     );
     const cardId = cardResult.rows[0].id;
     await client.query(
-      `INSERT INTO deck_cards (deck_id, card_id) VALUES ($1, $2)`,
+      `INSERT INTO deck_cards (deck_id, card_id, count, is_commander)
+      VALUES ($1, $2, 1, true)`,
       [deckId, cardId],
     );
     await client.query("COMMIT"); // COMMIT TRANSACTION
+
     res.status(201).json(deckResult.rows[0]);
   } catch (err) {
     if (client) await client.query("ROLLBACK");
