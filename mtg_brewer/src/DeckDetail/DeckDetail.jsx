@@ -44,7 +44,7 @@ function DeckDetail() {
     return {
       id: card.id,
       name: card.name,
-      count: card.count,
+      count: card.count ?? 1,
       is_commander: card.is_commander,
 
       image: data?.image,
