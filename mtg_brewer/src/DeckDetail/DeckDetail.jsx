@@ -21,21 +21,39 @@ function DeckDetail() {
         const res = await fetch(`http://localhost:4000/api/decks/${deckId}`);
         if (!res.ok) throw new Error("Failed to fetch deck");
         const data = await res.json();
-        const flattenedCards = data.cards.map((card) => ({
-          ...card.card_data,
-          id: card.id,
-          is_commander: card.is_commander,
-        }));
+        const formattedCards = data.cards.map(formatCard);
+        const formattedCommander = {
+          id: data.commander.id,
+          name: data.commander.name,
+          ...data.commander.card_data,
+        };
         setDeck({ id: data.id, name: data.name });
-        setCards(flattenedCards);
-        setCommander(data.commander);
-        setViewingCard(data.commander);
+        setCards(formattedCards);
+        setCommander(formattedCommander);
+        setViewingCard(formattedCommander);
       } catch (err) {
         console.error("Error fetching deck:", err);
       }
     };
     fetchDeckData();
   }, [deckId]);
+  const formatCard = (card) => {
+    const data = CanvasGradient.card_data;
+    return {
+      id: card.id,
+      name: card.name,
+      count: card.count,
+      is_commander: card.is_commander,
+
+      image: data?.image,
+      cmc: data?.cmc,
+      prices: data?.prices,
+      color_identity: data?.color_identity,
+      types: data?.types,
+
+      raw: data,
+    };
+  };
 
   const totalPrice = useMemo(() => {
     return cards
