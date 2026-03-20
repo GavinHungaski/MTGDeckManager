@@ -1,23 +1,13 @@
 import express from "express";
 import cors from "cors";
-import { Pool } from "pg";
-import dotenv from "dotenv";
 
-dotenv.config();
+const pool = require("./scripts/db");
 
-const app = express();
 const PORT = 4000;
+const app = express();
 
 app.use(express.json());
 app.use(cors());
-
-const pool = new Pool({
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  host: process.env.PGHOST,
-  port: process.env.PGPORT,
-  database: process.env.PGDATABASE,
-});
 
 // Quick check to see if the db is working
 pool.connect().catch((err) => {
