@@ -37,6 +37,7 @@ function DeckDetail() {
     };
     fetchDeckData();
   }, [deckId]);
+
   const formatCard = (card) => {
     const data = CanvasGradient.card_data;
     return {
