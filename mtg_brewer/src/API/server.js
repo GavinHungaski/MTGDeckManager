@@ -115,18 +115,22 @@ app.post("/api/deck", async (req, res) => {
 
     await client.query("BEGIN"); // BEGIN TRANSACTION
     const deckResult = await client.query(
-      `INSERT INTO decks (name)
+      `
+      INSERT INTO decks (name)
       VALUES ($1)
-      RETURNING id, name, created_at`,
+      RETURNING id, name, created_at
+      `,
       [name],
     );
     const deckId = deckResult.rows[0].id;
     const cardResult = await client.query(
-      `INSERT INTO cards (name, scryfall_id, card_data)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (scryfall_id)
-       DO UPDATE SET card_data = EXCLUDED.card_data
-       RETURNING id`,
+      `
+      INSERT INTO cards (name, scryfall_id, card_data)
+      VALUES ($1, $2, $3)
+      ON CONFLICT (scryfall_id)
+      DO UPDATE SET card_data = EXCLUDED.card_data
+      RETURNING id
+      `,
       [commander.name, commander.scryfall_id, commander],
     );
     const cardId = cardResult.rows[0].id;
@@ -184,24 +188,41 @@ app.post("/api/decks/:deckId/card", async (req, res) => {
   let client;
   try {
     const { deckId } = req.params;
-    const { name, card_data, is_commander } = req.body;
+    const { name, scryfall_id, card_data, is_commander } = req.body;
+    if (!name || !scryfall_id) {
+      return res.status(400).json({ error: "Missing card data" });
+    }
     client = await pool.connect();
+
     await client.query("BEGIN"); // BEGIN TRANSACTION
     const cardResult = await client.query(
-      `INSERT INTO cards (name, card_data, is_commander)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (name) DO UPDATE SET card_data = EXCLUDED.card_data
-       RETURNING id`,
-      [name, JSON.stringify(card_data), !!is_commander],
+      `
+      INSERT INTO cards (name, scryfall_id, card_data)
+      VALUES ($1, $2, $3)
+      ON CONFLICT (scryfall_id)
+      DO UPDATE SET card_data = EXCLUDED.card_data
+      RETURNING id
+      `,
+      [name, scryfall_id, card_data],
     );
     const cardId = cardResult.rows[0].id;
     await client.query(
-      `INSERT INTO deck_cards (deck_id, card_id) VALUES ($1, $2)
-       ON CONFLICT DO NOTHING`,
-      [deckId, cardId],
+      `
+      INSERT INTO deck_cards (deck_id, card_id, count, is_commander)
+      VALUES ($1, $2, 1, $3)
+      ON CONFLICT (deck_id, card_id)
+      DO UPDATE SET count = deck_cards.count + 1
+      `,
+      [deckId, cardId, !!is_commander],
     );
     await client.query("COMMIT"); // COMMIT TRANSACTION
-    res.status(201).json({ id: cardId, name, card_data });
+
+    res.status(201).json({
+      id: cardId,
+      name,
+      scryfall_id,
+      card_data,
+    });
   } catch (err) {
     if (client) await client.query("ROLLBACK");
     console.error("Database error:", err);
