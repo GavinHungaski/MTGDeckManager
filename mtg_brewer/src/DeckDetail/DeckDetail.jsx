@@ -21,7 +21,6 @@ function DeckDetail() {
         const res = await fetch(`http://localhost:4000/api/decks/${deckId}`);
         if (!res.ok) throw new Error("Failed to fetch deck");
         const data = await res.json();
-        console.log(data);
         const formattedCards = data.cards.map(formatCard);
         const formattedCommander = {
           id: data.commander.id,
@@ -43,6 +42,7 @@ function DeckDetail() {
     const data = card.card_data;
     return {
       id: card.id,
+      scryfall_id: card.scryfall_id,
       name: card.name,
       count: card.count ?? 1,
       is_commander: card.is_commander,
@@ -121,7 +121,20 @@ function DeckDetail() {
       if (!res.ok) throw new Error("Network response was not ok");
       const newCard = await res.json();
       const formattedCard = formatCard(newCard);
-      setCards((prevCards) => [...prevCards, formattedCard]);
+      setCards((prev) => {
+        const existing = prev.find(
+          (c) => c.scryfall_id === formattedCard.scryfall_id,
+        );
+        if (existing) {
+          console.log("Dupe Detected!");
+          return prev.map((c) =>
+            c.scryfall_id === formattedCard.scryfall_id
+              ? { ...c, count: formattedCard.count }
+              : c,
+          );
+        }
+        return [...prev, formattedCard];
+      });
     } catch (err) {
       console.error("Error adding card:", err);
     }
