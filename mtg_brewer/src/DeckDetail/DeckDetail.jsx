@@ -183,7 +183,7 @@ function DeckDetail() {
             <option value="price">Sort by Price</option>
           </select>
           <span>
-            Count: <b>{cards.length}</b>
+            Count: <b>{cards.reduce((sum, card) => sum + card.count, 0)}</b>
           </span>
           <span>
             Cost: <b>${totalPrice}</b>
