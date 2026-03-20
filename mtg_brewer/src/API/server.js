@@ -235,13 +235,28 @@ app.post("/api/decks/:deckId/card", async (req, res) => {
 // Delete a specific card
 app.delete("/api/decks/:deckId/card/:cardId", async (req, res) => {
   try {
-    const { cardId } = req.params;
+    const { deckId, cardId } = req.params;
     const result = await pool.query(
-      `DELETE FROM cards WHERE id = $1 RETURNING id`,
-      [cardId],
+      `
+      UPDATE deck_cards
+      SET count = count - 1
+      WHERE deck_id = $1 AND card_id = $2
+      RETURNING count
+      `,
+      [deckId, cardId],
     );
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Card not found" });
+      return res.status(404).json({ error: "Card not found in deck" });
+    }
+    const newCount = result.rows[0].count;
+    if (newCount <= 0) {
+      await pool.query(
+        `
+        DELETE FROM deck_cards
+        WHERE deck_id = $1 AND card_id = $2
+        `,
+        [deckId, cardId],
+      );
     }
     res.status(204).send();
   } catch (err) {
