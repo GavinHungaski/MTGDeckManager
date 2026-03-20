@@ -19,11 +19,24 @@ pool.connect().catch((err) => {
 app.get("/api/decks", async (_, res) => {
   try {
     const result = await pool.query(`
-      SELECT id, name
-      FROM decks
-      ORDER BY id
+      SELECT
+        d.id,
+        d.name,
+        d.created_at,
+        c.card_data AS commander
+      FROM decks d
+        LEFT JOIN deck_cards dc ON d.id = dc.deck_id AND dc.is_commander = true
+        LEFT JOIN cards c ON dc.card_id = c.id
+      ORDER BY LOWER(d.name), d.id
     `);
-    res.json(result.rows);
+    res.json(
+      result.rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        created_at: row.created_at,
+        commander: row.commander ?? null,
+      })),
+    );
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
