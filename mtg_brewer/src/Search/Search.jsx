@@ -1,46 +1,24 @@
-import { useState, useCallback, useRef } from "react";
+import { useSearch } from "./search_hooks/useSearch";
 import SearchBar from "./search_components/SearchBar";
 import phyrexianMana from "../assets/phyrexian_mana.png";
 import "./Search.css";
 
 function Search() {
-  const [cards, setCards] = useState([]);
-  const [nextPage, setNextPage] = useState(null);
-
-  const keyRef = useRef(0);
-  const withKey = (card) => ({ ...card, _key: keyRef.current++ });
-  const addCard = useCallback((results) => {
-    setCards(results.map(withKey));
-  }, []);
-
-  async function getRandomCard() {
-    try {
-      const response = await fetch("https://api.scryfall.com/cards/random");
-      if (!response.ok) throw new Error(`Status: ${response.status}`);
-      const result = await response.json();
-      setCards((prev) => [...prev, withKey(result)]);
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
-  async function getMoreCards() {
-    if (!nextPage) return;
-    try {
-      const response = await fetch(nextPage);
-      if (!response.ok) throw new Error(`Status: ${response.status}`);
-      const result = await response.json();
-      setCards((prev) => [...prev, ...result.data.map(withKey)]);
-      setNextPage(result.next_page || null);
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
-  function clearResults() {
-    setCards([]);
-    setNextPage(null);
-  }
+  const {
+    cards,
+    loading,
+    nextPage,
+    colors,
+    setColors,
+    sortBy,
+    setSortBy,
+    extraFilters,
+    setExtraFilters,
+    onSearch,
+    getRandomCard,
+    getMoreCards,
+    clearResults,
+  } = useSearch();
 
   return (
     <>
@@ -53,10 +31,10 @@ function Search() {
         />
         <h2>Scryfall API</h2>
         <SearchBar
-          addResults={addCard}
-          colors={[]}
-          sortBy={"name"}
-          extraFilters={{}}
+          onSearch={onSearch}
+          colors={colors}
+          sortBy={sortBy}
+          extraFilters={extraFilters}
         />
         <button onClick={getRandomCard}>
           <span className="button-top">Random</span>
@@ -68,9 +46,11 @@ function Search() {
         </button>
       </div>
 
+      {loading && <div className="loading">Loading...</div>}
+
       <div className="results-display">
         {cards.map((card) => (
-          <div key={`${card.id}-${Math.random()}`}>
+          <div key={card._key}>
             <img
               className="card-img"
               src={
@@ -84,13 +64,13 @@ function Search() {
         ))}
       </div>
 
-      <div style={{ backgroundColor: "gray" }}>
-        {nextPage && (
+      {nextPage && (
+        <div style={{ backgroundColor: "gray" }}>
           <button onClick={getMoreCards} className="get-more-button">
             <span className="button-top">Load More</span>
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 }
