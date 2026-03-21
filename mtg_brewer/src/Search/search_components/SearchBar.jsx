@@ -1,12 +1,31 @@
 import { useRef } from "react";
 
-function SearchBar({ addResults, color_identity = [] }) {
+function SearchBar({
+  addResults,
+  colors = [],
+  sortBy = "name",
+  extraFilters = {},
+}) {
   const debounceRef = useRef(null);
+
+  function buildQuery(searchText) {
+    const parts = [];
+    if (searchText.length >= 2) {
+      parts.push(`!"${searchText}" OR ${searchText}`);
+    }
+    if (colors.length > 0) {
+      parts.push(`id:${colors.join("").toLowerCase()}`);
+    }
+    if (extraFilters.type) {
+      parts.push(`t:${extraFilters.type}`);
+    }
+    parts.push("f:commander -is:digital");
+    return `https://api.scryfall.com/cards/search?q=${encodeURIComponent(parts.join(" "))}&order=${sortBy}`;
+  }
 
   function handleSearch(e) {
     const value = e.target.value;
     clearTimeout(debounceRef.current);
-
     if (value.length < 2) {
       addResults([]);
       return;
@@ -14,13 +33,7 @@ function SearchBar({ addResults, color_identity = [] }) {
 
     debounceRef.current = setTimeout(async () => {
       try {
-        const identityString = color_identity.join("").toLowerCase();
-        const query = encodeURIComponent(
-          `!"${value}" OR ${value} ${color_identity.length === 0 ? "" : `id:${identityString}`} f:commander -is:digital`,
-        );
-        const response = await fetch(
-          `https://api.scryfall.com/cards/search?q=${query}`,
-        );
+        const response = await fetch(buildQuery(value));
         if (!response.ok) throw new Error("Scryfall error");
         const data = await response.json();
         const sorted = data.data.sort((a, b) => {

@@ -52,7 +52,12 @@ function Search() {
           height="45"
         />
         <h2>Scryfall API</h2>
-        <SearchBar addResults={addCard} />
+        <SearchBar
+          addResults={addCard}
+          colors={[]}
+          sortBy={"name"}
+          extraFilters={{}}
+        />
         <button onClick={getRandomCard}>
           <span className="button-top">Random</span>
         </button>
