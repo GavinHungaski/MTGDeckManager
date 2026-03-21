@@ -1,4 +1,5 @@
 import { useSearch } from "./search_hooks/useSearch";
+import { useState } from "react";
 import SearchBar from "./search_components/SearchBar";
 import phyrexianMana from "../assets/phyrexian_mana.png";
 import "./Search.css";
@@ -21,6 +22,8 @@ function Search() {
     getMoreCards,
     clearResults,
   } = useSearch();
+
+  const [currentCard, setCurrentCard] = useState(null);
 
   return (
     <>
@@ -57,7 +60,15 @@ function Search() {
 
       <div className="results-display">
         {cards.map((card) => (
-          <div key={card._key}>
+          <div
+            key={card._key}
+            onMouseEnter={() => {
+              setCurrentCard(card);
+            }}
+            onMouseLeave={() => {
+              setCurrentCard(null);
+            }}
+          >
             <img
               className="card-img"
               src={
