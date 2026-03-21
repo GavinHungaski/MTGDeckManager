@@ -100,7 +100,7 @@ function SearchBar({
             >
               {rarities.map((rarity) => {
                 return (
-                  <option value={rarity} key={`${rarity}-${Math.random()}`}>
+                  <option value={rarity} key={rarity}>
                     {rarity === ""
                       ? "Any Rarity"
                       : `${rarity[0].toUpperCase()}${rarity.slice(1)}`}
