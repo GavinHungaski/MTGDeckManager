@@ -33,8 +33,11 @@ function Search() {
         <SearchBar
           onSearch={onSearch}
           colors={colors}
+          setColors={setColors}
           sortBy={sortBy}
+          setSortBy={setSortBy}
           extraFilters={extraFilters}
+          setExtraFilters={setExtraFilters}
         />
         <button onClick={getRandomCard}>
           <span className="button-top">Random</span>

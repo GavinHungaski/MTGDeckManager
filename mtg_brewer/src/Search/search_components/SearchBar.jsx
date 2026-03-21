@@ -4,13 +4,31 @@ import "./SearchBar.css";
 function SearchBar({
   onSearch,
   colors = [],
+  setColors = () => {},
   sortBy = "name",
+  setSortBy = () => {},
   extraFilters = {},
+  setExtraFilters = () => {},
 }) {
   const [value, setValue] = useState("");
 
   function handleKeyDown(e) {
     if (e.key === "Enter") onSearch(value);
+  }
+
+  function setColor(color = "w") {
+    const valid_colors = ["w", "u", "b", "g", "r"];
+    setColors((prev) => {
+      if (valid_colors.includes(color.toLowerCase())) {
+        if (!prev.includes(color)) {
+          return [...prev, color];
+        } else {
+          return prev.filter((n) => n !== color);
+        }
+      } else {
+        return prev;
+      }
+    });
   }
 
   return (
@@ -27,6 +45,7 @@ function SearchBar({
           Search
         </span>
       </button>
+      <i className="ms ms-g"></i>
     </div>
   );
 }
