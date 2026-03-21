@@ -1,39 +1,87 @@
+/* ── Search Header ────────────────────────────────────────── */
 .search-header {
-  width: 100%;
-  min-height: 80px;
-  background-color: lightgrey;
-  flex-grow: 0;
-
-  position: sticky;
-  top: 6vh;
-  z-index: 5;
-
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 14px;
+  padding: 14px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-wrap: wrap;
 }
 
-.results-display {
-  width: 100%;
-  background-color: gray;
-  flex-grow: 15;
-  padding: 5px;
+.search-header img {
+  filter: drop-shadow(0 0 6px rgba(201, 168, 76, 0.5));
+  flex-shrink: 0;
+}
 
+.search-header h2 {
+  font-family: "Cinzel", serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Loading ──────────────────────────────────────────────── */
+.loading {
+  font-family: "Cinzel", serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  color: var(--gold-dim);
+  text-align: center;
+  padding: 20px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ── Results Grid ─────────────────────────────────────────── */
+.results-display {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 0fr));
-  grid-auto-rows: 350px;
-  gap: 5px;
-  justify-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 24px;
+}
+
+.results-display > div {
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.results-display > div:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.7),
+    var(--glow);
 }
 
 .card-img {
-  width: 250px;
-  height: 350px;
-  border-radius: 11px;
+  width: 100%;
+  display: block;
+  border-radius: 8px;
 }
 
+/* ── Load More ────────────────────────────────────────────── */
 .get-more-button {
-  max-width: 200px;
-  margin-inline: auto;
+  display: block;
+  margin: 0 auto;
+  padding: 14px 0;
 }

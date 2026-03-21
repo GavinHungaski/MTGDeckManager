@@ -1,3 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&display=swap");
+
+/* ── Variables ────────────────────────────────────────────── */
+:root {
+  --bg: #0e0c0a;
+  --surface: #161310;
+  --surface-2: #1e1a16;
+  --border: #3a3020;
+  --border-glow: #c9a84c;
+  --gold: #c9a84c;
+  --gold-light: #e8cc7a;
+  --gold-dim: #7a6530;
+  --gold-shadow: rgb(90, 72, 28);
+  --text: #e8dfc8;
+  --text-muted: #8a7d65;
+  --red: #ff4444;
+  --red-shadow: rgb(120, 30, 30);
+  --green: #6fcf6f;
+  --green-shadow: rgb(30, 90, 30);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+  --glow: 0 0 12px rgba(201, 168, 76, 0.25);
+
+  --button_radius: 0.55em;
+  --button_outline_color: var(--gold-shadow);
+}
+
+/* ── Reset / Base ─────────────────────────────────────────── */
 html,
 body,
 #root,
@@ -9,7 +36,9 @@ body,
 body {
   padding: 0;
   overflow-x: hidden;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "Crimson Pro", Georgia, serif;
 }
 
 #root {
@@ -24,41 +53,82 @@ body {
   flex-direction: column;
 }
 
+/* ── Buttons ──────────────────────────────────────────────── */
 a,
 button {
-  --button_radius: 0.75em;
-  --button_outline_color: rgb(85, 85, 85);
-  font-size: 17px;
+  --button_radius: 0.55em;
+  --button_outline_color: var(--gold-shadow);
+  font-size: 15px;
   font-weight: bold;
   border: none;
   cursor: pointer;
   border-radius: var(--button_radius);
   background: var(--button_outline_color);
+  font-family: "Cinzel", serif;
 }
+
 .button-top {
   display: block;
   box-sizing: border-box;
   border: 2px solid var(--button_outline_color);
   border-radius: var(--button_radius);
-  padding: 0.75em 1.5em;
-  background: #e8e8e8;
-  color: var(--button_outline_color);
+  padding: 0.55em 1.3em;
+  background: var(--gold);
+  color: var(--bg);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
   transform: translateY(-0.2em);
-  transition: transform 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    background 0.15s ease;
 }
+
 a:hover .button-top,
 button:hover .button-top {
   transform: translateY(-0.33em);
+  background: var(--gold-light);
 }
+
 a:active .button-top,
 button:active .button-top {
   transform: translateY(0);
 }
 
+/* ── Color overrides for specific button types ────────────── */
+.button-top[style*="#FF4444"],
+.button-top.danger {
+  background: var(--red) !important;
+  border-color: var(--red-shadow) !important;
+  color: #fff !important;
+}
+
+button:has(.button-top[style*="#FF4444"]),
+button:has(.button-top.danger) {
+  background: var(--red-shadow);
+}
+
+.button-top[style*="lightgreen"],
+.button-top[style*="6fcf6f"],
+.button-top.confirm {
+  background: var(--green) !important;
+  border-color: var(--green-shadow) !important;
+  color: var(--bg) !important;
+}
+
+button:has(.button-top[style*="lightgreen"]),
+button:has(.button-top.confirm) {
+  background: var(--green-shadow);
+}
+
+/* ── Utility ──────────────────────────────────────────────── */
 .roboto-font {
-  font-family: "Roboto", sans-serif;
-  font-optical-sizing: auto;
+  font-family: "Crimson Pro", Georgia, serif;
   font-weight: 300;
-  font-style: normal;
-  font-variation-settings: "wdth" 100;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 8px 0;
 }
