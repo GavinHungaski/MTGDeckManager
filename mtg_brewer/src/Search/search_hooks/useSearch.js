@@ -2,20 +2,15 @@ import { useState, useEffect, useRef } from "react";
 
 function buildQuery(searchText, colors, sortBy, extraFilters) {
   const parts = [];
-
   if (searchText.length > 0) {
     parts.push(`!"${searchText}" OR ${searchText}`);
   }
-
   if (colors.length > 0) {
     parts.push(`id:${colors.join("").toLowerCase()}`);
   }
-
   // extraFilters scaffold — expand later
   if (extraFilters.type) parts.push(`t:${extraFilters.type}`);
-
   parts.push("f:commander -is:digital");
-
   return `https://api.scryfall.com/cards/search?q=${encodeURIComponent(parts.join(" "))}&order=${sortBy}`;
 }
 
@@ -93,9 +88,9 @@ export function useSearch() {
     loading,
     nextPage,
     colors,
-    setColors, // scaffold — wire to color toggles later
+    setColors,
     sortBy,
-    setSortBy, // scaffold — wire to sort UI later
+    setSortBy,
     extraFilters,
     setExtraFilters, // scaffold — wire to filter UI later
     onSearch,
