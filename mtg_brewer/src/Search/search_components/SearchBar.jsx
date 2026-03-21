@@ -89,7 +89,7 @@ function SearchBar({
               onChange={(e) => setSortBy(e.target.value)}
               value={sortBy}
             >
-              <option value="name">Name</option>
+              <option value="name">ABC</option>
               <option value="cmc">Mana Cost</option>
               <option value="rarity">Rarity</option>
               <option value="edhrec">EDH Rank</option>
