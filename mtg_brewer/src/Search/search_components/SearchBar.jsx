@@ -29,10 +29,9 @@ function SearchBar({
     if (e.key === "Enter") onSearch(value);
   }
 
-  function setColor(color = "w") {
-    const valid_colors = ["w", "u", "b", "g", "r", "c"];
+  function setColor(color) {
     setColors((prev) => {
-      if (valid_colors.includes(color.toLowerCase())) {
+      if (color_buttons.includes(color.toLowerCase())) {
         if (color === "c" && !prev.includes(color)) {
           return ["c"];
         } else if (!prev.includes(color)) {
@@ -45,6 +44,13 @@ function SearchBar({
       }
     });
   }
+
+  function setRarity(rarity) {
+    setExtraFilters((prev) => {
+      if (rarities.includes(rarity)) {}
+    })
+  }
+  function setType(type) {}
 
   return (
     <>
@@ -101,7 +107,7 @@ function SearchBar({
             {rarities.map((rarity) => {
               return (
                 <button
-                  onClick={() => setExtraFilters({ rarities: [...rarity] })}
+                  onClick={() => setExtraFilters()}
                   key={rarity}
                   className={
                     extraFilters.rarities.includes(rarity) ? "" : "deselected"
@@ -113,16 +119,16 @@ function SearchBar({
             })}
             <br />
             <span>Types: </span>
-            {types.map((Type) => {
+            {types.map((type) => {
               return (
                 <button
-                  onClick={() => setExtraFilters({ rarities: [...Type] })}
-                  key={Type}
+                  onClick={() => setExtraFilters()}
+                  key={type}
                   className={
-                    extraFilters.rarities.includes(Type) ? "" : "deselected"
+                    extraFilters.rarities.includes(type) ? "" : "deselected"
                   }
                 >
-                  <span className="button-top">{Type}</span>
+                  <span className="button-top">{type}</span>
                 </button>
               );
             })}
