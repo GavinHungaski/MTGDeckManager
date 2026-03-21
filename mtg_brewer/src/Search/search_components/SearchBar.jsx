@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./SearchBar.css";
 
 function SearchBar({
   onSearch,
@@ -21,7 +22,7 @@ function SearchBar({
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
       />
-      <button onClick={() => onSearch(value)}>
+      <button onClick={() => onSearch(value)} className="search-button">
         <span className="button-top" style={{ background: "lightgreen" }}>
           Search
         </span>
