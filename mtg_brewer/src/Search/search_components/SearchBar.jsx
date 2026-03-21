@@ -53,11 +53,6 @@ function SearchBar({
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <button onClick={() => onSearch(value)} className="search-button">
-          <span className="button-top" style={{ background: "lightgreen" }}>
-            Search
-          </span>
-        </button>
         {color_buttons.map((cb) => {
           return (
             <button
@@ -72,8 +67,15 @@ function SearchBar({
         <button onClick={() => {}} className={"deselected"}>
           <i className="ms ms-multicolor ms-cost"></i>
         </button>
+        <button onClick={() => onSearch(value)} className="search-button">
+          <span className="button-top" style={{ background: "lightgreen" }}>
+            Search
+          </span>
+        </button>
       </div>
-      <button onClick={() => setPanelCollapsed((prev) => !prev)}>~</button>
+      <button onClick={() => setPanelCollapsed((prev) => !prev)}>
+        {panelCollapsed ? "<" : ">"}
+      </button>
       {panelCollapsed && (
         <div className="parameter-tray">
           <div className="sort-select">

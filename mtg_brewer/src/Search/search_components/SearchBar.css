@@ -19,7 +19,7 @@
   background: var(--surface-2);
   border: 2px solid var(--gold-shadow);
   border-right: none;
-  border-radius: var(--button_radius) 0 0 var(--button_radius);
+  border-radius: var(--button_radius);
   outline: none;
   padding: 0.55em 14px;
   font-family: "Crimson Pro", Georgia, serif;
