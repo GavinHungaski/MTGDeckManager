@@ -53,8 +53,8 @@
 }
 
 .search-button .button-top {
-  border-radius: 0 var(--button_radius);
-  border-left: none;
+  border-radius: 0 var(--button_radius) var(--button_radius) 0;
+  border-left: 2px solid black;
   padding: 0.55em 14px;
   font-size: 0.68rem;
   height: 100%;
