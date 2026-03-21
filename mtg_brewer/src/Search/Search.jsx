@@ -62,7 +62,9 @@ function Search() {
           <span className="button-top">Random</span>
         </button>
         <button onClick={clearResults}>
-          <span className="button-top">Clear</span>
+          <span className="button-top" style={{ background: "#FF4444" }}>
+            Clear
+          </span>
         </button>
       </div>
 
