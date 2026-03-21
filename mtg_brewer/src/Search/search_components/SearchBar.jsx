@@ -7,20 +7,14 @@ function SearchBar({
   setColors = () => {},
   sortBy = "name",
   setSortBy = () => {},
-  extraFilters = {},
+  extraFilters = { rarity: null, type: null },
   setExtraFilters = () => {},
 }) {
   const [value, setValue] = useState("");
   const [panelCollapsed, setPanelCollapsed] = useState(false);
 
-  const color_buttons = [
-    { color: "w" },
-    { color: "u" },
-    { color: "b" },
-    { color: "g" },
-    { color: "r" },
-    { color: "c" },
-  ];
+  const color_buttons = ["w", "u", "b", "g", "r", "c"];
+  const rarities = ["common", "uncommon", "rare", "mythic"];
 
   function handleKeyDown(e) {
     if (e.key === "Enter") onSearch(value);
@@ -53,14 +47,14 @@ function SearchBar({
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        {color_buttons.map((cb) => {
+        {color_buttons.map((color) => {
           return (
             <button
-              onClick={() => setColor(cb.color)}
-              key={cb.color}
-              className={colors.includes(cb.color) ? "" : "deselected"}
+              onClick={() => setColor(color)}
+              key={color}
+              className={colors.includes(color) ? "" : "deselected"}
             >
-              <i className={`ms ms-${cb.color} ms-cost ms-shadow`}></i>
+              <i className={`ms ms-${color} ms-cost ms-shadow`}></i>
             </button>
           );
         })}
@@ -90,6 +84,24 @@ function SearchBar({
               <option value="cmc">Cost</option>
               <option value="rarity">Rarity</option>
               <option value="edhrec">EDH Rank</option>
+            </select>
+          </div>
+          <hr />
+          <div className="extra-filters-select">
+            <span>Extra Filters | </span>
+            <label for="rarity_select">Rarity:</label>
+            <select
+              name="rarity_select"
+              id="rarity_select"
+              onChange={(e) =>
+                setExtraFilters({ ...extraFilters, rarity: e.target.value })
+              }
+              value={extraFilters.rarity}
+            >
+              <option value="common">Common</option>
+              <option value="uncommon">Uncommon</option>
+              <option value="rare">Rare</option>
+              <option value="mythic">Mythic Rare</option>
             </select>
           </div>
         </div>
