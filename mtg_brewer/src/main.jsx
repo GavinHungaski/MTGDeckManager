@@ -16,9 +16,9 @@ const router = createBrowserRouter([
       { path: "decks", element: <Decks /> },
       { path: "search", element: <Search /> },
       { path: "decks/:deckId", element: <DeckDetail /> },
-      { path: "decks/:deckId/playtest", element: <Playtest /> },
     ],
   },
+  { path: "decks/:deckId/playtest", element: <Playtest /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
