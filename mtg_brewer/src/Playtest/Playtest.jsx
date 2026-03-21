@@ -1,7 +1,11 @@
 import { useEffect, useReducer, createContext } from "react";
 import { useParams } from "react-router";
-import { playtestReducer, initialState } from "./playtest_reducers/playtestReducer";
+import {
+  playtestReducer,
+  initialState,
+} from "./playtest_reducers/playtestReducer";
 import { expandAndShuffle } from "./playtest_utils/deckUtils";
+import "./Playtest.css";
 
 export const PlaytestContext = createContext();
 
@@ -61,7 +65,7 @@ function Playtest() {
 
   return (
     <PlaytestContext.Provider value={{ state, dispatch }}>
-      <div style={{ width: "100vw", height: "100vh", background: "#2D5A27" }}>
+      <div className="container">
         <p style={{ color: "white" }}>
           Deck loaded — {state.deck.length} cards in library
         </p>
