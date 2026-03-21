@@ -74,7 +74,21 @@ function SearchBar({
         </button>
       </div>
       <button onClick={() => setPanelCollapsed((prev) => !prev)}>~</button>
-      {panelCollapsed && <div></div>}
+      {panelCollapsed && (
+        <div className="parameter-tray">
+          <select
+            name="sort_select"
+            id="sort_select"
+            onChange={(e) => setSortBy(e.target.value)}
+            value={sortBy}
+          >
+            <option value="name">Name</option>
+            <option value="cmc">Cost</option>
+            <option value="rarity">Rarity</option>
+            <option value="edhrec">EDH Rank</option>
+          </select>
+        </div>
+      )}
     </>
   );
 }
