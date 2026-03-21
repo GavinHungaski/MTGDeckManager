@@ -5,15 +5,15 @@ function buildQuery(
   colors,
   sortBy,
   extraFilters,
-  color_joiner,
-  type_joiner,
+  color_joiner = ":",
+  type_joiner = "OR",
 ) {
   const parts = [];
   if (searchText.length > 0) {
     parts.push(`!"${searchText}" OR ${searchText}`);
   }
   if (colors.length > 0) {
-    parts.push(`id:${colors.join("").toLowerCase()}`);
+    parts.push(`id${color_joiner}${colors.join("").toLowerCase()}`);
   }
 
   const type_string = extraFilters.types
@@ -45,7 +45,7 @@ export function useSearch() {
   const keyRef = useRef(0);
   const withKey = (card) => ({ ...card, _key: keyRef.current++ });
 
-  async function runQuery(searchText) {
+  async function runQuery(searchText, color_joiner, type_joiner) {
     try {
       setLoading(true);
       const url = buildQuery(
@@ -70,9 +70,9 @@ export function useSearch() {
     }
   }
 
-  function onSearch(text) {
-    console.log(extraFilters);
-    runQuery(text);
+  function onSearch(text, color_joiner, type_joiner) {
+    console.log(extraFilters, color_joiner, type_joiner);
+    runQuery(text, color_joiner, type_joiner);
   }
 
   async function getRandomCard() {

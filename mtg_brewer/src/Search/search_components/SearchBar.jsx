@@ -12,6 +12,8 @@ function SearchBar({
 }) {
   const [value, setValue] = useState("");
   const [panelCollapsed, setPanelCollapsed] = useState(false);
+  const [colorJoiner, setColorJoiner] = useState(":");
+  const [typeJoiner, setTypeJoiner] = useState("OR");
 
   const color_buttons = ["w", "u", "b", "g", "r", "c"];
   const rarities = ["common", "uncommon", "rare", "mythic"];
@@ -25,7 +27,7 @@ function SearchBar({
   ];
 
   function handleKeyDown(e) {
-    if (e.key === "Enter") onSearch(value);
+    if (e.key === "Enter") onSearch(value, colorJoiner, typeJoiner);
   }
 
   function setColor(color) {
@@ -106,10 +108,21 @@ function SearchBar({
           );
         })}
         {"|"}
-        <button onClick={() => {}} className={"deselected"}>
+        <button
+          onClick={() => {
+            setColorJoiner((prev) => {
+              if (prev == ":") return "=";
+              else return ":";
+            });
+          }}
+          className={colorJoiner === ":" ? "deselected" : ""}
+        >
           <i className="ms ms-multicolor ms-cost"></i>
         </button>
-        <button onClick={() => onSearch(value)} className="search-button">
+        <button
+          onClick={() => onSearch(value, colorJoiner, typeJoiner)}
+          className="search-button"
+        >
           <span className="button-top" style={{ background: "lightgreen" }}>
             Search
           </span>
@@ -166,7 +179,15 @@ function SearchBar({
               );
             })}
             {"|"}
-            <button onClick={() => {}} className={"deselected"}>
+            <button
+              onClick={() => {
+                setTypeJoiner((prev) => {
+                  if (prev == "OR") return "AND";
+                  else return "OR";
+                });
+              }}
+              className={typeJoiner === "OR" ? "deselected" : ""}
+            >
               <span className="button-top">+</span>
             </button>
           </div>
