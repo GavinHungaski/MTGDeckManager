@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 
 function buildQuery(searchText, colors, sortBy, extraFilters) {
   const parts = [];
