@@ -30,6 +30,7 @@
 .card-img {
   width: 250px;
   height: 350px;
+  border-radius: 15px;
 }
 
 .get-more-button {
