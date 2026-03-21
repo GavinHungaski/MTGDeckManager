@@ -8,8 +8,21 @@ function buildQuery(searchText, colors, sortBy, extraFilters) {
   if (colors.length > 0) {
     parts.push(`id:${colors.join("").toLowerCase()}`);
   }
-  if (extraFilters.type) parts.push(`t:${extraFilters.type}`);
-  if (extraFilters.rarity) parts.push(`r:${extraFilters.rarity}`);
+
+  const type_string = extraFilters.types
+    ?.map((type) => {
+      return "t:" + type;
+    })
+    .join(" OR ");
+  if (type_string) parts.push(`(${type_string})`);
+
+  const rarity_string = extraFilters.rarities
+    ?.map((rarity) => {
+      return "r:" + rarity;
+    })
+    .join(" OR ");
+  if (rarity_string) parts.push(`(${rarity_string})`);
+
   parts.push("f:commander -is:digital");
   return `https://api.scryfall.com/cards/search?q=${encodeURIComponent(parts.join(" "))}&order=${sortBy}`;
 }
@@ -19,7 +32,7 @@ export function useSearch() {
   const [nextPage, setNextPage] = useState(null);
   const [colors, setColors] = useState([]);
   const [sortBy, setSortBy] = useState("name");
-  const [extraFilters, setExtraFilters] = useState({});
+  const [extraFilters, setExtraFilters] = useState({ rarities: [], types: [] });
   const [loading, setLoading] = useState(false);
 
   const keyRef = useRef(0);

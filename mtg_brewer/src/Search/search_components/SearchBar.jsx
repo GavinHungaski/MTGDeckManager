@@ -7,7 +7,7 @@ function SearchBar({
   setColors = () => {},
   sortBy = "name",
   setSortBy = () => {},
-  extraFilters = { rarity: "", type: "" },
+  extraFilters = { rarities: [], types: [] },
   setExtraFilters = () => {},
 }) {
   const [value, setValue] = useState("");
