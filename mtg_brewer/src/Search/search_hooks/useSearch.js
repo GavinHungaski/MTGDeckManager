@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 function buildQuery(
   searchText,
   colors,
+  cmcs,
   sortBy,
   extraFilters,
   color_joiner = ":",
@@ -15,6 +16,13 @@ function buildQuery(
   if (colors.length > 0) {
     parts.push(`id${color_joiner}${colors.join("").toLowerCase()}`);
   }
+
+  const mana_value_string = cmcs
+    ?.map((cost) => {
+      return cost != 12 ? `mv= ${cost}` : "mv>=12";
+    })
+    .join(" OR ");
+  if (mana_value_string) parts.push(`(${mana_value_string})`);
 
   const type_string = extraFilters.types
     ?.map((type) => {
@@ -38,6 +46,7 @@ export function useSearch() {
   const [cards, setCards] = useState([]);
   const [nextPage, setNextPage] = useState(null);
   const [colors, setColors] = useState([]);
+  const [cmcs, setCmcs] = useState([]);
   const [sortBy, setSortBy] = useState("name");
   const [extraFilters, setExtraFilters] = useState({ rarities: [], types: [] });
   const [loading, setLoading] = useState(false);
@@ -51,6 +60,7 @@ export function useSearch() {
       const url = buildQuery(
         searchText,
         colors,
+        cmcs,
         sortBy,
         extraFilters,
         color_joiner,
@@ -116,6 +126,8 @@ export function useSearch() {
     nextPage,
     colors,
     setColors,
+    cmcs,
+    setCmcs,
     sortBy,
     setSortBy,
     extraFilters,

@@ -5,6 +5,8 @@ function SearchBar({
   onSearch,
   colors = [],
   setColors = () => {},
+  cmcs = [],
+  setCmcs = () => {},
   sortBy = "name",
   setSortBy = () => {},
   extraFilters = { rarities: [], types: [] },
@@ -25,6 +27,7 @@ function SearchBar({
     "land",
     "battle",
   ];
+  const cmc_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
   function handleKeyDown(e) {
     if (e.key === "Enter") onSearch(value, colorJoiner, typeJoiner);
@@ -39,6 +42,20 @@ function SearchBar({
           return [...prev, color].filter((n) => n != "c");
         } else {
           return prev.filter((n) => n !== color);
+        }
+      } else {
+        return prev;
+      }
+    });
+  }
+
+  function setCmc(cmc) {
+    setCmcs((prev) => {
+      if (cmc_list.includes(cmc)) {
+        if (!prev.includes(cmc)) {
+          return [...prev, cmc];
+        } else {
+          return prev.filter((n) => n !== cmc);
         }
       } else {
         return prev;
@@ -147,8 +164,26 @@ function SearchBar({
             </select>
           </div>
           <hr />
+          <div className="cmc-select">
+            <label>Mana Cost: </label>
+            {cmc_list.map((cmc) => {
+              return (
+                <button
+                  onClick={() => {
+                    setCmc(cmc);
+                  }}
+                  key={cmc}
+                  className={cmcs.includes(cmc) ? "" : "deselected"}
+                >
+                  <i className={`ms ms-${cmc} ms-cost`}>
+                    {cmc >= 12 ? "+" : ""}
+                  </i>
+                </button>
+              );
+            })}
+          </div>
+          <hr />
           <div className="extra-filters-select">
-            <h3>Extra Filters</h3>
             <span>Rarity: </span>
             {rarities.map((rarity) => {
               return (
@@ -163,7 +198,7 @@ function SearchBar({
                 </button>
               );
             })}
-            <br />
+            <hr />
             <span>Types: </span>
             {types.map((type) => {
               return (

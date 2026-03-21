@@ -10,6 +10,8 @@ function Search() {
     nextPage,
     colors,
     setColors,
+    cmcs,
+    setCmcs,
     sortBy,
     setSortBy,
     extraFilters,
@@ -34,6 +36,8 @@ function Search() {
           onSearch={onSearch}
           colors={colors}
           setColors={setColors}
+          cmcs={cmcs}
+          setCmcs={setCmcs}
           sortBy={sortBy}
           setSortBy={setSortBy}
           extraFilters={extraFilters}
