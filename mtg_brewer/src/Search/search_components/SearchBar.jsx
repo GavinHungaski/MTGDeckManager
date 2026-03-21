@@ -73,7 +73,7 @@ function SearchBar({
           <i className="ms ms-multicolor ms-cost"></i>
         </button>
       </div>
-      <button onClick={() => setPanelCollapsed((prev) => !prev)}>^</button>
+      <button onClick={() => setPanelCollapsed((prev) => !prev)}>~</button>
       {panelCollapsed && <div></div>}
     </>
   );
