@@ -76,18 +76,20 @@ function SearchBar({
       <button onClick={() => setPanelCollapsed((prev) => !prev)}>~</button>
       {panelCollapsed && (
         <div className="parameter-tray">
-          <label for="sort_select">Sort By:</label>
-          <select
-            name="sort_select"
-            id="sort_select"
-            onChange={(e) => setSortBy(e.target.value)}
-            value={sortBy}
-          >
-            <option value="name">Name</option>
-            <option value="cmc">Cost</option>
-            <option value="rarity">Rarity</option>
-            <option value="edhrec">EDH Rank</option>
-          </select>
+          <div className="sort-select">
+            <label for="sort_select">Sort By:</label>
+            <select
+              name="sort_select"
+              id="sort_select"
+              onChange={(e) => setSortBy(e.target.value)}
+              value={sortBy}
+            >
+              <option value="name">Name</option>
+              <option value="cmc">Cost</option>
+              <option value="rarity">Rarity</option>
+              <option value="edhrec">EDH Rank</option>
+            </select>
+          </div>
         </div>
       )}
     </>

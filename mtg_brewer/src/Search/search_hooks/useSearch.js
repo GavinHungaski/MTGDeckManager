@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 function buildQuery(searchText, colors, sortBy, extraFilters) {
   const parts = [];
 
-  if (searchText.length >= 2) {
+  if (searchText.length > 0) {
     parts.push(`!"${searchText}" OR ${searchText}`);
   }
 
