@@ -82,6 +82,7 @@
 /* ── Load More ────────────────────────────────────────────── */
 .get-more-button {
   display: block;
+  max-height: 5%;
   margin: 0 auto;
   padding: 14px 0;
 }
