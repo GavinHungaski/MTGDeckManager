@@ -4,6 +4,7 @@ import CardSearch from "../components/CardSearch/CardSearch.jsx";
 import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
 import SetCommanderBtn from "../components/SetCommanderBtn.jsx";
 import "./DeckDetail.css";
+import ExportDeckButton from "../components/ExportDeckButton.jsx";
 
 function DeckDetail() {
   const { deckId } = useParams();
@@ -190,6 +191,7 @@ function DeckDetail() {
           <span>
             Cost: <b>${totalPrice}</b>
           </span>
+          <ExportDeckButton cards={cards} />
         </div>
 
         <div className="card-display">
