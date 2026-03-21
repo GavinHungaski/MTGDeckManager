@@ -15,6 +15,15 @@ function SearchBar({
 
   const color_buttons = ["w", "u", "b", "g", "r", "c"];
   const rarities = ["", "common", "uncommon", "rare", "mythic"];
+  const types = [
+    "",
+    "artifact",
+    "creature",
+    "planeswalker",
+    "enchantment",
+    "land",
+    "battle",
+  ];
 
   function handleKeyDown(e) {
     if (e.key === "Enter") onSearch(value);
@@ -104,6 +113,25 @@ function SearchBar({
                     {rarity === ""
                       ? "Any Rarity"
                       : `${rarity[0].toUpperCase()}${rarity.slice(1)}`}
+                  </option>
+                );
+              })}
+            </select>
+            <label for="type_select">Type:</label>
+            <select
+              name="type_select"
+              id="type_select"
+              onChange={(e) =>
+                setExtraFilters({ ...extraFilters, type: e.target.value })
+              }
+              value={extraFilters.type}
+            >
+              {types.map((type) => {
+                return (
+                  <option value={type} key={type}>
+                    {type === ""
+                      ? "Any type"
+                      : `${type[0].toUpperCase()}${type.slice(1)}`}
                   </option>
                 );
               })}
