@@ -84,7 +84,6 @@ function SearchBar({
           <div className="sort-select">
             <label for="sort_select">Sort By: </label>
             <select
-              name="sort_select"
               id="sort_select"
               onChange={(e) => setSortBy(e.target.value)}
               value={sortBy}
@@ -97,45 +96,36 @@ function SearchBar({
           </div>
           <hr />
           <div className="extra-filters-select">
-            <h4>Extra Filters</h4>
-            <label for="rarity_select">Rarity: </label>
-            <select
-              name="rarity_select"
-              id="rarity_select"
-              onChange={(e) =>
-                setExtraFilters({ ...extraFilters, rarity: e.target.value })
-              }
-              value={extraFilters.rarity}
-            >
-              {rarities.map((rarity) => {
-                return (
-                  <option value={rarity} key={rarity}>
-                    {rarity === ""
-                      ? "Any Rarity"
-                      : `${rarity[0].toUpperCase()}${rarity.slice(1)}`}
-                  </option>
-                );
-              })}
-            </select>
-            <label for="type_select">Type: </label>
-            <select
-              name="type_select"
-              id="type_select"
-              onChange={(e) =>
-                setExtraFilters({ ...extraFilters, type: e.target.value })
-              }
-              value={extraFilters.type}
-            >
-              {types.map((type) => {
-                return (
-                  <option value={type} key={type}>
-                    {type === ""
-                      ? "Any type"
-                      : `${type[0].toUpperCase()}${type.slice(1)}`}
-                  </option>
-                );
-              })}
-            </select>
+            <h3>Extra Filters</h3>
+            <span>Rarity: </span>
+            {rarities.map((rarity) => {
+              return (
+                <button
+                  onClick={() => setExtraFilters({ rarities: [...rarity] })}
+                  key={rarity}
+                  className={
+                    extraFilters.rarities.includes(rarity) ? "" : "deselected"
+                  }
+                >
+                  <span className="button-top">{rarity}</span>
+                </button>
+              );
+            })}
+            <br />
+            <span>Types: </span>
+            {types.map((Type) => {
+              return (
+                <button
+                  onClick={() => setExtraFilters({ rarities: [...Type] })}
+                  key={Type}
+                  className={
+                    extraFilters.rarities.includes(Type) ? "" : "deselected"
+                  }
+                >
+                  <span className="button-top">{Type}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
