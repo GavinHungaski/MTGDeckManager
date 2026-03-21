@@ -9,6 +9,7 @@ body,
 body {
   padding: 0;
   overflow-x: hidden;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 #root {
