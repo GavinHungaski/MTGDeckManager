@@ -81,7 +81,7 @@ export function useSearch() {
   }
 
   function onSearch(text, color_joiner, type_joiner) {
-    console.log(extraFilters, color_joiner, type_joiner);
+    console.log(cmcs);
     runQuery(text, color_joiner, type_joiner);
   }
 
