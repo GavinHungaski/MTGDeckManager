@@ -14,9 +14,8 @@ function SearchBar({
   const [panelCollapsed, setPanelCollapsed] = useState(false);
 
   const color_buttons = ["w", "u", "b", "g", "r", "c"];
-  const rarities = ["", "common", "uncommon", "rare", "mythic"];
+  const rarities = ["common", "uncommon", "rare", "mythic"];
   const types = [
-    "",
     "artifact",
     "creature",
     "planeswalker",
@@ -31,7 +30,7 @@ function SearchBar({
 
   function setColor(color) {
     setColors((prev) => {
-      if (color_buttons.includes(color.toLowerCase())) {
+      if (color_buttons.includes(color)) {
         if (color === "c" && !prev.includes(color)) {
           return ["c"];
         } else if (!prev.includes(color)) {
@@ -47,10 +46,43 @@ function SearchBar({
 
   function setRarity(rarity) {
     setExtraFilters((prev) => {
-      if (rarities.includes(rarity)) {}
-    })
+      if (rarities.includes(rarity)) {
+        if (!prev.rarities.includes(rarity)) {
+          return {
+            rarities: [...prev.rarities, rarity],
+            types: prev.types,
+          };
+        } else {
+          return {
+            rarities: prev.rarities.filter((n) => n !== rarity),
+            types: prev.types,
+          };
+        }
+      } else {
+        return prev;
+      }
+    });
   }
-  function setType(type) {}
+
+  function setType(type) {
+    setExtraFilters((prev) => {
+      if (types.includes(type)) {
+        if (!prev.types.includes(type)) {
+          return {
+            rarities: prev.rarities,
+            types: [...prev.types, type],
+          };
+        } else {
+          return {
+            rarities: prev.rarities,
+            types: prev.types.filter((n) => n !== type),
+          };
+        }
+      } else {
+        return prev;
+      }
+    });
+  }
 
   return (
     <>
@@ -88,7 +120,7 @@ function SearchBar({
       {panelCollapsed && (
         <div className="parameter-tray">
           <div className="sort-select">
-            <label for="sort_select">Sort By: </label>
+            <label>Sort By: </label>
             <select
               id="sort_select"
               onChange={(e) => setSortBy(e.target.value)}
@@ -107,7 +139,7 @@ function SearchBar({
             {rarities.map((rarity) => {
               return (
                 <button
-                  onClick={() => setExtraFilters()}
+                  onClick={() => setRarity(rarity)}
                   key={rarity}
                   className={
                     extraFilters.rarities.includes(rarity) ? "" : "deselected"
@@ -122,10 +154,10 @@ function SearchBar({
             {types.map((type) => {
               return (
                 <button
-                  onClick={() => setExtraFilters()}
+                  onClick={() => setType(type)}
                   key={type}
                   className={
-                    extraFilters.rarities.includes(type) ? "" : "deselected"
+                    extraFilters.types.includes(type) ? "" : "deselected"
                   }
                 >
                   <span className="button-top">{type}</span>
