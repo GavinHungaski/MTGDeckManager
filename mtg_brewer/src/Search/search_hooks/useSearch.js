@@ -22,7 +22,6 @@ function buildQuery(searchText, colors, sortBy, extraFilters) {
 export function useSearch() {
   const [cards, setCards] = useState([]);
   const [nextPage, setNextPage] = useState(null);
-  const [committedSearch, setCommittedSearch] = useState("");
   const [colors, setColors] = useState([]);
   const [sortBy, setSortBy] = useState("name");
   const [extraFilters, setExtraFilters] = useState({});
@@ -51,7 +50,6 @@ export function useSearch() {
 
   function onSearch(text) {
     console.log(colors);
-    setCommittedSearch(text);
     runQuery(text);
   }
 
@@ -88,7 +86,6 @@ export function useSearch() {
   function clearResults() {
     setCards([]);
     setNextPage(null);
-    setCommittedSearch("");
   }
 
   return {
