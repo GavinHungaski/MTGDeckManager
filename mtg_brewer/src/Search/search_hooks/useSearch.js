@@ -92,7 +92,7 @@ export function useSearch() {
     sortBy,
     setSortBy,
     extraFilters,
-    setExtraFilters, // scaffold — wire to filter UI later
+    setExtraFilters,
     onSearch,
     getRandomCard,
     getMoreCards,
