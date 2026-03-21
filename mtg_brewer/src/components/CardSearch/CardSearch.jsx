@@ -45,7 +45,7 @@ function CardSearch({ addCard, color_identity = [] }) {
         const identityString = color_identity.join("").toLowerCase();
 
         const query = encodeURIComponent(
-          `!"${search}" OR ${search} id:${identityString} f:commander -is:digital`,
+          `!"${search}" OR ${search}  ${color_identity.length === 0 ? "" : `id:${identityString}`} f:commander -is:digital`,
         );
         const url = `https://api.scryfall.com/cards/search?q=${query}`;
 
