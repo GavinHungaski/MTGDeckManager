@@ -1,9 +1,30 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useEffect, useReducer, createContext } from "react";
+import { useParams } from "react-router";
+import { playtestReducer, initialState } from "../reducers/playtestReducer";
+import { expandAndShuffle } from "../utils/deckUtils";
 
+export const PlaytestContext = createContext();
+
+const formatCard = (card) => {
+  const data = card.card_data;
+  return {
+    id: card.id,
+    scryfall_id: card.scryfall_id,
+    name: card.name,
+    count: card.count ?? 1,
+    is_commander: card.is_commander,
+    image: data?.image,
+    cmc: data?.cmc,
+    prices: data?.prices,
+    color_identity: data?.color_identity,
+    types: data?.types,
+    raw: data,
+  };
+};
 
 function Playtest() {
   const { deckId } = useParams();
+  const [state, dispatch] = useReducer(playtestReducer, initialState);
 
   useEffect(() => {
     if (!deckId) return;
@@ -13,8 +34,22 @@ function Playtest() {
         if (!res.ok) throw new Error("Failed to fetch deck");
         const data = await res.json();
         const formattedCards = data.cards.map(formatCard);
-        console.log(data);
-        console.log(formattedCards);
+
+        const { library, deck } = expandAndShuffle(formattedCards);
+
+        const players = [
+          {
+            id: crypto.randomUUID(),
+            name: "Player 1",
+            life: 40,
+            commanderDamage: {},
+          },
+        ];
+
+        dispatch({
+          type: "INIT_GAME",
+          payload: { library, deck, players },
+        });
       } catch (err) {
         console.error("Error fetching deck:", err);
       }
@@ -22,26 +57,17 @@ function Playtest() {
     fetchDeckData();
   }, [deckId]);
 
-  const formatCard = (card) => {
-    const data = card.card_data;
-    return {
-      id: card.id,
-      scryfall_id: card.scryfall_id,
-      name: card.name,
-      count: card.count ?? 1,
-      is_commander: card.is_commander,
+  console.log("Game state:", state);
 
-      image: data?.image,
-      cmc: data?.cmc,
-      prices: data?.prices,
-      color_identity: data?.color_identity,
-      types: data?.types,
-
-      raw: data,
-    };
-  };
-
-  return <div>Hello World</div>;
+  return (
+    <PlaytestContext.Provider value={{ state, dispatch }}>
+      <div style={{ width: "100vw", height: "100vh", background: "#2D5A27" }}>
+        <p style={{ color: "white" }}>
+          Deck loaded — {state.deck.length} cards in library
+        </p>
+      </div>
+    </PlaytestContext.Provider>
+  );
 }
 
 export default Playtest;
