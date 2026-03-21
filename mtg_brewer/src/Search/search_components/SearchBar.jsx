@@ -11,6 +11,7 @@ function SearchBar({
   setExtraFilters = () => {},
 }) {
   const [value, setValue] = useState("");
+  const [panelCollapsed, setPanelCollapsed] = useState(false);
 
   const color_buttons = [
     { color: "w" },
@@ -43,34 +44,38 @@ function SearchBar({
   }
 
   return (
-    <div className="card-search">
-      <input
-        type="text"
-        value={value}
-        placeholder="Search cards . . ."
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-      <button onClick={() => onSearch(value)} className="search-button">
-        <span className="button-top" style={{ background: "lightgreen" }}>
-          Search
-        </span>
-      </button>
-      {color_buttons.map((cb) => {
-        return (
-          <button
-            onClick={() => setColor(cb.color)}
-            key={cb.color}
-            className={colors.includes(cb.color) ? "" : "deselected"}
-          >
-            <i className={`ms ms-${cb.color} ms-cost ms-shadow`}></i>
-          </button>
-        );
-      })}
-      <button onClick={() => {}} className={"deselected"}>
-        <i className="ms ms-multicolor ms-cost"></i>
-      </button>
-    </div>
+    <>
+      <div className="card-search">
+        <input
+          type="text"
+          value={value}
+          placeholder="Search cards . . ."
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <button onClick={() => onSearch(value)} className="search-button">
+          <span className="button-top" style={{ background: "lightgreen" }}>
+            Search
+          </span>
+        </button>
+        {color_buttons.map((cb) => {
+          return (
+            <button
+              onClick={() => setColor(cb.color)}
+              key={cb.color}
+              className={colors.includes(cb.color) ? "" : "deselected"}
+            >
+              <i className={`ms ms-${cb.color} ms-cost ms-shadow`}></i>
+            </button>
+          );
+        })}
+        <button onClick={() => {}} className={"deselected"}>
+          <i className="ms ms-multicolor ms-cost"></i>
+        </button>
+      </div>
+      <button onClick={() => setPanelCollapsed((prev) => !prev)}>^</button>
+      {panelCollapsed && <div></div>}
+    </>
   );
 }
 
