@@ -5,6 +5,7 @@ import App from "./App";
 import Decks from "./Decks/Decks";
 import DeckDetail from "./DeckDetail/DeckDetail";
 import Search from "./Search/Search";
+import Playtest from "./Playtest/Playtest";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
       { path: "decks", element: <Decks /> },
       { path: "search", element: <Search /> },
       { path: "decks/:deckId", element: <DeckDetail /> },
+      { path: "decks/:deckId/playtest", element: <Playtest /> },
     ],
   },
 ]);
