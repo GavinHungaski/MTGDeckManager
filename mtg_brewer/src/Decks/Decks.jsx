@@ -22,6 +22,12 @@ function Decks() {
   }
 
   function deleteDeck(deckId) {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this deck?",
+    );
+    if (!isConfirmed) {
+      return;
+    }
     fetch(`http://localhost:4000/api/decks/${deckId}`, {
       method: "DELETE",
     })
