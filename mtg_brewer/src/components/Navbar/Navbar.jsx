@@ -4,9 +4,15 @@ import "./Navbar.css";
 export default function Navbar() {
   return (
     <nav>
-      <Link to="/">Home</Link>
-      <Link to="/decks">Decks</Link>
-      <Link to="/search">Search</Link>
+      <Link class to="/">
+        <span className="button-top">Home</span>
+      </Link>
+      <Link to="/decks">
+        <span className="button-top">Decks</span>
+      </Link>
+      <Link to="/search">
+        <span className="button-top">Search</span>
+      </Link>
     </nav>
   );
 }
