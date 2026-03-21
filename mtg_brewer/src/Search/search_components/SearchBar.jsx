@@ -82,7 +82,7 @@ function SearchBar({
       {panelCollapsed && (
         <div className="parameter-tray">
           <div className="sort-select">
-            <label for="sort_select">Sort By:</label>
+            <label for="sort_select">Sort By: </label>
             <select
               name="sort_select"
               id="sort_select"
@@ -98,7 +98,7 @@ function SearchBar({
           <hr />
           <div className="extra-filters-select">
             <h4>Extra Filters</h4>
-            <label for="rarity_select">Rarity:</label>
+            <label for="rarity_select">Rarity: </label>
             <select
               name="rarity_select"
               id="rarity_select"
@@ -117,7 +117,7 @@ function SearchBar({
                 );
               })}
             </select>
-            <label for="type_select">Type:</label>
+            <label for="type_select">Type: </label>
             <select
               name="type_select"
               id="type_select"
