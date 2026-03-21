@@ -54,6 +54,7 @@ function DeckDetail() {
       prices: data?.prices,
       color_identity: data?.color_identity,
       types: data?.types,
+      text: data?.text_box,
 
       raw: data,
     };
@@ -229,7 +230,8 @@ function DeckDetail() {
                   const canBeCommander =
                     card.types?.super.includes("Legendary") &&
                     (card.types?.type.includes("Creature") ||
-                      card.types?.sub.includes("Vehicle"));
+                      card.types?.sub.includes("Vehicle") ||
+                      card.text?.includes("can be your commander"));
                   const isInvalid = !card.color_identity?.every((color) =>
                     commander?.color_identity?.includes(color),
                   );

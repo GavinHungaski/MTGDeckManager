@@ -22,6 +22,7 @@ const formatCard = (card) => {
     prices: data?.prices,
     color_identity: data?.color_identity,
     types: data?.types,
+    text: data?.text_box,
     raw: data,
   };
 };

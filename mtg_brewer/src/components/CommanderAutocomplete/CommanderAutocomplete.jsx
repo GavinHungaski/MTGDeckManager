@@ -42,7 +42,7 @@ function CommanderAutocomplete({ onSelect }) {
       try {
         setLoading(true);
 
-        const url = `https://api.scryfall.com/cards/search?q=t:legend (t:creature OR t:vehicle) f:commander -is:digital ${search}`;
+        const url = `https://api.scryfall.com/cards/search?q=t:legend+(t:creature+or+t:vehicle+or+o:'can be your commander')+f:commander -is:digital ${search}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error("Scryfall error");
 
