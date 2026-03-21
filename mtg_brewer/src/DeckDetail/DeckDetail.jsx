@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import CardSearch from "../components/CardSearch/CardSearch.jsx";
 import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
 import SetCommanderBtn from "../components/SetCommanderBtn.jsx";
@@ -14,6 +14,7 @@ function DeckDetail() {
   const [cards, setCards] = useState([]);
   const [commander, setCommander] = useState(null);
   const [viewingCard, setViewingCard] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!deckId) return;
@@ -192,6 +193,9 @@ function DeckDetail() {
             Cost: <b>${totalPrice}</b>
           </span>
           <ExportDeckButton cards={cards} />
+          <button onClick={() => navigate("playtest")}>
+            <span className="button-top">Open Playtester</span>
+          </button>
         </div>
 
         <div className="card-display">
