@@ -27,7 +27,6 @@ function SearchBar({
 
   function setColor(color = "w") {
     const valid_colors = ["w", "u", "b", "g", "r", "c"];
-
     setColors((prev) => {
       if (valid_colors.includes(color.toLowerCase())) {
         if (color === "c" && !prev.includes(color)) {
