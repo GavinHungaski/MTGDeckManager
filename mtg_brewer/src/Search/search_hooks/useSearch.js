@@ -1,6 +1,13 @@
 import { useState, useRef } from "react";
 
-function buildQuery(searchText, colors, sortBy, extraFilters) {
+function buildQuery(
+  searchText,
+  colors,
+  sortBy,
+  extraFilters,
+  color_joiner,
+  type_joiner,
+) {
   const parts = [];
   if (searchText.length > 0) {
     parts.push(`!"${searchText}" OR ${searchText}`);
@@ -13,14 +20,14 @@ function buildQuery(searchText, colors, sortBy, extraFilters) {
     ?.map((type) => {
       return "t:" + type;
     })
-    .join(" OR ");
+    .join(` ${type_joiner} `);
   if (type_string) parts.push(`(${type_string})`);
 
   const rarity_string = extraFilters.rarities
     ?.map((rarity) => {
       return "r:" + rarity;
     })
-    .join(" OR ");
+    .join(` OR `);
   if (rarity_string) parts.push(`(${rarity_string})`);
 
   parts.push("f:commander -is:digital");
@@ -41,7 +48,14 @@ export function useSearch() {
   async function runQuery(searchText) {
     try {
       setLoading(true);
-      const url = buildQuery(searchText, colors, sortBy, extraFilters);
+      const url = buildQuery(
+        searchText,
+        colors,
+        sortBy,
+        extraFilters,
+        color_joiner,
+        type_joiner,
+      );
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Status: ${response.status}`);
       const data = await response.json();
