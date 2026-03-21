@@ -8,8 +8,8 @@ function buildQuery(searchText, colors, sortBy, extraFilters) {
   if (colors.length > 0) {
     parts.push(`id:${colors.join("").toLowerCase()}`);
   }
-  // extraFilters scaffold — expand later
   if (extraFilters.type) parts.push(`t:${extraFilters.type}`);
+  if (extraFilters.rarity) parts.push(`r:${extraFilters.rarity}`);
   parts.push("f:commander -is:digital");
   return `https://api.scryfall.com/cards/search?q=${encodeURIComponent(parts.join(" "))}&order=${sortBy}`;
 }
