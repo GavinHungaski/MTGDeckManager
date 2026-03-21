@@ -76,6 +76,7 @@ function SearchBar({
       <button onClick={() => setPanelCollapsed((prev) => !prev)}>~</button>
       {panelCollapsed && (
         <div className="parameter-tray">
+          <label for="sort_select">Sort By:</label>
           <select
             name="sort_select"
             id="sort_select"
