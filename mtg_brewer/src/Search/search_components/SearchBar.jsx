@@ -14,7 +14,7 @@ function SearchBar({
   const [panelCollapsed, setPanelCollapsed] = useState(false);
 
   const color_buttons = ["w", "u", "b", "g", "r", "c"];
-  const rarities = ["common", "uncommon", "rare", "mythic"];
+  const rarities = ["common", "uncommon", "rare", "mythic", ""];
 
   function handleKeyDown(e) {
     if (e.key === "Enter") onSearch(value);
@@ -98,10 +98,15 @@ function SearchBar({
               }
               value={extraFilters.rarity}
             >
-              <option value="common">Common</option>
-              <option value="uncommon">Uncommon</option>
-              <option value="rare">Rare</option>
-              <option value="mythic">Mythic Rare</option>
+              {rarities.map((rarity) => {
+                return (
+                  <option value={rarity}>
+                    {rarity === ""
+                      ? "Any Rarity"
+                      : `${rarity[0].toUpperCase()}${rarity.slice(1)}`}
+                  </option>
+                );
+              })}
             </select>
           </div>
         </div>
