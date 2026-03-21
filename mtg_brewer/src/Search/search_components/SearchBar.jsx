@@ -90,7 +90,7 @@ function SearchBar({
               value={sortBy}
             >
               <option value="name">Name</option>
-              <option value="cmc">Cost</option>
+              <option value="cmc">Mana Cost</option>
               <option value="rarity">Rarity</option>
               <option value="edhrec">EDH Rank</option>
             </select>
