@@ -44,7 +44,6 @@ export function useSearch() {
   }
 
   function onSearch(text) {
-    console.log(colors);
     runQuery(text);
   }
 
