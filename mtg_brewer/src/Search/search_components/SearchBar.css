@@ -2,6 +2,7 @@
   display: flex;
   align-items: stretch;
   border-radius: var(--button_radius);
+  min-width: 40%;
   overflow: hidden;
   background: var(--gold-shadow);
   flex: 1;
