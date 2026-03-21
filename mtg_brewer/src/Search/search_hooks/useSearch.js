@@ -57,6 +57,7 @@ export function useSearch() {
   }
 
   function onSearch(text) {
+    console.log(text);
     runQuery(text);
   }
 
