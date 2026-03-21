@@ -1,7 +1,7 @@
 import { useEffect, useReducer, createContext } from "react";
 import { useParams } from "react-router";
-import { playtestReducer, initialState } from "../reducers/playtestReducer";
-import { expandAndShuffle } from "../utils/deckUtils";
+import { playtestReducer, initialState } from "./playtest_reducers/playtestReducer";
+import { expandAndShuffle } from "./playtest_utils/deckUtils";
 
 export const PlaytestContext = createContext();
 
