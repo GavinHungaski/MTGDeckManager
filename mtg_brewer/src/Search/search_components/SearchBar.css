@@ -65,3 +65,32 @@
 .deselected {
   opacity: 0.25;
 }
+
+.parameter-tray {
+  border: 2px solid black;
+  border-radius: 15px;
+  padding: 5px;
+}
+
+select {
+  padding: 6px 10px;
+  border-radius: var(--button_radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-family: "Crimson Pro", Georgia, serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+select:hover,
+select:focus {
+  border-color: var(--gold-dim);
+}
+
+select option {
+  background: var(--surface);
+  color: var(--text);
+}

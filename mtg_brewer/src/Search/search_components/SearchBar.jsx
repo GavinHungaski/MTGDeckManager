@@ -97,7 +97,7 @@ function SearchBar({
           </div>
           <hr />
           <div className="extra-filters-select">
-            <span>Extra Filters | </span>
+            <h4>Extra Filters</h4>
             <label for="rarity_select">Rarity:</label>
             <select
               name="rarity_select"
