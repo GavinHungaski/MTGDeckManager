@@ -3,7 +3,7 @@ import "./App.css";
 function App() {
   return (
     <>
-      <div>Home</div>
+      <h1>Welcome to the Ultimate MTG EDH Deck Brewing Tool!</h1>
     </>
   );
 }
