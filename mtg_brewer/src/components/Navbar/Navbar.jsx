@@ -4,7 +4,7 @@ import "./Navbar.css";
 export default function Navbar() {
   return (
     <nav>
-      <Link class to="/">
+      <Link to="/">
         <span className="button-top">Home</span>
       </Link>
       <Link to="/decks">
