@@ -105,6 +105,7 @@ function SearchBar({
             </button>
           );
         })}
+        {"|"}
         <button onClick={() => {}} className={"deselected"}>
           <i className="ms ms-multicolor ms-cost"></i>
         </button>
@@ -164,6 +165,10 @@ function SearchBar({
                 </button>
               );
             })}
+            {"|"}
+            <button onClick={() => {}} className={"deselected"}>
+              <span className="button-top">+</span>
+            </button>
           </div>
         </div>
       )}

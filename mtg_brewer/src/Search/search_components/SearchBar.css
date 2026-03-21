@@ -1,6 +1,6 @@
 .card-search {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   border-radius: var(--button_radius);
   min-width: 40%;
   overflow: hidden;
