@@ -19,7 +19,7 @@ function buildQuery(
 
   const mana_value_string = cmcs
     ?.map((cost) => {
-      return cost != 12 ? `mv= ${cost}` : "mv>=12";
+      return cost != 12 ? `mv=${cost}` : "mv>=12";
     })
     .join(" OR ");
   if (mana_value_string) parts.push(`(${mana_value_string})`);
