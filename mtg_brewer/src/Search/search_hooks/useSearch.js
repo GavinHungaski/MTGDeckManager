@@ -31,12 +31,6 @@ export function useSearch() {
   const keyRef = useRef(0);
   const withKey = (card) => ({ ...card, _key: keyRef.current++ });
 
-  // re-fire when filters change, only if a search is committed
-  useEffect(() => {
-    if (committedSearch.length < 2) return;
-    runQuery(committedSearch);
-  }, [colors, sortBy, extraFilters]);
-
   async function runQuery(searchText) {
     try {
       setLoading(true);
@@ -56,6 +50,7 @@ export function useSearch() {
   }
 
   function onSearch(text) {
+    console.log(colors);
     setCommittedSearch(text);
     runQuery(text);
   }

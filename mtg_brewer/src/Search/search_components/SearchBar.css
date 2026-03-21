@@ -60,3 +60,7 @@
   display: flex;
   align-items: center;
 }
+
+.deselected {
+  opacity: 0.25;
+}

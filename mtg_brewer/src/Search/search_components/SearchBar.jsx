@@ -12,16 +12,28 @@ function SearchBar({
 }) {
   const [value, setValue] = useState("");
 
+  const color_buttons = [
+    { color: "w" },
+    { color: "u" },
+    { color: "b" },
+    { color: "g" },
+    { color: "r" },
+    { color: "c" },
+  ];
+
   function handleKeyDown(e) {
     if (e.key === "Enter") onSearch(value);
   }
 
   function setColor(color = "w") {
-    const valid_colors = ["w", "u", "b", "g", "r"];
+    const valid_colors = ["w", "u", "b", "g", "r", "c"];
+
     setColors((prev) => {
       if (valid_colors.includes(color.toLowerCase())) {
-        if (!prev.includes(color)) {
-          return [...prev, color];
+        if (color === "c" && !prev.includes(color)) {
+          return ["c"];
+        } else if (!prev.includes(color)) {
+          return [...prev, color].filter((n) => n != "c");
         } else {
           return prev.filter((n) => n !== color);
         }
@@ -45,7 +57,20 @@ function SearchBar({
           Search
         </span>
       </button>
-      <i className="ms ms-g"></i>
+      {color_buttons.map((cb) => {
+        return (
+          <button
+            onClick={() => setColor(cb.color)}
+            key={cb.color}
+            className={colors.includes(cb.color) ? "" : "deselected"}
+          >
+            <i className={`ms ms-${cb.color} ms-cost ms-shadow`}></i>
+          </button>
+        );
+      })}
+      <button onClick={() => {}} className={"deselected"}>
+        <i className="ms ms-multicolor ms-cost"></i>
+      </button>
     </div>
   );
 }
