@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { useDeckTray } from "../search_hooks/useDeckTray.js";
 import "./DeckTray.css";
 
-function DeckTray({onCardDragEnd}) {
-  const { decks, addCardToDeck } = useDeckTray();
+function DeckTray({ decks }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

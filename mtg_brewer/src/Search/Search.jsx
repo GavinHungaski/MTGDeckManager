@@ -1,4 +1,5 @@
 import { useSearch } from "./search_hooks/useSearch";
+import { useDeckTray } from "./search_hooks/useDeckTray.js";
 import { useState } from "react";
 import { DndContext } from "@dnd-kit/core";
 import SearchBar from "./search_components/SearchBar";
@@ -25,6 +26,7 @@ function Search() {
     getMoreCards,
     clearResults,
   } = useSearch();
+  const { decks, addCardToDeck } = useDeckTray();
 
   const [currentCard, setCurrentCard] = useState(null);
   const [mousePos, setMousePos] = useState([null, null]);
@@ -63,7 +65,7 @@ function Search() {
       {loading && <div className="loading">Loading...</div>}
 
       <DndContext>
-        <DeckTray />
+        <DeckTray decks={decks} />
         <div
           className="results-display"
           onMouseMove={(e) => {
