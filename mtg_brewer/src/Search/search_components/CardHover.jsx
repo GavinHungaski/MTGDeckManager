@@ -9,8 +9,8 @@ function CardHover({ card, mousePos }) {
           style={{
             ...{ top: mousePos[1] - 175 },
             ...(mousePos[0] < window.innerWidth / 2
-              ? { left: mousePos[0] + 115 }
-              : { right: window.innerWidth - mousePos[0] + 115 }),
+              ? { left: mousePos[0] + 120 }
+              : { right: window.innerWidth - mousePos[0] + 120 }),
           }}
         >
           <img

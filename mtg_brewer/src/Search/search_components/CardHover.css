@@ -1,5 +1,5 @@
 .card-hover-container {
-  position: absolute;
+  position: fixed;
   display: flex;
 }
 

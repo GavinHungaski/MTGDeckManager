@@ -29,6 +29,7 @@ function Search() {
 
   const [currentCard, setCurrentCard] = useState(null);
   const [mousePos, setMousePos] = useState([null, null]);
+  const [selectedCards, setSelectedCards] = useState([]);
 
   return (
     <>
