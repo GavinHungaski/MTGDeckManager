@@ -3,6 +3,7 @@ import { useState } from "react";
 import { DndContext } from "@dnd-kit/core";
 import SearchBar from "./search_components/SearchBar";
 import CardHover from "./search_components/CardHover";
+import DeckTray from "./search_components/DeckTray";
 import phyrexianMana from "../assets/phyrexian_mana.png";
 import "./Search.css";
 
@@ -91,6 +92,7 @@ function Search() {
             </div>
           ))}
         </div>
+        <DeckTray />
       </DndContext>
 
       {nextPage && (
