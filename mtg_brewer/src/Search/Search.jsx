@@ -1,13 +1,6 @@
 import { useSearch } from "./search_hooks/useSearch";
 import { useDeckTray } from "./search_hooks/useDeckTray.js";
 import { useState } from "react";
-import {
-  DndContext,
-  useDraggable,
-  MouseSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
 import SearchBar from "./search_components/SearchBar";
 import CardHover from "./search_components/CardHover";
 import { DeckTray } from "./search_components/DeckTray";
@@ -36,15 +29,6 @@ function Search() {
 
   const [currentCard, setCurrentCard] = useState(null);
   const [mousePos, setMousePos] = useState([null, null]);
-
-  const sensors = useSensors(useSensor(MouseSensor));
-
-  function handleDragEnd(e) {
-    if (e.active && e.over) {
-      const deck_id = e.over.id;
-      addCardToDeck(currentCard, deck_id);
-    }
-  }
 
   return (
     <>
@@ -79,31 +63,30 @@ function Search() {
 
       {loading && <div className="loading">Loading...</div>}
 
-      <DndContext
-        sensors={sensors}
-        onDragStart={(e) => {
-          setCurrentCard(null);
-        }}
-        onDragEnd={(e) => {
-          handleDragEnd(e);
-        }}
+      <div
+        className="results-display"
+        onMouseMove={(e) => setMousePos([e.clientX, e.clientY])}
       >
-        <div
-          className="results-display"
-          onMouseMove={(e) => setMousePos([e.clientX, e.clientY])}
-        >
-          <CardHover card={currentCard} mousePos={mousePos} />
-          {cards.map((card) => (
-            <DraggableCard
-              card={card}
-              key={card.id}
-              setCurrentCard={setCurrentCard}
-              currentCard={currentCard}
+        <CardHover card={currentCard} mousePos={mousePos} />
+        {cards.map((card) => (
+          <div
+            key={card._key}
+            onMouseEnter={() => setCurrentCard(card)}
+            onMouseLeave={() => setCurrentCard(null)}
+          >
+            <img
+              className="card-img"
+              src={
+                card.image_uris?.normal ||
+                card.image_uris?.small ||
+                card.card_faces?.[0]?.image_uris?.normal
+              }
+              alt={card.name}
             />
-          ))}
-        </div>
-        <DeckTray decks={decks} />
-      </DndContext>
+          </div>
+        ))}
+      </div>
+      <DeckTray decks={decks} />
 
       {nextPage && (
         <div style={{ backgroundColor: "gray" }}>
@@ -113,43 +96,6 @@ function Search() {
         </div>
       )}
     </>
-  );
-}
-
-function DraggableCard({ card, setCurrentCard }) {
-  const { setNodeRef, listeners, attributes, transform } = useDraggable({
-    id: card.id,
-  });
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        willChange: "transform",
-        zIndex: 999,
-      }
-    : undefined;
-  return (
-    <div
-      onMouseEnter={() => {
-        setCurrentCard(card);
-      }}
-      onMouseLeave={() => {
-        setCurrentCard(null);
-      }}
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      style={style}
-    >
-      <img
-        className="card-img"
-        src={
-          card.image_uris?.normal ||
-          card.image_uris?.small ||
-          card.card_faces?.[0]?.image_uris?.normal
-        }
-        alt={card.name}
-      />
-    </div>
   );
 }
 
