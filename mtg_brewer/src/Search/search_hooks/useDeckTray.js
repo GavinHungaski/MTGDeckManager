@@ -50,6 +50,7 @@ export function useDeckTray() {
     fetch("http://localhost:4000/api/decks")
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         setDecks(data);
       })
       .catch((err) => console.error("Error fetching decks:", err));

@@ -35,8 +35,8 @@ function Search() {
         <img
           src={phyrexianMana}
           alt="Phyrexian Mana Symbol"
-          width="45"
-          height="45"
+          width="45vh"
+          height="45vh"
         />
         <h2>Scryfall API</h2>
         <SearchBar
@@ -63,6 +63,7 @@ function Search() {
       {loading && <div className="loading">Loading...</div>}
 
       <DndContext>
+        <DeckTray />
         <div
           className="results-display"
           onMouseMove={(e) => {
@@ -92,7 +93,6 @@ function Search() {
             </div>
           ))}
         </div>
-        <DeckTray />
       </DndContext>
 
       {nextPage && (
