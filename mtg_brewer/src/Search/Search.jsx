@@ -1,10 +1,10 @@
 import { useSearch } from "./search_hooks/useSearch";
 import { useDeckTray } from "./search_hooks/useDeckTray.js";
 import { useState } from "react";
-import { DndContext } from "@dnd-kit/core";
+import { DndContext, useDraggable } from "@dnd-kit/core";
 import SearchBar from "./search_components/SearchBar";
 import CardHover from "./search_components/CardHover";
-import DeckTray from "./search_components/DeckTray";
+import { DeckTray } from "./search_components/DeckTray";
 import phyrexianMana from "../assets/phyrexian_mana.png";
 import "./Search.css";
 
@@ -81,25 +81,12 @@ function Search() {
         >
           <CardHover card={currentCard} mousePos={mousePos} />
           {cards.map((card) => (
-            <div
-              key={card._key}
-              onMouseEnter={() => {
-                setCurrentCard(card);
-              }}
-              onMouseLeave={() => {
-                setCurrentCard(null);
-              }}
-            >
-              <img
-                className="card-img"
-                src={
-                  card.image_uris?.normal ||
-                  card.image_uris?.small ||
-                  card.card_faces?.[0]?.image_uris?.normal
-                }
-                alt={card.name}
-              />
-            </div>
+            <DraggableCard
+              card={card}
+              key={card.id}
+              setCurrentCard={setCurrentCard}
+              currentCard={currentCard}
+            />
           ))}
         </div>
       </DndContext>
@@ -112,6 +99,41 @@ function Search() {
         </div>
       )}
     </>
+  );
+}
+
+function DraggableCard({ card, setCurrentCard, currentCard }) {
+  const { setNodeRef, listeners, attributes, transform } = useDraggable({
+    id: card.id,
+  });
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
+  return (
+    <div
+      onMouseEnter={() => {
+        setCurrentCard(card);
+      }}
+      onMouseLeave={() => {
+        setCurrentCard(null);
+      }}
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={style}
+    >
+      <img
+        className={`card-img ${card.id === (currentCard?.id || 0) ? "top-level" : ""}`}
+        src={
+          card.image_uris?.normal ||
+          card.image_uris?.small ||
+          card.card_faces?.[0]?.image_uris?.normal
+        }
+        alt={card.name}
+      />
+    </div>
   );
 }
 
