@@ -1,0 +1,10 @@
+.card-hover-container {
+  position: fixed;
+  display: flex;
+}
+
+.hover-img {
+  min-width: 288px;
+  max-width: 288px;
+  z-index: 100;
+}

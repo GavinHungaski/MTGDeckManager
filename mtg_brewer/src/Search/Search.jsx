@@ -1,6 +1,7 @@
 import { useSearch } from "./search_hooks/useSearch";
 import { useState } from "react";
 import SearchBar from "./search_components/SearchBar";
+import CardHover from "./search_components/CardHover";
 import phyrexianMana from "../assets/phyrexian_mana.png";
 import "./Search.css";
 
@@ -24,6 +25,7 @@ function Search() {
   } = useSearch();
 
   const [currentCard, setCurrentCard] = useState(null);
+  const [mousePos, setMousePos] = useState([null, null]);
 
   return (
     <>
@@ -58,7 +60,13 @@ function Search() {
 
       {loading && <div className="loading">Loading...</div>}
 
-      <div className="results-display">
+      <div
+        className="results-display"
+        onMouseMove={(e) => {
+          setMousePos([e.clientX, e.clientY]);
+        }}
+      >
+        <CardHover card={currentCard} mousePos={mousePos} />
         {cards.map((card) => (
           <div
             key={card._key}
