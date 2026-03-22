@@ -30,6 +30,7 @@ function Search() {
 
   const [currentCard, setCurrentCard] = useState(null);
   const [mousePos, setMousePos] = useState([null, null]);
+  const [activeCard, setActiveCard] = useState(null);
 
   function handleDragEnd(e) {
     if (e.active && e.over) {
@@ -71,12 +72,20 @@ function Search() {
 
       {loading && <div className="loading">Loading...</div>}
 
-      <DndContext onDragEnd={handleDragEnd}>
-        <DeckTray decks={decks} />
+      <DndContext
+        onDragStart={(e) => {
+          setActiveCard(currentCard);
+          setCurrentCard(null);
+        }}
+        onDragEnd={(e) => {
+          setActiveCard(null);
+          handleDragEnd(e);
+        }}
+      >
         <div
           className="results-display"
           onMouseMove={(e) => {
-            setMousePos([e.clientX, e.clientY]);
+            if (!isDragging) setMousePos([e.clientX, e.clientY]);
           }}
         >
           <CardHover card={currentCard} mousePos={mousePos} />
@@ -89,6 +98,7 @@ function Search() {
             />
           ))}
         </div>
+        <DeckTray decks={decks} />
       </DndContext>
 
       {nextPage && (
@@ -107,10 +117,12 @@ function DraggableCard({ card, setCurrentCard, currentCard }) {
     id: card.id,
   });
   const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
+  ? {
+      transform: `translate3d(${transform.x}px, ${transform.y + window.scrollY}px, 0)`,
+      willChange: "transform",
+      zIndex: 999,
+    }
+  : undefined;
   return (
     <div
       onMouseEnter={() => {
@@ -125,7 +137,7 @@ function DraggableCard({ card, setCurrentCard, currentCard }) {
       style={style}
     >
       <img
-        className={`card-img ${card.id === (currentCard?.id || 0) ? "top-level" : ""}`}
+        className="card-img"
         src={
           card.image_uris?.normal ||
           card.image_uris?.small ||

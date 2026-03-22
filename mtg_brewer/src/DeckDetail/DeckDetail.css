@@ -277,7 +277,7 @@
 
 /* ── Invalid Color Identity ───────────────────────────────── */
 .card-item.invalid-identity {
-  outline: 2px solid var(--red);
+  outline: 5px solid var(--red);
   outline-offset: -2px;
   border-radius: 10px;
 }
