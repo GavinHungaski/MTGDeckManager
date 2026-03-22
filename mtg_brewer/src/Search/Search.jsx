@@ -31,14 +31,21 @@ function Search() {
   const [currentCard, setCurrentCard] = useState(null);
   const [mousePos, setMousePos] = useState([null, null]);
 
+  function handleDragEnd(e) {
+    if (e.active && e.over) {
+      const deck_id = e.over.id;
+      addCardToDeck(currentCard, deck_id);
+    }
+  }
+
   return (
     <>
       <div className="search-header">
         <img
           src={phyrexianMana}
           alt="Phyrexian Mana Symbol"
-          width="45vh"
-          height="45vh"
+          width="45"
+          height="45"
         />
         <h2>Scryfall API</h2>
         <SearchBar
@@ -64,7 +71,7 @@ function Search() {
 
       {loading && <div className="loading">Loading...</div>}
 
-      <DndContext>
+      <DndContext onDragEnd={handleDragEnd}>
         <DeckTray decks={decks} />
         <div
           className="results-display"
