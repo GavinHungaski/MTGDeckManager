@@ -137,6 +137,12 @@ function SearchBar({
           <i className="ms ms-multicolor ms-cost"></i>
         </button>
         <button
+          className="panel-expand-btn"
+          onClick={() => setPanelCollapsed((prev) => !prev)}
+        >
+          <span className="button-top">{panelCollapsed ? "↑" : "↓"}</span>
+        </button>
+        <button
           onClick={() => onSearch(value, colorJoiner, typeJoiner)}
           className="search-button"
         >
@@ -145,9 +151,6 @@ function SearchBar({
           </span>
         </button>
       </div>
-      <button onClick={() => setPanelCollapsed((prev) => !prev)}>
-        {panelCollapsed ? "<" : ">"}
-      </button>
       {panelCollapsed && (
         <div className="parameter-tray">
           <div className="sort-select">

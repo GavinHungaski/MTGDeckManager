@@ -1,7 +1,3 @@
-.deck-tray-container {
-  display: flex;
-}
-
 .deck-tray {
   position: fixed;
   right: 0;
@@ -15,4 +11,10 @@
 
 .deck-tray.open {
   transform: translateX(0);
+}
+
+.deck-tray-btn {
+  position: absolute;
+  left: -40px;
+  top: 50%;
 }

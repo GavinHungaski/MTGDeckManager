@@ -5,16 +5,15 @@ function DeckTray() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="deck-tray-container">
+    <div className={`deck-tray ${isOpen ? "open" : ""}`}>
       <button
         className="deck-tray-btn"
         onClick={() => {
           setIsOpen(!isOpen);
         }}
       >
-        {isOpen ? ">" : "<"}
+        <span className="button-top">{isOpen ? ">" : "<"}</span>
       </button>
-      <div className={`deck-tray ${isOpen ? "open" : ""}`}></div>
     </div>
   );
 }

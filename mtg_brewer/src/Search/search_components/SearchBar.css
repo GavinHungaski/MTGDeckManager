@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   border-radius: var(--button_radius);
-  min-width: 40%;
+  min-width: 50%;
   overflow: hidden;
   background: var(--gold-shadow);
   flex: 1;
@@ -67,8 +67,11 @@
 }
 
 .parameter-tray {
+  position: fixed;
+  top: 165px;
   border: 2px solid black;
   border-radius: 15px;
+  background: var(--surface-2);
   padding: 5px;
 }
 
@@ -93,4 +96,8 @@ select:focus {
 select option {
   background: var(--surface);
   color: var(--text);
+}
+
+.panel-expand-btn {
+  height: 100%;
 }
