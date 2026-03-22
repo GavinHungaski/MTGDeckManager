@@ -31,6 +31,18 @@ function Search() {
   const [mousePos, setMousePos] = useState([null, null]);
   const [selectedCards, setSelectedCards] = useState([]);
 
+  function toggleSelectedCard(card) {
+    if (selectedCards.some((c) => c.id === card.id)) {
+      setSelectedCards((prev) => {
+        return prev.filter((c) => c.id != card.id);
+      });
+    } else {
+      setSelectedCards((prev) => {
+        return [...prev, card];
+      });
+    }
+  }
+
   return (
     <>
       <div className="search-header">
@@ -74,6 +86,8 @@ function Search() {
             key={card._key}
             onMouseEnter={() => setCurrentCard(card)}
             onMouseLeave={() => setCurrentCard(null)}
+            onClick={() => toggleSelectedCard(card)}
+            className={selectedCards.some((c) => c.id === card.id)}
           >
             <img
               className="card-img"
