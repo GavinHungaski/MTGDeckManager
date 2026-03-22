@@ -1,7 +1,13 @@
 import { useSearch } from "./search_hooks/useSearch";
 import { useDeckTray } from "./search_hooks/useDeckTray.js";
 import { useState } from "react";
-import { DndContext, useDraggable } from "@dnd-kit/core";
+import {
+  DndContext,
+  useDraggable,
+  MouseSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import SearchBar from "./search_components/SearchBar";
 import CardHover from "./search_components/CardHover";
 import { DeckTray } from "./search_components/DeckTray";
@@ -31,6 +37,8 @@ function Search() {
   const [currentCard, setCurrentCard] = useState(null);
   const [mousePos, setMousePos] = useState([null, null]);
   const [activeCard, setActiveCard] = useState(null);
+
+  const sensors = useSensors(useSensor(MouseSensor));
 
   function handleDragEnd(e) {
     if (e.active && e.over) {
@@ -73,6 +81,7 @@ function Search() {
       {loading && <div className="loading">Loading...</div>}
 
       <DndContext
+        sensors={sensors}
         onDragStart={(e) => {
           setActiveCard(currentCard);
           setCurrentCard(null);
@@ -117,12 +126,12 @@ function DraggableCard({ card, setCurrentCard, currentCard }) {
     id: card.id,
   });
   const style = transform
-  ? {
-      transform: `translate3d(${transform.x}px, ${transform.y + window.scrollY}px, 0)`,
-      willChange: "transform",
-      zIndex: 999,
-    }
-  : undefined;
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        willChange: "transform",
+        zIndex: 999,
+      }
+    : undefined;
   return (
     <div
       onMouseEnter={() => {

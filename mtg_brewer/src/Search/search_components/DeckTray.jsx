@@ -7,6 +7,11 @@ export function DeckTray({ decks }) {
 
   return (
     <>
+      <div className={`deck-tray ${isOpen ? "open" : ""}`}>
+        {decks.map((deck) => {
+          return <DroppableDeck deck={deck} key={deck.id}></DroppableDeck>;
+        })}
+      </div>
       <button
         className={`deck-tray-btn ${isOpen ? "open" : ""}`}
         onClick={() => {
@@ -15,11 +20,6 @@ export function DeckTray({ decks }) {
       >
         <span className="button-top">{isOpen ? ">" : "<"}</span>
       </button>
-      <div className={`deck-tray ${isOpen ? "open" : ""}`}>
-        {decks.map((deck) => {
-          return <DroppableDeck deck={deck} key={deck.id}></DroppableDeck>;
-        })}
-      </div>
     </>
   );
 }
