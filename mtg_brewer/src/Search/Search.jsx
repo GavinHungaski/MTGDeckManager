@@ -93,9 +93,7 @@ function Search() {
       >
         <div
           className="results-display"
-          onMouseMove={(e) => {
-            if (!isDragging) setMousePos([e.clientX, e.clientY]);
-          }}
+          onMouseMove={(e) => setMousePos([e.clientX, e.clientY])}
         >
           <CardHover card={currentCard} mousePos={mousePos} />
           {cards.map((card) => (
