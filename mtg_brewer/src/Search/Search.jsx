@@ -36,7 +36,6 @@ function Search() {
 
   const [currentCard, setCurrentCard] = useState(null);
   const [mousePos, setMousePos] = useState([null, null]);
-  const [activeCard, setActiveCard] = useState(null);
 
   const sensors = useSensors(useSensor(MouseSensor));
 
@@ -83,11 +82,9 @@ function Search() {
       <DndContext
         sensors={sensors}
         onDragStart={(e) => {
-          setActiveCard(currentCard);
           setCurrentCard(null);
         }}
         onDragEnd={(e) => {
-          setActiveCard(null);
           handleDragEnd(e);
         }}
       >
