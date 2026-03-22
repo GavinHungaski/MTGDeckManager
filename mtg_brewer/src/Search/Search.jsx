@@ -1,5 +1,6 @@
 import { useSearch } from "./search_hooks/useSearch";
 import { useState } from "react";
+import { DndContext } from "@dnd-kit/core";
 import SearchBar from "./search_components/SearchBar";
 import CardHover from "./search_components/CardHover";
 import phyrexianMana from "../assets/phyrexian_mana.png";
@@ -60,35 +61,37 @@ function Search() {
 
       {loading && <div className="loading">Loading...</div>}
 
-      <div
-        className="results-display"
-        onMouseMove={(e) => {
-          setMousePos([e.clientX, e.clientY]);
-        }}
-      >
-        <CardHover card={currentCard} mousePos={mousePos} />
-        {cards.map((card) => (
-          <div
-            key={card._key}
-            onMouseEnter={() => {
-              setCurrentCard(card);
-            }}
-            onMouseLeave={() => {
-              setCurrentCard(null);
-            }}
-          >
-            <img
-              className="card-img"
-              src={
-                card.image_uris?.normal ||
-                card.image_uris?.small ||
-                card.card_faces?.[0]?.image_uris?.normal
-              }
-              alt={card.name}
-            />
-          </div>
-        ))}
-      </div>
+      <DndContext>
+        <div
+          className="results-display"
+          onMouseMove={(e) => {
+            setMousePos([e.clientX, e.clientY]);
+          }}
+        >
+          <CardHover card={currentCard} mousePos={mousePos} />
+          {cards.map((card) => (
+            <div
+              key={card._key}
+              onMouseEnter={() => {
+                setCurrentCard(card);
+              }}
+              onMouseLeave={() => {
+                setCurrentCard(null);
+              }}
+            >
+              <img
+                className="card-img"
+                src={
+                  card.image_uris?.normal ||
+                  card.image_uris?.small ||
+                  card.card_faces?.[0]?.image_uris?.normal
+                }
+                alt={card.name}
+              />
+            </div>
+          ))}
+        </div>
+      </DndContext>
 
       {nextPage && (
         <div style={{ backgroundColor: "gray" }}>
