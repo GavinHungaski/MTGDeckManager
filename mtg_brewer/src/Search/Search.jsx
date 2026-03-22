@@ -119,7 +119,7 @@ function Search() {
   );
 }
 
-function DraggableCard({ card, setCurrentCard, currentCard }) {
+function DraggableCard({ card, setCurrentCard }) {
   const { setNodeRef, listeners, attributes, transform } = useDraggable({
     id: card.id,
   });
