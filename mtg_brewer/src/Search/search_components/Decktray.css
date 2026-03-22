@@ -3,12 +3,15 @@
   right: 0;
   top: 12vh;
   width: 300px;
+  height: calc(100vh - 12vh);
   background-color: #011627;
-  transform: translateX(100%);
+  transform: translateX(300px);
   transition: transform 0.3s ease;
+  overflow-y: auto;
   z-index: 99;
 }
 
+.deck-tray-btn.open,
 .deck-tray.open {
   transform: translateX(0);
 }
@@ -20,6 +23,8 @@
 
 .deck-tray-btn {
   position: absolute;
-  left: -40px;
+  transform: translateX(300px);
+  transition: transform 0.3s ease;
+  right: 300px;
   top: 50%;
 }
