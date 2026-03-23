@@ -22,6 +22,7 @@
   gap: 0;
   text-align: left;
   overflow: hidden;
+  color: rgb(179, 179, 179) I !important;
   transition:
     border-color 0.2s,
     box-shadow 0.2s,
@@ -46,7 +47,6 @@
 .deck-item span {
   font-family: "Crimson Pro", Georgia, serif;
   font-size: 0.85rem;
-  color: black;
   font-style: italic;
 }
 
