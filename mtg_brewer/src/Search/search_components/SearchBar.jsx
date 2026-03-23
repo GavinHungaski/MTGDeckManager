@@ -196,14 +196,15 @@ function SearchBar({
                   onClick={() => setRarity(rarity)}
                   key={rarity}
                   className={
-                    extraFilters.rarities.includes(rarity) ? "" : "deselected"
+                    extraFilters.rarities.includes(rarity)
+                      ? "rarity-btn"
+                      : "rarity-btn deselected"
                   }
                 >
                   <span className="button-top">{rarity}</span>
                 </button>
               );
             })}
-            <hr />
             <span>Types: </span>
             {types.map((type) => {
               return (
@@ -218,7 +219,6 @@ function SearchBar({
                 </button>
               );
             })}
-            {"|"}
             <button
               onClick={() => {
                 setTypeJoiner((prev) => {
