@@ -87,7 +87,9 @@ function Search() {
             onMouseEnter={() => setCurrentCard(card)}
             onMouseLeave={() => setCurrentCard(null)}
             onClick={() => toggleSelectedCard(card)}
-            className={selectedCards.some((c) => c.id === card.id)}
+            className={
+              selectedCards.some((c) => c.id === card.id) ? "selected" : ""
+            }
           >
             <img
               className="card-img"

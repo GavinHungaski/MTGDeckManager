@@ -46,7 +46,7 @@
 .deck-item span {
   font-family: "Crimson Pro", Georgia, serif;
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: black;
   font-style: italic;
 }
 

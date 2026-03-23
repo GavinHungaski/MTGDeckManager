@@ -10,7 +10,13 @@ export function DeckTray({ decks }) {
         {decks.map((deck) => {
           return (
             <div className="deck-item" key={deck.id}>
-              <p>{deck.name}</p>
+              <h3>{deck.name}</h3>
+              <button className="add-to-btn">
+                <span className="button-top">Add to</span>
+              </button>
+              <button>
+                <span className="button-top">Go to</span>
+              </button>
               <img
                 className="commander-art"
                 src={deck.commander?.image || ""}

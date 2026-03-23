@@ -55,7 +55,6 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
   padding: 24px;
-
 }
 
 .results-display > div {
@@ -78,6 +77,11 @@
   width: 100%;
   display: block;
   border-radius: 8px;
+}
+
+.selected {
+  border: 5px solid rgb(255, 255, 103);
+  z-index: 5;
 }
 
 /* ── Load More ────────────────────────────────────────────── */
