@@ -23,7 +23,8 @@ app.get("/api/decks", async (_, res) => {
         d.id,
         d.name,
         d.created_at,
-        c.card_data AS commander
+        c.card_data AS commander,
+        (SELECT SUM(count) FROM deck_cards WHERE deck_id = d.id) AS card_count
       FROM decks d
         LEFT JOIN deck_cards dc ON d.id = dc.deck_id AND dc.is_commander = true
         LEFT JOIN cards c ON dc.card_id = c.id
@@ -35,6 +36,7 @@ app.get("/api/decks", async (_, res) => {
         name: row.name,
         created_at: row.created_at,
         commander: row.commander ?? null,
+        count: row.card_count,
       })),
     );
   } catch (err) {
