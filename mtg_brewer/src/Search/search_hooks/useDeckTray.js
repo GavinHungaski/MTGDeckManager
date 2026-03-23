@@ -13,6 +13,7 @@ const SUPERTYPES = [
 function processCard(card) {
   const image =
     card.image_uris?.normal || card.card_faces?.[0]?.image_uris?.normal || null;
+  const back_image = card.card_faces?.[1].image_uris?.normal || null;
   const typeLine = card.type_line || "";
   const [left, right] = typeLine.split("—").map((s) => s.trim());
   const leftWords = left ? left.split(" ") : [];
@@ -22,6 +23,7 @@ function processCard(card) {
   const cardData = {
     name: card.name,
     image,
+    back_image,
     scryfall_id: card.id,
     color_identity: card.color_identity,
     cmc: card.cmc,

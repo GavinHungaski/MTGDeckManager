@@ -65,6 +65,7 @@ function CommanderAutocomplete({ onSelect }) {
       card.image_uris?.normal ||
       card.card_faces?.[0]?.image_uris?.normal ||
       null;
+    const back_image = card.card_faces?.[1].image_uris?.normal || null;
 
     const typeLine = card.type_line || "";
 
@@ -80,6 +81,7 @@ function CommanderAutocomplete({ onSelect }) {
       name: card.name,
       scryfall_id: card.id,
       image,
+      back_image,
       color_identity: card.color_identity,
       cmc: card.cmc,
       mana_cost: card.mana_cost,
