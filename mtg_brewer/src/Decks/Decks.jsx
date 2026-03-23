@@ -67,6 +67,8 @@ function Decks() {
           <div className="deck-item" key={deck.id}>
             <h2>{deck.name}</h2>
             <hr />
+            <span>{deck.count}</span>
+            <hr />
             <span>id: {deck.id}</span>
             <hr />
             <span>{Date(deck.created_at)}</span>
