@@ -49,6 +49,7 @@ function DeckDetail() {
       is_commander: card.is_commander,
 
       image: data?.image,
+      back_image: data?.back_image,
       cmc: data?.cmc,
       prices: data?.prices,
       color_identity: data?.color_identity,
@@ -193,6 +194,13 @@ function DeckDetail() {
             className="viewing-img"
             src={viewingCard.image}
             alt={viewingCard.name}
+          />
+        )}
+        {viewingCard?.back_image && (
+          <img
+            className="viewing-img"
+            src={viewingCard.back_image}
+            alt={viewingCard.name + " back"}
           />
         )}
         <span className="roboto-font">${viewingCard?.prices?.usd}</span>
