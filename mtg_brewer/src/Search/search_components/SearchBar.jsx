@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./SearchBar.css";
 
 function SearchBar({
@@ -30,6 +30,13 @@ function SearchBar({
     "land",
   ];
   const cmc_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+  useEffect(() => {
+    localStorage.setItem("search_colors", JSON.stringify(colors));
+    localStorage.setItem("search_cmcs", JSON.stringify(cmcs));
+    localStorage.setItem("search_sortBy", JSON.stringify(sortBy));
+    localStorage.setItem("search_filters", JSON.stringify(extraFilters));
+  }, [colors, cmcs, sortBy, extraFilters]);
 
   function handleKeyDown(e) {
     if (e.key === "Enter") onSearch(value, colorJoiner, typeJoiner);

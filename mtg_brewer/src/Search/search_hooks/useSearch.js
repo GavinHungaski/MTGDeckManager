@@ -45,10 +45,24 @@ function buildQuery(
 export function useSearch() {
   const [cards, setCards] = useState([]);
   const [nextPage, setNextPage] = useState(null);
-  const [colors, setColors] = useState([]);
-  const [cmcs, setCmcs] = useState([]);
-  const [sortBy, setSortBy] = useState("name");
-  const [extraFilters, setExtraFilters] = useState({ rarities: [], types: [] });
+
+  const [colors, setColors] = useState(() => {
+    const saved = localStorage.getItem("search_colors");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [cmcs, setCmcs] = useState(() => {
+    const saved = localStorage.getItem("search_cmcs");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [sortBy, setSortBy] = useState(() => {
+    const saved = localStorage.getItem("search_sortBy");
+    return saved ? JSON.parse(saved) : "name";
+  });
+  const [extraFilters, setExtraFilters] = useState(() => {
+    const saved = localStorage.getItem("search_filters");
+    return saved ? JSON.parse(saved) : { rarities: [], types: [] };
+  });
+
   const [loading, setLoading] = useState(false);
 
   const keyRef = useRef(0);
