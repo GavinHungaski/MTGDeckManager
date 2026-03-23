@@ -73,7 +73,7 @@ export function useDeckTray() {
         },
       );
       if (!res.ok) throw new Error("Network response was not ok");
-      const result = await res.json();
+      return (result = await res.json());
     } catch (err) {
       console.error("Error adding card:", err);
     }

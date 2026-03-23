@@ -103,7 +103,12 @@ function Search() {
           </div>
         ))}
       </div>
-      <DeckTray decks={decks} selectedCards={selectedCards} />
+      <DeckTray
+        decks={decks}
+        selectedCards={selectedCards}
+        setSelectedCards={setSelectedCards}
+        addCard={addCardToDeck}
+      />
 
       {nextPage && (
         <div style={{ backgroundColor: "gray" }}>
