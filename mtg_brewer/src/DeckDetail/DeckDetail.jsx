@@ -2,7 +2,6 @@ import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
 import CardSearch from "../components/CardSearch/CardSearch.jsx";
 import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
-import SetCommanderBtn from "../components/SetCommanderBtn.jsx";
 import "./DeckDetail.css";
 import ExportDeckButton from "../components/ExportDeckButton.jsx";
 
@@ -102,7 +101,7 @@ function DeckDetail() {
       });
     });
     return groups;
-  }, [cards, groupBy, sortBy]);
+  }, [cards, groupBy, sortBy, commander]);
 
   if (!deck) return <div>Loading...</div>;
 
@@ -153,6 +152,33 @@ function DeckDetail() {
     });
     if (viewingCard?.name === cardToRemove.name) {
       setViewingCard(commander);
+    }
+  }
+
+  async function handleSetCommander(card) {
+    if (commander.id === card.id) return;
+    try {
+      const res = await fetch(
+        `http://localhost:4000/api/decks/${deckId}/card/${card.id}/commander`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ is_commander: true }),
+        },
+      );
+      if (!res.ok) throw new Error("Failed to swap commander");
+    } catch (err) {
+      console.error("Error swapping commander:", err);
+      return;
+    }
+    setCards((prev) =>
+      prev.map((c) =>
+        c.id === card.id ? { ...commander, is_commander: false, count: 1 } : c,
+      ),
+    );
+    setCommander({ ...card, is_commander: true });
+    if (viewingCard?.id === card.id) {
+      setViewingCard({ ...card, is_commander: true });
     }
   }
 
@@ -253,7 +279,16 @@ function DeckDetail() {
                         card={card}
                         onDelete={handleRemoveCard}
                       />
-                      {canBeCommander && <SetCommanderBtn />}
+                      {canBeCommander && (
+                        <button
+                          onClick={() => {
+                            handleSetCommander(card);
+                          }}
+                          className="set-commander-btn"
+                        >
+                          C
+                        </button>
+                      )}
                     </div>
                   );
                 })}

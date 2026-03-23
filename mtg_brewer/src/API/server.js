@@ -277,6 +277,39 @@ app.delete("/api/decks/:deckId/card/:cardId", async (req, res) => {
   }
 });
 
+// Swap commander
+app.patch("/api/decks/:deckId/card/:cardId/commander", async (req, res) => {
+  let client;
+  try {
+    const { deckId, cardId } = req.params;
+    const { is_commander } = req.body;
+    client = await pool.connect();
+    await client.query("BEGIN");
+    if (is_commander) {
+      await client.query(
+        `UPDATE deck_cards SET is_commander = false WHERE deck_id = $1 AND is_commander = true`,
+        [deckId],
+      );
+    }
+    const result = await client.query(
+      `UPDATE deck_cards SET is_commander = $1 WHERE deck_id = $2 AND card_id = $3 RETURNING *`,
+      [is_commander, deckId, cardId],
+    );
+    if (result.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Card not found in deck" });
+    }
+    await client.query("COMMIT");
+    res.json(result.rows[0]);
+  } catch (err) {
+    if (client) await client.query("ROLLBACK");
+    console.error("Database error:", err);
+    res.status(500).json({ error: "Database error" });
+  } finally {
+    if (client) client.release();
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
