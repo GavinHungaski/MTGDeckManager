@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Outlet } from "react-router";
+import { useNavigate } from "react-router";
 import NewDeckForm from "../components/NewDeckForm/NewDeckForm";
 import "./Decks.css";
 
