@@ -131,7 +131,15 @@ export function useSearch() {
 
   function clearResults() {
     setCards([]);
+    setColors([]);
+    setCmcs([]);
+    setSortBy("name");
+    setExtraFilters({ rarities: [], types: [] });
     setNextPage(null);
+    localStorage.removeItem("search_colors");
+    localStorage.removeItem("search_cmcs");
+    localStorage.removeItem("search_sortBy");
+    localStorage.removeItem("search_filters");
   }
 
   return {
