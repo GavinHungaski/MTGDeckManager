@@ -195,7 +195,7 @@ function DeckDetail() {
           </span>
           <ExportDeckButton cards={cards} />
           <button onClick={() => navigate("playtest")}>
-            <span className="button-top">Open Playtester</span>
+            <span className="button-top">Playtester</span>
           </button>
         </div>
 
