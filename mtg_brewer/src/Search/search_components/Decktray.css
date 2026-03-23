@@ -30,6 +30,10 @@
   z-index: 100;
 }
 
-.add-to-btn {
+.add-btn, .go-btn {
+  color: var(--text-muted);
 }
 
+.add-btn:hover, .go-btn:hover {
+  color: var(--bg);
+}

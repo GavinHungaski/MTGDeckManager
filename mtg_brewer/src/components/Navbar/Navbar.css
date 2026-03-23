@@ -19,6 +19,6 @@ nav {
 }
 
 a {
-  color: white;
+  color: var(--bg);
   text-decoration: none;
 }

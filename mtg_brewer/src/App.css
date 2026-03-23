@@ -74,7 +74,6 @@ button {
   border-radius: var(--button_radius);
   padding: 0.55em 1.3em;
   background: var(--gold);
-  color: var(--bg);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.72rem;

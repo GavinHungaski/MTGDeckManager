@@ -17,12 +17,11 @@ export function DeckTray({ decks, selectedCards }) {
           return (
             <div className="deck-item" key={deck.id}>
               <h3>{deck.name}</h3>
-              <button className="add-to-btn">
-                <span className="button-top">
-                  Add {selectedCards.length} to
-                </span>
+              <button className="add-btn">
+                <span className="button-top">Add {selectedCards.length}</span>
               </button>
               <button
+                className="go-btn"
                 onClick={() => {
                   handleDeckClick(deck);
                 }}
