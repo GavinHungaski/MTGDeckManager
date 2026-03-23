@@ -171,11 +171,11 @@ function DeckDetail() {
       console.error("Error swapping commander:", err);
       return;
     }
-    setCards((prev) =>
-      prev.map((c) =>
-        c.id === card.id ? { ...commander, is_commander: false, count: 1 } : c,
-      ),
-    );
+    setCards((prev) => {
+      const withoutNewCommander = prev.filter((c) => c.id !== card.id);
+      const demotedCommander = { ...commander, is_commander: false, count: 1 };
+      return [...withoutNewCommander, demotedCommander];
+    });
     setCommander({ ...card, is_commander: true });
     if (viewingCard?.id === card.id) {
       setViewingCard({ ...card, is_commander: true });
