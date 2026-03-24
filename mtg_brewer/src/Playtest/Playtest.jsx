@@ -6,6 +6,7 @@ import Battlefield from "./playtest_components/Battlefield.jsx";
 import Hand from "./playtest_components/Hand.jsx";
 import DeckPile from "./playtest_components/DeckPile.jsx";
 import PlayerHUD from "./playtest_components/PlayerHUD.jsx";
+import ContextMenu from "./playtest_components/ContextMenu.jsx";
 import "./Playtest.css";
 
 export const PlaytestContext = createContext();
@@ -66,6 +67,7 @@ function Playtest() {
 
   return (
     <PlaytestContext.Provider value={{ state, dispatch, actions }}>
+      <ContextMenu />
       <div className="container">
         <PlayerHUD />
         <Battlefield />

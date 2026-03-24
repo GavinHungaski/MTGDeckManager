@@ -131,6 +131,17 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "RETURN_TO_DECK": {
+      const { instanceId } = action.payload;
+      return {
+        ...state,
+        battlefield: state.battlefield.filter(
+          (c) => c.instanceId !== instanceId,
+        ),
+        deck: [instanceId, ...state.deck],
+      };
+    }
+
     case "SET_CONTEXT_MENU": {
       const { x, y, instanceId } = action.payload;
       return { ...state, contextMenu: { x, y, instanceId } };
