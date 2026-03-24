@@ -26,7 +26,7 @@ function DeckPile() {
         style={{
           position: "absolute",
           bottom: "0",
-          left: "48%",
+          left: "47%",
         }}
       >
         {state.deck.length}
