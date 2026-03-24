@@ -70,7 +70,6 @@ function ZonePanel() {
           width: `${CARD_WIDTH}px`,
           height: `${CARD_HEIGHT}px`,
 
-          border: "1px solid black",
           borderRadius: 10,
 
           zIndex: 99,
