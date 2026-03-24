@@ -9,7 +9,7 @@ function PlayerHUD() {
       style={{
         width: "100vw",
         height: `${HUD_HEIGHT}px`,
-        background: "orange",
+        background: "var(--gold-dim)",
       }}
     ></div>
   );
