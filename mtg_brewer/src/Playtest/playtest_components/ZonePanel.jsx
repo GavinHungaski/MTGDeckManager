@@ -15,7 +15,6 @@ function ZonePanel() {
 
   return (
     <div className="zone-container">
-      {/* Graveyard */}
       <div
         style={{
           position: "fixed",
@@ -32,7 +31,6 @@ function ZonePanel() {
         }}
       ></div>
 
-      {/* Exile */}
       <div
         style={{
           position: "fixed",
@@ -60,7 +58,6 @@ function ZonePanel() {
         </button>
       </div>
 
-      {/* Command Zone */}
       <div
         style={{
           position: "fixed",
