@@ -23,6 +23,7 @@ export function expandAndShuffle(cards) {
       for (let i = 0; i < (card.count ?? 1); i++) {
         const instanceId = crypto.randomUUID();
         library[instanceId] = {
+          instanceId,
           cardId: card.id,
           name: card.name,
           image: card.image,
