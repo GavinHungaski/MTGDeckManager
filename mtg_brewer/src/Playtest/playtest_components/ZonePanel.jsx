@@ -55,23 +55,32 @@ function ZonePanel() {
           borderRadius: 10,
         }}
       >
-        {state.commandZone.map((commander) => (
-          <img
-            key={commander?.instanceId}
-            src={commander?.image}
-            alt="Command Zone"
-            onClick={() => {}}
-            style={{
-              width: `${CARD_WIDTH}px`,
-              height: `${CARD_HEIGHT}px`,
-              borderRadius: 10,
-              cursor: "pointer",
-              flexShrink: 0,
-              transition: "transform 0.15s",
-              objectFit: "cover",
-            }}
-          />
-        ))}
+        {state.commandZone.map((commander) => {
+          const card = state.cardLibrary[commander?.instanceId];
+          return (
+            <img
+              key={commander?.instanceId}
+              src={commander?.image}
+              alt="Command Zone"
+              onClick={() =>
+                actions.playCommander(
+                  commander?.instanceId,
+                  window.innerWidth / 2,
+                  200,
+                )
+              }
+              style={{
+                width: `${CARD_WIDTH}px`,
+                height: `${CARD_HEIGHT}px`,
+                borderRadius: 10,
+                cursor: "pointer",
+                flexShrink: 0,
+                transition: "transform 0.15s",
+                objectFit: "cover",
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );

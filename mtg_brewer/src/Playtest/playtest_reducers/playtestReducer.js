@@ -70,6 +70,29 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "PLAY_COMMANDER": {
+      const { instanceId, x, y } = action.payload;
+      return {
+        ...state,
+        commandZone: state.commandZone.filter(
+          (card) => card.instanceId !== instanceId,
+        ),
+        battlefield: [
+          ...state.battlefield,
+          {
+            instanceId,
+            x,
+            y,
+            tapped: false,
+            facedown: false,
+            isToken: false,
+            counters: [],
+            stackId: null,
+          },
+        ],
+      };
+    }
+
     case "MOVE_CARD": {
       const { instanceId, x, y } = action.payload;
       return {
