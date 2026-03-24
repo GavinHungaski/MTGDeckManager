@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useContext, useRef, memo } from "react";
 import { Image, Group, Rect } from "react-konva";
 import useImage from "use-image";
 import { PlaytestContext } from "../Playtest";
@@ -13,13 +13,13 @@ function BattlefieldCard({ card }) {
   const isSelected = state.selectedInstanceIds.includes(instanceId);
 
   const rotation = tapped ? 90 : 0;
-  const offsetX = tapped ? CARD_WIDTH / 2 : 0;
-  const offsetY = tapped ? CARD_WIDTH / 2 : 0;
+  const offsetX = tapped ? -CARD_WIDTH / 2 : 0;
+  const offsetY = tapped ? CARD_HEIGHT : 0;
 
   const dragStartPos = useRef(null);
 
   const handleDragStart = (e) => {
-    actions.moveCard(instanceId, e.target.x(), e.target.y());
+    dragStartPos.current = { x, y };
   };
 
   const handleDragEnd = (e) => {
@@ -33,6 +33,16 @@ function BattlefieldCard({ card }) {
     actions.setContextMenu(pos.x, pos.y, instanceId);
   };
 
+  const handleDbClick = (e) => {
+    if (e.evt.button === 0) {
+      if (isSelected) {
+        actions.tapMany(state.selectedInstanceIds);
+      } else {
+        actions.tapCard(instanceId);
+      }
+    }
+  };
+
   return (
     <Group
       x={x}
@@ -44,7 +54,7 @@ function BattlefieldCard({ card }) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onContextMenu={handleContextMenu}
-      onClick={() => actions.selectCards([instanceId])}
+      onDblClick={handleDbClick}
     >
       {image ? (
         <Image
@@ -77,4 +87,4 @@ function BattlefieldCard({ card }) {
   );
 }
 
-export default BattlefieldCard;
+export default memo(BattlefieldCard);

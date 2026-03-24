@@ -24,6 +24,9 @@ export function usePlaytestState() {
     tapCard: (instanceId) =>
       dispatch({ type: "TAP_CARD", payload: { instanceId } }),
 
+    tapMany: (instanceIds) =>
+      dispatch({ type: "TAP_N", payload: { instanceIds } }),
+
     sendToZone: (instanceId, zone) =>
       dispatch({ type: "SEND_TO_ZONE", payload: { instanceId, zone } }),
 

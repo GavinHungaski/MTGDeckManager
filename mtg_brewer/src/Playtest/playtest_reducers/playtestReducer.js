@@ -89,6 +89,17 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "TAP_N": {
+      return {
+        ...state,
+        battlefield: state.battlefield.map((c) =>
+          action.payload.instanceIds.includes(c.instanceId)
+            ? { ...c, tapped: !c.tapped }
+            : c,
+        ),
+      };
+    }
+
     case "SEND_TO_ZONE": {
       const { instanceId, zone } = action.payload;
       const card = state.cardLibrary[instanceId];
