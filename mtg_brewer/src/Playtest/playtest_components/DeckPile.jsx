@@ -19,6 +19,7 @@ function DeckPile() {
 
         width: `${CARD_WIDTH}px`,
         height: `${CARD_HEIGHT}px`,
+        zIndex: 100,
       }}
     >
       <span
