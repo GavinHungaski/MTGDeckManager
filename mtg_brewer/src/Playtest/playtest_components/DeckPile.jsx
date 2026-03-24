@@ -1,4 +1,3 @@
-import react, { useEffect, useState } from "react";
 import { useContext } from "react";
 import { PlaytestContext } from "../Playtest";
 import {
@@ -15,7 +14,7 @@ function DeckPile() {
     <div
       style={{
         position: "fixed",
-        bottom: `${HAND_HEIGHT + 10}px`,
+        bottom: `${HAND_HEIGHT * 2 + 10}px`,
         right: "10px",
 
         width: `${CARD_WIDTH}px`,

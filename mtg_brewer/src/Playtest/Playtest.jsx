@@ -5,6 +5,7 @@ import { usePlaytestState } from "./playtest_hooks/usePlaytestState.js";
 import Battlefield from "./playtest_components/Battlefield.jsx";
 import Hand from "./playtest_components/Hand.jsx";
 import DeckPile from "./playtest_components/DeckPile.jsx";
+import ZonePanel from "./playtest_components/ZonePanel.jsx";
 import PlayerHUD from "./playtest_components/PlayerHUD.jsx";
 import ContextMenu from "./playtest_components/ContextMenu.jsx";
 import "./Playtest.css";
@@ -43,7 +44,7 @@ function Playtest() {
         const data = await res.json();
         const formattedCards = data.cards.map(formatCard);
 
-        const { library, deck } = expandAndShuffle(formattedCards);
+        const { library, deck, commandZone } = expandAndShuffle(formattedCards);
 
         const players = [
           {
@@ -56,7 +57,7 @@ function Playtest() {
 
         dispatch({
           type: "INIT_GAME",
-          payload: { library, deck, players },
+          payload: { library, deck, commandZone, players },
         });
       } catch (err) {
         console.error("Error fetching deck:", err);
@@ -72,6 +73,7 @@ function Playtest() {
         <PlayerHUD />
         <Battlefield />
         <DeckPile />
+        <ZonePanel />
         <Hand />
       </div>
     </PlaytestContext.Provider>

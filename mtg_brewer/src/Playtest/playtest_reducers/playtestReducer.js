@@ -5,6 +5,7 @@ export const initialState = {
   hand: [],
   graveyard: [],
   exile: [],
+  commandZone: [],
   battlefield: [],
   stacks: [],
   cardLibrary: {},
@@ -19,11 +20,12 @@ export const initialState = {
 export function playtestReducer(state, action) {
   switch (action.type) {
     case "INIT_GAME": {
-      const { library, deck, players } = action.payload;
+      const { library, deck, commandZone, players } = action.payload;
       return {
         ...initialState,
         cardLibrary: library,
         deck,
+        commandZone,
         players,
         activePlayerId: players[0].id,
       };
