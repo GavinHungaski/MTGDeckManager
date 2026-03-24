@@ -41,7 +41,7 @@ function Hand() {
             style={{
               width: `${CARD_WIDTH}px`,
               height: `${CARD_HEIGHT}px`,
-              borderRadius: 4,
+              borderRadius: 10,
               cursor: "pointer",
               flexShrink: 0,
               transition: "transform 0.15s",

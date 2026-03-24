@@ -51,14 +51,14 @@ function BattlefieldCard({ card }) {
           image={image}
           width={CARD_WIDTH}
           height={CARD_HEIGHT}
-          cornerRadius={4}
+          cornerRadius={10}
         />
       ) : (
         <Rect
           width={CARD_WIDTH}
           height={CARD_HEIGHT}
           fill="#1a1a2e"
-          cornerRadius={4}
+          cornerRadius={10}
         />
       )}
 
