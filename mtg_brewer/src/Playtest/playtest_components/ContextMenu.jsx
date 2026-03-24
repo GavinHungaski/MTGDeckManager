@@ -6,86 +6,101 @@ function ContextMenu() {
   const { state, actions } = useContext(PlaytestContext);
   const ref = useRef(null);
 
+  // Close menu when clicking outside
   useEffect(() => {
     const handleClick = (e) => {
-      if (!ref.current || !ref.current.contains(e.target))
+      if (ref.current && !ref.current.contains(e.target)) {
         actions.closeContextMenu();
+      }
     };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+  }, [actions]);
+
+  if (!state.contextMenu) return null;
+
+  const card = state.cardLibrary[state.contextMenu.instanceId];
 
   return createPortal(
-    state.contextMenu ? (
-      <div
-        style={{
-          position: "fixed",
-          top: `${state.contextMenu.y}px`,
-          left: `${state.contextMenu.x}px`,
-
-          display: "flex",
-          flexDirection: "column",
-          z_index: 999,
-
-          background: "var(--gold-dim)",
-          borderRadius: 10,
+    <div
+      ref={ref}
+      style={{
+        position: "fixed",
+        top: `${state.contextMenu.y}px`,
+        left: `${state.contextMenu.x}px`,
+        display: "flex",
+        flexDirection: "column",
+        zIndex: 999,
+        background: "#2a2a2a",
+        border: "1px solid #555",
+        borderRadius: "8px",
+        padding: "4px",
+        boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+      }}
+    >
+      <button
+        onClick={() => {
+          actions.tapCard(state.contextMenu.instanceId);
+          actions.closeContextMenu();
         }}
-        ref={ref}
       >
+        <span className="button-top">Tap / Untap</span>
+      </button>
+
+      <button onClick={() => actions.closeContextMenu()}>
+        <span className="button-top">Flip (N/A)</span>
+      </button>
+
+      <hr style={{ width: "100%", border: "0.5px solid #444" }} />
+
+      <button
+        onClick={() => {
+          actions.sendToZone(state.contextMenu.instanceId, "graveyard");
+          actions.closeContextMenu();
+        }}
+      >
+        <span className="button-top">To Graveyard</span>
+      </button>
+
+      <button
+        onClick={() => {
+          actions.sendToZone(state.contextMenu.instanceId, "exile");
+          actions.closeContextMenu();
+        }}
+      >
+        <span className="button-top">To Exile</span>
+      </button>
+
+      <button
+        onClick={() => {
+          actions.returnToHand(state.contextMenu.instanceId);
+          actions.closeContextMenu();
+        }}
+      >
+        <span className="button-top">To Hand</span>
+      </button>
+
+      <button
+        onClick={() => {
+          actions.returnToDeckTop(state.contextMenu.instanceId);
+          actions.closeContextMenu();
+        }}
+      >
+        <span className="button-top">To Deck (Top)</span>
+      </button>
+
+      <button
+        onClick={() => {
+          actions.returnToDeckBottom(state.contextMenu.instanceId);
+          actions.closeContextMenu();
+        }}
+      >
+        <span className="button-top">To Deck (Bottom)</span>
+      </button>
+
+      {card?.is_commander && (
         <button
-          onClick={() => {
-            actions.tapCard(state.contextMenu.instanceId);
-            actions.closeContextMenu();
-          }}
-        >
-          <span className="button-top">Tap / Untap</span>
-        </button>
-        <button>
-          {/* no reducer yet */}
-          <span className="button-top">Flip ****</span>
-        </button>
-        <hr />
-        <button
-          onClick={() => {
-            actions.sendToZone(state.contextMenu.instanceId, "graveyard");
-            actions.closeContextMenu();
-          }}
-        >
-          <span className="button-top">To Graveyard</span>
-        </button>
-        <button
-          onClick={() => {
-            actions.sendToZone(state.contextMenu.instanceId, "exile");
-            actions.closeContextMenu();
-          }}
-        >
-          <span className="button-top">To Exile</span>
-        </button>
-        <button
-          onClick={() => {
-            actions.returnToHand(state.contextMenu.instanceId);
-            actions.closeContextMenu();
-          }}
-        >
-          <span className="button-top">To Hand</span>
-        </button>
-        <button
-          onClick={() => {
-            actions.returnToDeckTop(state.contextMenu.instanceId);
-            actions.closeContextMenu();
-          }}
-        >
-          <span className="button-top">To Deck (Top)</span>
-        </button>
-        <button
-          onClick={() => {
-            actions.returnToDeckBottom(state.contextMenu.instanceId);
-            actions.closeContextMenu();
-          }}
-        >
-          <span className="button-top">To Deck (Bottom)</span>
-        </button>
-        <button
+          style={{ borderTop: "1px solid #555", marginTop: "4px" }}
           onClick={() => {
             actions.sendToZone(state.contextMenu.instanceId, "commandZone");
             actions.closeContextMenu();
@@ -93,8 +108,8 @@ function ContextMenu() {
         >
           <span className="button-top">To Command Zone</span>
         </button>
-      </div>
-    ) : null,
+      )}
+    </div>,
     document.body,
   );
 }

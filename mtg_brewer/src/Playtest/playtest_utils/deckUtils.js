@@ -8,6 +8,7 @@ export function expandAndShuffle(cards) {
       const instanceId = crypto.randomUUID();
       library[instanceId] = {
         instanceId,
+        is_commander: card.is_commander,
         cardId: card.id,
         name: card.name,
         image: card.image,
@@ -23,6 +24,7 @@ export function expandAndShuffle(cards) {
         const instanceId = crypto.randomUUID();
         library[instanceId] = {
           instanceId,
+          is_commander: false,
           cardId: card.id,
           name: card.name,
           image: card.image,
