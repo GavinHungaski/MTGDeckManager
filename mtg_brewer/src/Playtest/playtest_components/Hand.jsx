@@ -48,7 +48,7 @@ function Hand() {
               objectFit: "cover",
             }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "translateY(-20px)")
+              (e.currentTarget.style.transform = "translateY(-5px)")
             }
             onMouseLeave={(e) =>
               (e.currentTarget.style.transform = "translateY(0)")
