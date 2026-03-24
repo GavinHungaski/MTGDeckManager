@@ -75,7 +75,7 @@ export function playtestReducer(state, action) {
       return {
         ...state,
         commandZone: state.commandZone.filter(
-          (card) => card.instanceId !== instanceId,
+          (instanceId) => instanceId !== instanceId,
         ),
         battlefield: [
           ...state.battlefield,

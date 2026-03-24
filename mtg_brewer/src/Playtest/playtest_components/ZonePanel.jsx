@@ -55,16 +55,16 @@ function ZonePanel() {
           borderRadius: 10,
         }}
       >
-        {state.commandZone.map((commander) => {
-          const card = state.cardLibrary[commander?.instanceId];
+        {state.commandZone.map((instanceId) => {
+          const card = state.cardLibrary[instanceId];
           return (
             <img
-              key={commander?.instanceId}
-              src={commander?.image}
+              key={card?.instanceId}
+              src={card?.image}
               alt="Command Zone"
               onClick={() =>
                 actions.playCommander(
-                  commander?.instanceId,
+                  card?.instanceId,
                   window.innerWidth / 2,
                   200,
                 )

@@ -5,9 +5,9 @@ export function expandAndShuffle(cards) {
 
   for (const card of cards) {
     if (card.is_commander) {
-      const c_instanceId = crypto.randomUUID();
-      library[c_instanceId] = {
-        instanceId: c_instanceId,
+      const instanceId = crypto.randomUUID();
+      library[instanceId] = {
+        instanceId,
         cardId: card.id,
         name: card.name,
         image: card.image,
@@ -17,8 +17,7 @@ export function expandAndShuffle(cards) {
         cmc: card.cmc,
         isToken: false,
       };
-      const commander = library[c_instanceId];
-      commandZone.push(commander);
+      commandZone.push(instanceId);
     } else {
       for (let i = 0; i < (card.count ?? 1); i++) {
         const instanceId = crypto.randomUUID();

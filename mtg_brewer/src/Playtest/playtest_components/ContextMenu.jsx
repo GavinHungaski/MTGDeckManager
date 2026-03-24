@@ -85,6 +85,14 @@ function ContextMenu() {
         >
           <span className="button-top">To Deck (Bottom)</span>
         </button>
+        <button
+          onClick={() => {
+            actions.sendToZone(state.contextMenu.instanceId, "commandZone");
+            actions.closeContextMenu();
+          }}
+        >
+          <span className="button-top">To Command Zone</span>
+        </button>
       </div>
     ) : null,
     document.body,
