@@ -26,6 +26,9 @@ function ContextMenu() {
           display: "flex",
           flexDirection: "column",
           z_index: "999",
+
+          background: "var(--gold-dim)",
+          borderRadius: 10,
         }}
         ref={ref}
       >
@@ -37,6 +40,11 @@ function ContextMenu() {
         >
           <span className="button-top">Tap / Untap</span>
         </button>
+        <button>
+          {/* no reducer yet */}
+          <span className="button-top">Flip</span>
+        </button>
+        <hr />
         <button
           onClick={() => {
             actions.sendToZone(state.contextMenu.instanceId, "graveyard");
@@ -68,10 +76,6 @@ function ContextMenu() {
           }}
         >
           <span className="button-top">To Deck</span>
-        </button>
-        <button>
-          {/* no reducer yet */}
-          <span className="button-top">Flip</span>
         </button>
       </div>
     ) : null,
