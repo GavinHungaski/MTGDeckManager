@@ -1,5 +1,8 @@
 import { useReducer } from "react";
-import { playtestReducer, initialState } from "../playtest_reducers/playtestReducer.js";
+import {
+  playtestReducer,
+  initialState,
+} from "../playtest_reducers/playtestReducer.js";
 
 export function usePlaytestState() {
   const [state, dispatch] = useReducer(playtestReducer, initialState);
@@ -9,6 +12,8 @@ export function usePlaytestState() {
       dispatch({ type: "INIT_GAME", payload: { library, deck, players } }),
 
     drawCard: () => dispatch({ type: "DRAW_CARD" }),
+
+    shuffle: () => dispatch({ type: "SHUFFLE_DECK" }),
 
     playCard: (instanceId, x, y) =>
       dispatch({ type: "PLAY_CARD", payload: { instanceId, x, y } }),

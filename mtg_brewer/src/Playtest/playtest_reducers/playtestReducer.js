@@ -1,3 +1,5 @@
+import { fisherYates } from "../playtest_utils/deckUtils.js";
+
 export const initialState = {
   deck: [],
   hand: [],
@@ -38,6 +40,11 @@ export function playtestReducer(state, action) {
       const drawn = state.deck.slice(0, n);
       const rest = state.deck.slice(n);
       return { ...state, deck: rest, hand: [...state.hand, ...drawn] };
+    }
+
+    case "SHUFFLE_DECK": {
+      const shuffled = fisherYates(state.deck);
+      return { ...state, deck: shuffled };
     }
 
     case "PLAY_CARD": {
@@ -85,7 +92,6 @@ export function playtestReducer(state, action) {
     case "SEND_TO_ZONE": {
       const { instanceId, zone } = action.payload;
       const card = state.cardLibrary[instanceId];
-      // Tokens are removed from the game entirely
       if (card?.isToken) {
         return {
           ...state,
