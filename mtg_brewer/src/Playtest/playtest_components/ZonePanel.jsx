@@ -55,14 +55,12 @@ function ZonePanel() {
           borderRadius: 10,
         }}
       >
-        {state.commandZone.map((instancId) => (
+        {state.commandZone.map((commander) => (
           <img
-            key={instancId}
-            src={state.commandZone[0]?.image}
+            key={commander?.instanceId}
+            src={commander?.image}
             alt="Command Zone"
-            onClick={() =>
-              actions.playCard(state.commandZone[0]?.instanceId, 0, 0)
-            }
+            onClick={() => {}}
             style={{
               width: `${CARD_WIDTH}px`,
               height: `${CARD_HEIGHT}px`,
