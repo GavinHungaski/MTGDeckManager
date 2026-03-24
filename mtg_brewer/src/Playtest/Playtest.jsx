@@ -1,10 +1,11 @@
-import { useEffect, useReducer, createContext } from "react";
+import { useEffect, createContext } from "react";
 import { useParams } from "react-router";
-import {
-  playtestReducer,
-  initialState,
-} from "./playtest_reducers/playtestReducer";
 import { expandAndShuffle } from "./playtest_utils/deckUtils";
+import { usePlaytestState } from "./playtest_hooks/usePlaytestState.js";
+import Battlefield from "./playtest_components/Battlefield.jsx";
+import Hand from "./playtest_components/Hand.jsx";
+import DeckPile from "./playtest_components/DeckPile.jsx";
+import PlayerHUD from "./playtest_components/PlayerHUD.jsx";
 import "./Playtest.css";
 
 export const PlaytestContext = createContext();
@@ -18,6 +19,7 @@ const formatCard = (card) => {
     count: card.count ?? 1,
     is_commander: card.is_commander,
     image: data?.image,
+    back_image: data?.back_image,
     cmc: data?.cmc,
     prices: data?.prices,
     color_identity: data?.color_identity,
@@ -29,7 +31,7 @@ const formatCard = (card) => {
 
 function Playtest() {
   const { deckId } = useParams();
-  const [state, dispatch] = useReducer(playtestReducer, initialState);
+  const { state, dispatch, actions } = usePlaytestState();
 
   useEffect(() => {
     if (!deckId) return;
@@ -62,14 +64,13 @@ function Playtest() {
     fetchDeckData();
   }, [deckId]);
 
-  console.log("Game state:", state);
-
   return (
-    <PlaytestContext.Provider value={{ state, dispatch }}>
+    <PlaytestContext.Provider value={{ state, dispatch, actions }}>
       <div className="container">
-        <p style={{ color: "white" }}>
-          Deck loaded — {state.deck.length} cards in library
-        </p>
+        <PlayerHUD />
+        <Battlefield />
+        <DeckPile />
+        <Hand />
       </div>
     </PlaytestContext.Provider>
   );

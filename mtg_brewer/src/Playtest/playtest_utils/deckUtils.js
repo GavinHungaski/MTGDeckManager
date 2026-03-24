@@ -10,6 +10,7 @@ export function expandAndShuffle(cards) {
         cardId: card.id,
         name: card.name,
         image: card.image,
+        back_image: card.back_image,
         colors: card.color_identity,
         types: card.types,
         cmc: card.cmc,
