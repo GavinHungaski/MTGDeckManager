@@ -25,7 +25,7 @@ function ContextMenu() {
 
           display: "flex",
           flexDirection: "column",
-          z_index: "999",
+          z_index: 999,
 
           background: "var(--gold-dim)",
           borderRadius: 10,
@@ -42,7 +42,7 @@ function ContextMenu() {
         </button>
         <button>
           {/* no reducer yet */}
-          <span className="button-top">Flip</span>
+          <span className="button-top">Flip ****</span>
         </button>
         <hr />
         <button
@@ -71,11 +71,19 @@ function ContextMenu() {
         </button>
         <button
           onClick={() => {
-            actions.returnToDeck(state.contextMenu.instanceId);
+            actions.returnToDeckTop(state.contextMenu.instanceId);
             actions.closeContextMenu();
           }}
         >
-          <span className="button-top">To Deck</span>
+          <span className="button-top">To Deck (Top)</span>
+        </button>
+        <button
+          onClick={() => {
+            actions.returnToDeckBottom(state.contextMenu.instanceId);
+            actions.closeContextMenu();
+          }}
+        >
+          <span className="button-top">To Deck (Bottom)</span>
         </button>
       </div>
     ) : null,

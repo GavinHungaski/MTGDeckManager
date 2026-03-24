@@ -33,8 +33,11 @@ export function usePlaytestState() {
     returnToHand: (instanceId) =>
       dispatch({ type: "RETURN_TO_HAND", payload: { instanceId } }),
 
-    returnToDeck: (instanceId) =>
-      dispatch({ type: "RETURN_TO_DECK", payload: { instanceId } }),
+    returnToDeckTop: (instanceId) =>
+      dispatch({ type: "RETURN_TO_DECK_TOP", payload: { instanceId } }),
+
+    returnToDeckBottom: (instanceId) =>
+      dispatch({ type: "RETURN_TO_DECK_BOTTOM", payload: { instanceId } }),
 
     setContextMenu: (x, y, instanceId) =>
       dispatch({ type: "SET_CONTEXT_MENU", payload: { x, y, instanceId } }),

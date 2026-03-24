@@ -131,7 +131,7 @@ export function playtestReducer(state, action) {
       };
     }
 
-    case "RETURN_TO_DECK": {
+    case "RETURN_TO_DECK_TOP": {
       const { instanceId } = action.payload;
       return {
         ...state,
@@ -139,6 +139,17 @@ export function playtestReducer(state, action) {
           (c) => c.instanceId !== instanceId,
         ),
         deck: [instanceId, ...state.deck],
+      };
+    }
+
+    case "RETURN_TO_DECK_BOTTOM": {
+      const { instanceId } = action.payload;
+      return {
+        ...state,
+        battlefield: state.battlefield.filter(
+          (c) => c.instanceId !== instanceId,
+        ),
+        deck: [...state.deck, instanceId],
       };
     }
 
