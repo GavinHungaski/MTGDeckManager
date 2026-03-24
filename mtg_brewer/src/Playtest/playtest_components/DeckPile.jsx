@@ -20,11 +20,17 @@ function DeckPile() {
 
         width: `${CARD_WIDTH}px`,
         height: `${CARD_HEIGHT}px`,
-
-        border: "2px solid black",
       }}
     >
-      <span>{state.deck.length}</span>
+      <span
+        style={{
+          position: "absolute",
+          bottom: "0",
+          left: "48%",
+        }}
+      >
+        {state.deck.length}
+      </span>
       <img
         src={CARD_BACK_IMAGE}
         alt="Deck"
