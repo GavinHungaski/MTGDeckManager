@@ -13,6 +13,7 @@ function ZonePanel() {
 
   return (
     <div className="zone-container">
+      {/* Graveyard */}
       <div
         style={{
           position: "fixed",
@@ -39,8 +40,32 @@ function ZonePanel() {
             Graveyard
           </span>
         )}
+        {state.graveyard.map((instanceId) => {
+          const card = state.cardLibrary[instanceId];
+          return (
+            <img
+              key={card?.instanceId}
+              src={card?.image}
+              alt={card?.name}
+              onClick={() =>
+                actions.playCard(card?.instanceId, window.innerWidth / 2, 200)
+              }
+              style={{
+                width: `${CARD_WIDTH}px`,
+                height: `${CARD_HEIGHT}px`,
+                borderRadius: 10,
+                cursor: "pointer",
+                flexShrink: 0,
+                transition: "transform 0.15s",
+                objectFit: "cover",
+                zIndex: 98,
+              }}
+            />
+          );
+        })}
       </div>
 
+      {/* Exile */}
       <div
         style={{
           position: "fixed",
@@ -67,6 +92,29 @@ function ZonePanel() {
             Exile
           </span>
         )}
+        {state.exile.map((instanceId) => {
+          const card = state.cardLibrary[instanceId];
+          return (
+            <img
+              key={card?.instanceId}
+              src={card?.image}
+              alt={card?.name}
+              onClick={() =>
+                actions.playCard(card?.instanceId, window.innerWidth / 2, 200)
+              }
+              style={{
+                width: `${CARD_WIDTH}px`,
+                height: `${CARD_HEIGHT}px`,
+                borderRadius: 10,
+                cursor: "pointer",
+                flexShrink: 0,
+                transition: "transform 0.15s",
+                objectFit: "cover",
+                zIndex: 98,
+              }}
+            />
+          );
+        })}
         <button
           onClick={() => setExileOut((prev) => !prev)}
           style={{
@@ -80,6 +128,7 @@ function ZonePanel() {
         </button>
       </div>
 
+      {/* Command Zone */}
       <div
         style={{
           position: "fixed",
@@ -123,7 +172,7 @@ function ZonePanel() {
             <img
               key={card?.instanceId}
               src={card?.image}
-              alt="Command Zone"
+              alt={card?.name}
               onClick={() =>
                 actions.playCommander(
                   card?.instanceId,

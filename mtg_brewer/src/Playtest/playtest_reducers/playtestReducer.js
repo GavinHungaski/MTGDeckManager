@@ -54,6 +54,8 @@ export function playtestReducer(state, action) {
       return {
         ...state,
         hand: state.hand.filter((id) => id !== instanceId),
+        graveyard: state.graveyard.filter((id) => id !== instanceId),
+        exile: state.exile.filter((id) => id !== instanceId),
         battlefield: [
           ...state.battlefield,
           {
