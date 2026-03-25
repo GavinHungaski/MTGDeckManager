@@ -11,8 +11,6 @@ function ZonePanel() {
   const [commandOut, setCommandOut] = useState(false);
   const [exileOut, setExileOut] = useState(false);
 
-  const handleCommandPopout = () => {};
-
   return (
     <div className="zone-container">
       <div
