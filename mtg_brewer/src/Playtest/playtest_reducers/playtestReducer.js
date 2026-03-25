@@ -76,9 +76,7 @@ export function playtestReducer(state, action) {
       const { instanceId, x, y } = action.payload;
       return {
         ...state,
-        commandZone: state.commandZone.filter(
-          (instanceId) => instanceId !== instanceId,
-        ),
+        commandZone: state.commandZone.filter((id) => id !== instanceId),
         battlefield: [
           ...state.battlefield,
           {

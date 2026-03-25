@@ -23,11 +23,15 @@ app.get("/api/decks", async (_, res) => {
         d.id,
         d.name,
         d.created_at,
-        c.card_data AS commander,
+        COALESCE(
+          JSON_AGG(c.card_data) FILTER (WHERE c.id IS NOT NULL), 
+          '[]'
+        ) AS commanders,
         (SELECT SUM(count) FROM deck_cards WHERE deck_id = d.id) AS card_count
       FROM decks d
-        LEFT JOIN deck_cards dc ON d.id = dc.deck_id AND dc.is_commander = true
-        LEFT JOIN cards c ON dc.card_id = c.id
+      LEFT JOIN deck_cards dc ON d.id = dc.deck_id AND dc.is_commander = true
+      LEFT JOIN cards c ON dc.card_id = c.id
+      GROUP BY d.id
       ORDER BY LOWER(d.name), d.id
     `);
     res.json(
@@ -35,8 +39,8 @@ app.get("/api/decks", async (_, res) => {
         id: row.id,
         name: row.name,
         created_at: row.created_at,
-        commander: row.commander ?? null,
-        count: row.card_count,
+        commanders: row.commanders,
+        count: row.card_count || 0,
       })),
     );
   } catch (err) {
