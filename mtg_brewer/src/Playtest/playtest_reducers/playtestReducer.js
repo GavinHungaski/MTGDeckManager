@@ -190,8 +190,8 @@ export function playtestReducer(state, action) {
     }
 
     case "SET_CONTEXT_MENU": {
-      const { x, y, instanceId } = action.payload;
-      return { ...state, contextMenu: { x, y, instanceId } };
+      const { x, y, type, instanceId } = action.payload;
+      return { ...state, contextMenu: { x, y, type, instanceId } };
     }
 
     case "CLOSE_CONTEXT_MENU": {

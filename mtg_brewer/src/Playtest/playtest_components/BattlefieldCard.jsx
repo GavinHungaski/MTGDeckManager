@@ -35,7 +35,7 @@ function BattlefieldCard({ card }) {
     e.evt.preventDefault();
     const stage = e.target.getStage();
     const pos = stage.getPointerPosition();
-    actions.setContextMenu(pos.x, pos.y, instanceId);
+    actions.setContextMenu(pos.x, pos.y, "card", instanceId);
   };
 
   const handleDbClick = (e) => {

@@ -20,6 +20,8 @@ function ContextMenu() {
   if (!state.contextMenu) return null;
 
   const card = state.cardLibrary[state.contextMenu.instanceId];
+  const { type } = state.contextMenu;
+  console.log(type);
 
   return createPortal(
     <div
@@ -38,81 +40,85 @@ function ContextMenu() {
         boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
       }}
     >
-      <button
-        onClick={() => {
-          actions.tapCard(state.contextMenu.instanceId);
-          actions.closeContextMenu();
-        }}
-      >
-        <span className="button-top">Tap / Untap</span>
-      </button>
+      {type === "card" && (
+        <>
+          <button
+            onClick={() => {
+              actions.tapCard(state.contextMenu.instanceId);
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">Tap / Untap</span>
+          </button>
 
-      <button
-        onClick={() => {
-          actions.flipCard(state.contextMenu.instanceId);
-          actions.closeContextMenu();
-        }}
-      >
-        <span className="button-top">Flip</span>
-      </button>
+          <button
+            onClick={() => {
+              actions.flipCard(state.contextMenu.instanceId);
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">Flip</span>
+          </button>
 
-      <hr style={{ width: "100%", border: "0.5px solid #444" }} />
+          <hr style={{ width: "100%", border: "0.5px solid #444" }} />
 
-      <button
-        onClick={() => {
-          actions.sendToZone(state.contextMenu.instanceId, "graveyard");
-          actions.closeContextMenu();
-        }}
-      >
-        <span className="button-top">To Graveyard</span>
-      </button>
+          <button
+            onClick={() => {
+              actions.sendToZone(state.contextMenu.instanceId, "graveyard");
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">To Graveyard</span>
+          </button>
 
-      <button
-        onClick={() => {
-          actions.sendToZone(state.contextMenu.instanceId, "exile");
-          actions.closeContextMenu();
-        }}
-      >
-        <span className="button-top">To Exile</span>
-      </button>
+          <button
+            onClick={() => {
+              actions.sendToZone(state.contextMenu.instanceId, "exile");
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">To Exile</span>
+          </button>
 
-      <button
-        onClick={() => {
-          actions.returnToHand(state.contextMenu.instanceId);
-          actions.closeContextMenu();
-        }}
-      >
-        <span className="button-top">To Hand</span>
-      </button>
+          <button
+            onClick={() => {
+              actions.returnToHand(state.contextMenu.instanceId);
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">To Hand</span>
+          </button>
 
-      <button
-        onClick={() => {
-          actions.returnToDeckTop(state.contextMenu.instanceId);
-          actions.closeContextMenu();
-        }}
-      >
-        <span className="button-top">To Deck (Top)</span>
-      </button>
+          <button
+            onClick={() => {
+              actions.returnToDeckTop(state.contextMenu.instanceId);
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">To Deck (Top)</span>
+          </button>
 
-      <button
-        onClick={() => {
-          actions.returnToDeckBottom(state.contextMenu.instanceId);
-          actions.closeContextMenu();
-        }}
-      >
-        <span className="button-top">To Deck (Bottom)</span>
-      </button>
+          <button
+            onClick={() => {
+              actions.returnToDeckBottom(state.contextMenu.instanceId);
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">To Deck (Bottom)</span>
+          </button>
 
-      {card?.is_commander && (
-        <button
-          style={{ borderTop: "1px solid #555", marginTop: "4px" }}
-          onClick={() => {
-            actions.sendToZone(state.contextMenu.instanceId, "commandZone");
-            actions.closeContextMenu();
-          }}
-        >
-          <span className="button-top">To Command Zone</span>
-        </button>
+          {card?.is_commander && (
+            <button
+              style={{ borderTop: "1px solid #555", marginTop: "4px" }}
+              onClick={() => {
+                actions.sendToZone(state.contextMenu.instanceId, "commandZone");
+                actions.closeContextMenu();
+              }}
+            >
+              <span className="button-top">To Command Zone</span>
+            </button>
+          )}
+        </>
       )}
     </div>,
     document.body,

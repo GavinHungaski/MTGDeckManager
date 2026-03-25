@@ -45,8 +45,11 @@ export function usePlaytestState() {
     returnToDeckBottom: (instanceId) =>
       dispatch({ type: "RETURN_TO_DECK_BOTTOM", payload: { instanceId } }),
 
-    setContextMenu: (x, y, instanceId) =>
-      dispatch({ type: "SET_CONTEXT_MENU", payload: { x, y, instanceId } }),
+    setContextMenu: (x, y, type, instanceId) =>
+      dispatch({
+        type: "SET_CONTEXT_MENU",
+        payload: { x, y, type, instanceId },
+      }),
 
     closeContextMenu: () => dispatch({ type: "CLOSE_CONTEXT_MENU" }),
 
