@@ -27,6 +27,7 @@ function ZonePanel() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
         }}
       >
         {state.graveyard.length === 0 && (
@@ -54,6 +55,7 @@ function ZonePanel() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
         }}
       >
         {state.exile.length === 0 && (
@@ -71,6 +73,7 @@ function ZonePanel() {
             position: "absolute",
             left: "-35px",
             top: "45%",
+            zIndex: 99,
           }}
         >
           <span className="button-top">{exileOut ? ">" : "<"}</span>
@@ -91,6 +94,7 @@ function ZonePanel() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
         }}
       >
         {state.commandZone.length === 0 && (
@@ -107,6 +111,7 @@ function ZonePanel() {
             position: "absolute",
             left: "-35px",
             top: "45%",
+            zIndex: 99,
           }}
           onClick={() => setCommandOut((prev) => !prev)}
         >

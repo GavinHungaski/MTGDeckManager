@@ -16,10 +16,11 @@ function DeckPile() {
         position: "fixed",
         bottom: `${HAND_HEIGHT * 2 + 10}px`,
         right: "10px",
-
         width: `${CARD_WIDTH}px`,
         height: `${CARD_HEIGHT}px`,
+        borderRadius: 10,
         zIndex: 100,
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
       }}
     >
       <span
