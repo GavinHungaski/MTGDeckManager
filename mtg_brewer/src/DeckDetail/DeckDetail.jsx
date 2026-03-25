@@ -11,7 +11,7 @@ function DeckDetail() {
   const [groupBy, setGroupBy] = useState("type");
   const [sortBy, setSortBy] = useState("mana");
   const [cards, setCards] = useState([]);
-  const [commander, setCommander] = useState(null);
+  const [commanders, setCommanders] = useState(null);
   const [viewingCard, setViewingCard] = useState(null);
   const navigate = useNavigate();
 
@@ -23,15 +23,11 @@ function DeckDetail() {
         if (!res.ok) throw new Error("Failed to fetch deck");
         const data = await res.json();
         const formattedCards = data.cards.map(formatCard);
-        const formattedCommander = {
-          id: data.commander.id,
-          name: data.commander.name,
-          ...data.commander.card_data,
-        };
+        const commanders = formattedCards.filter((c) => c.is_commander);
         setDeck({ id: data.id, name: data.name });
         setCards(formattedCards);
-        setCommander(formattedCommander);
-        setViewingCard(formattedCommander);
+        setCommanders(commanders);
+        setViewingCard(commanders[0]);
       } catch (err) {
         console.error("Error fetching deck:", err);
       }
@@ -102,7 +98,7 @@ function DeckDetail() {
       });
     });
     return groups;
-  }, [cards, groupBy, sortBy, commander]);
+  }, [cards, groupBy, sortBy, commanders]);
 
   if (!deck) return <div>Loading...</div>;
 
@@ -152,12 +148,11 @@ function DeckDetail() {
       return prev.filter((c) => c.name !== cardToRemove.name);
     });
     if (viewingCard?.name === cardToRemove.name) {
-      setViewingCard(commander);
+      setViewingCard(commanders[0]);
     }
   }
 
   async function handleSetCommander(card) {
-    if (commander.id === card.id) return;
     try {
       const res = await fetch(
         `http://localhost:4000/api/decks/${deckId}/card/${card.id}/commander`,
@@ -167,19 +162,20 @@ function DeckDetail() {
           body: JSON.stringify({ is_commander: true }),
         },
       );
-      if (!res.ok) throw new Error("Failed to swap commander");
+      if (!res.ok) throw new Error("Failed to update commander status");
+      setCards((prev) =>
+        prev.map((c) => (c.id === card.id ? { ...c, is_commander: true } : c)),
+      );
+      setCommanders((prev) => {
+        const exists = prev.find((c) => c.id === card.id);
+        if (exists) return prev;
+        return [...prev, { ...card, is_commander: true }];
+      });
+      if (viewingCard?.id === card.id) {
+        setViewingCard({ ...card, is_commander: true });
+      }
     } catch (err) {
-      console.error("Error swapping commander:", err);
-      return;
-    }
-    setCards((prev) => {
-      const withoutNewCommander = prev.filter((c) => c.id !== card.id);
-      const demotedCommander = { ...commander, is_commander: false, count: 1 };
-      return [...withoutNewCommander, demotedCommander];
-    });
-    setCommander({ ...card, is_commander: true });
-    if (viewingCard?.id === card.id) {
-      setViewingCard({ ...card, is_commander: true });
+      console.error("Error setting commander:", err);
     }
   }
 
@@ -210,7 +206,9 @@ function DeckDetail() {
         <div className="search-banner roboto-font">
           <CardSearch
             addCard={addCard}
-            color_identity={commander?.color_identity || []}
+            color_identity={[
+              ...new Set(commanders.flatMap((c) => c.color_identity || [])),
+            ]}
           />
           <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
             <option value="type">Group by Types</option>
@@ -236,17 +234,21 @@ function DeckDetail() {
         <div className="card-display">
           <div className="category">
             <span className="roboto-font">
-              <b>Commander</b>
+              <b>Commander (s)</b>
             </span>
             <div className="category-cards">
-              <div className="card-item">
-                <img
-                  className="card-item-image"
-                  src={commander.image}
-                  alt={commander.name}
-                  onMouseEnter={() => setViewingCard(commander)}
-                />
-              </div>
+              {commanders.map((commander) => {
+                return (
+                  <div className="card-item">
+                    <img
+                      className="card-item-image"
+                      src={commander.image}
+                      alt={commander.name}
+                      onMouseEnter={() => setViewingCard(commander)}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -267,7 +269,11 @@ function DeckDetail() {
                       card.types?.sub.includes("Vehicle") ||
                       card.text?.includes("can be your commander"));
                   const isInvalid = !card.color_identity?.every((color) =>
-                    commander?.color_identity?.includes(color),
+                    [
+                      ...new Set(
+                        commanders.flatMap((c) => c.color_identity || []),
+                      ),
+                    ]?.includes(color),
                   );
                   return (
                     <div

@@ -83,23 +83,14 @@ app.get("/api/decks/:id", async (req, res) => {
         count: r.count || 1,
         is_commander: r.is_commander,
       }));
-    const commander = rows.find((r) => r.is_commander);
+    const commanders = cards.filter((c) => c.is_commander);
+
     const deck = {
       id: rows[0].deck_id,
       name: rows[0].deck_name,
       created_at: rows[0].created_at,
-
-      commander: commander
-        ? {
-            id: commander.card_id,
-            name: commander.card_name,
-            card_data: commander.card_data,
-            count: commander.count || 1,
-            is_commander: true,
-          }
-        : null,
-
-      cards,
+      commanders: commanders,
+      cards: cards,
     };
 
     res.json(deck);
@@ -277,32 +268,25 @@ app.delete("/api/decks/:deckId/card/:cardId", async (req, res) => {
   }
 });
 
-// Swap commander
+// Add a commander
 app.patch("/api/decks/:deckId/card/:cardId/commander", async (req, res) => {
   let client;
   try {
     const { deckId, cardId } = req.params;
     const { is_commander } = req.body;
     client = await pool.connect();
-    await client.query("BEGIN");
-    if (is_commander) {
-      await client.query(
-        `UPDATE deck_cards SET is_commander = false WHERE deck_id = $1 AND is_commander = true`,
-        [deckId],
-      );
-    }
     const result = await client.query(
-      `UPDATE deck_cards SET is_commander = $1 WHERE deck_id = $2 AND card_id = $3 RETURNING *`,
+      `UPDATE deck_cards 
+       SET is_commander = $1 
+       WHERE deck_id = $2 AND card_id = $3 
+       RETURNING *`,
       [is_commander, deckId, cardId],
     );
     if (result.rowCount === 0) {
-      await client.query("ROLLBACK");
       return res.status(404).json({ error: "Card not found in deck" });
     }
-    await client.query("COMMIT");
     res.json(result.rows[0]);
   } catch (err) {
-    if (client) await client.query("ROLLBACK");
     console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
   } finally {

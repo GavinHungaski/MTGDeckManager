@@ -47,8 +47,13 @@ function ContextMenu() {
         <span className="button-top">Tap / Untap</span>
       </button>
 
-      <button onClick={() => actions.closeContextMenu()}>
-        <span className="button-top">Flip (N/A)</span>
+      <button
+        onClick={() => {
+          actions.flipCard(state.contextMenu.instanceId);
+          actions.closeContextMenu();
+        }}
+      >
+        <span className="button-top">Flip</span>
       </button>
 
       <hr style={{ width: "100%", border: "0.5px solid #444" }} />

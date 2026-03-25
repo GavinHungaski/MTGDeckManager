@@ -105,6 +105,17 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "FLIP_CARD": {
+      return {
+        ...state,
+        battlefield: state.battlefield.map((c) =>
+          c.instanceId === action.payload.instanceId
+            ? { ...c, flipped: !c.flipped }
+            : c,
+        ),
+      };
+    }
+
     case "TAP_CARD": {
       return {
         ...state,

@@ -24,6 +24,9 @@ export function usePlaytestState() {
     moveCard: (instanceId, x, y) =>
       dispatch({ type: "MOVE_CARD", payload: { instanceId, x, y } }),
 
+    flipCard: (instanceId) =>
+      dispatch({ type: "FLIP_CARD", payload: { instanceId } }),
+
     tapCard: (instanceId) =>
       dispatch({ type: "TAP_CARD", payload: { instanceId } }),
 
