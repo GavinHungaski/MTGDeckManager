@@ -8,7 +8,9 @@ function BattlefieldCard({ card }) {
   const { state, actions } = useContext(PlaytestContext);
   const { instanceId, x, y, tapped } = card;
   const cardData = state.cardLibrary[instanceId];
-  const [image] = useImage(cardData?.image);
+  const [image] = useImage(cardData?.image, "anonymous");
+
+  const imageRef = useRef(null);
 
   const isSelected = state.selectedInstanceIds.includes(instanceId);
 
