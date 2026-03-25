@@ -25,7 +25,7 @@ function DeckPile() {
       <span
         style={{
           position: "absolute",
-          bottom: "0",
+          top: "-4px",
           left: "47%",
         }}
       >
