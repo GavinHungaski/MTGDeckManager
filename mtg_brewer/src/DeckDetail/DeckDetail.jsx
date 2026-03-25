@@ -152,30 +152,38 @@ function DeckDetail() {
     }
   }
 
-  async function handleSetCommander(card) {
+  async function handleToggleCommander(card) {
+    const newStatus = !card.is_commander;
     try {
       const res = await fetch(
         `http://localhost:4000/api/decks/${deckId}/card/${card.id}/commander`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ is_commander: true }),
+          body: JSON.stringify({ is_commander: newStatus }),
         },
       );
       if (!res.ok) throw new Error("Failed to update commander status");
       setCards((prev) =>
-        prev.map((c) => (c.id === card.id ? { ...c, is_commander: true } : c)),
+        prev.map((c) =>
+          c.id === card.id ? { ...c, is_commander: newStatus } : c,
+        ),
       );
       setCommanders((prev) => {
-        const exists = prev.find((c) => c.id === card.id);
-        if (exists) return prev;
-        return [...prev, { ...card, is_commander: true }];
+        if (newStatus) {
+          // Add to list if not already there
+          const exists = prev.find((c) => c.id === card.id);
+          return exists ? prev : [...prev, { ...card, is_commander: true }];
+        } else {
+          // Remove from list
+          return prev.filter((c) => c.id !== card.id);
+        }
       });
       if (viewingCard?.id === card.id) {
-        setViewingCard({ ...card, is_commander: true });
+        setViewingCard({ ...viewingCard, is_commander: newStatus });
       }
     } catch (err) {
-      console.error("Error setting commander:", err);
+      console.error("Error toggling commander:", err);
     }
   }
 
@@ -234,7 +242,7 @@ function DeckDetail() {
         <div className="card-display">
           <div className="category">
             <span className="roboto-font">
-              <b>Commander (s)</b>
+              <b>Commander</b>
             </span>
             <div className="category-cards">
               {commanders.map((commander) => {
@@ -246,6 +254,12 @@ function DeckDetail() {
                       alt={commander.name}
                       onMouseEnter={() => setViewingCard(commander)}
                     />
+                    <button
+                      onClick={() => handleToggleCommander(commander)}
+                      className="rmv-commander-btn"
+                    >
+                      R
+                    </button>
                   </div>
                 );
               })}
@@ -296,7 +310,7 @@ function DeckDetail() {
                       {canBeCommander && (
                         <button
                           onClick={() => {
-                            handleSetCommander(card);
+                            handleToggleCommander(card);
                           }}
                           className="set-commander-btn"
                         >

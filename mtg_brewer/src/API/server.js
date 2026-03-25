@@ -268,7 +268,7 @@ app.delete("/api/decks/:deckId/card/:cardId", async (req, res) => {
   }
 });
 
-// Add a commander
+// Toggle commander in a deck
 app.patch("/api/decks/:deckId/card/:cardId/commander", async (req, res) => {
   let client;
   try {
@@ -288,7 +288,7 @@ app.patch("/api/decks/:deckId/card/:cardId/commander", async (req, res) => {
     res.json(result.rows[0]);
   } catch (err) {
     console.error("Database error:", err);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: "Internal server error" });
   } finally {
     if (client) client.release();
   }

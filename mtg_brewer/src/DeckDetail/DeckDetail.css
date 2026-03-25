@@ -207,6 +207,7 @@
 /* ── Overlay Buttons & Count ──────────────────────────────── */
 .card-delete-btn,
 .set-commander-btn,
+.rmv-commander-btn,
 .card-count {
   position: absolute;
   right: 10px;
@@ -241,6 +242,13 @@
   color: var(--gold);
 }
 
+.rmv-commander-btn {
+  top: 58%;
+  transform: translateY(-50%) scale(0.8);
+  background-color: var(--bg);
+  color: var(--red);
+}
+
 .card-count {
   top: 15%;
   transform: translateY(-50%) scale(0.8);
@@ -252,7 +260,8 @@
 
 /* ── Hover reveals ────────────────────────────────────────── */
 .card-item:hover .card-delete-btn,
-.card-item:hover .set-commander-btn {
+.card-item:hover .set-commander-btn,
+.card-item:hover .rmv-commander-btn {
   opacity: 1;
   visibility: visible;
   transform: translateY(-50%) scale(1);
@@ -272,6 +281,11 @@
 
 .set-commander-btn:hover {
   background-color: rgba(30, 24, 10, 0.95) !important;
+  transform: translateY(-50%) scale(1.1) !important;
+}
+
+.rmv-commander-btn:hover {
+  background-color: var(--red-shadow) !important;
   transform: translateY(-50%) scale(1.1) !important;
 }
 
