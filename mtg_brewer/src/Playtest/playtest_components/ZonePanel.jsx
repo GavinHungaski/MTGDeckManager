@@ -48,11 +48,11 @@ function ZonePanel() {
           onClick={() => setExileOut((prev) => !prev)}
           style={{
             position: "absolute",
-            left: "-25px",
+            left: "-35px",
             top: "50%",
           }}
         >
-          <span className="button-top"></span>
+          <span className="button-top">{exileOut ? ">" : "<"}</span>
         </button>
       </div>
 
@@ -74,12 +74,12 @@ function ZonePanel() {
         <button
           style={{
             position: "absolute",
-            left: "-25px",
+            left: "-35px",
             top: "50%",
           }}
           onClick={() => setCommandOut((prev) => !prev)}
         >
-          <span className="button-top"></span>
+          <span className="button-top">{commandOut ? ">" : "<"}</span>
         </button>
         {state.commandZone.map((instanceId) => {
           const card = state.cardLibrary[instanceId];
