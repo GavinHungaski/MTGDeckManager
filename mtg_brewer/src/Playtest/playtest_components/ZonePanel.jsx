@@ -22,7 +22,8 @@ function ZonePanel() {
           width: `${CARD_WIDTH}px`,
           height: `${CARD_HEIGHT}px`,
 
-          border: "1px solid black",
+          background: "var(--surface-2)",
+
           borderRadius: 10,
 
           zIndex: 100,
@@ -38,7 +39,8 @@ function ZonePanel() {
           width: `${CARD_WIDTH}px`,
           height: `${CARD_HEIGHT}px`,
 
-          border: "1px solid black",
+          background: "var(--red-shadow)",
+
           borderRadius: 10,
 
           zIndex: 99,
@@ -65,7 +67,8 @@ function ZonePanel() {
           width: `${CARD_WIDTH}px`,
           height: `${CARD_HEIGHT}px`,
 
-          border: "1px solid black",
+          background: "var(--gold-dim)",
+
           borderRadius: 10,
 
           zIndex: 99,
