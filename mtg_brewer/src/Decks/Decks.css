@@ -1,12 +1,11 @@
 /* ── Deck Display Grid ────────────────────────────────────── */
 .deck-display {
   width: 100%;
-  flex-grow: 15;
   padding: 16px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 0fr));
-  grid-auto-rows: 350px;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-auto-rows: min-content;
+  gap: 24px;
   justify-content: center;
   background-color: var(--bg);
 }
@@ -19,14 +18,20 @@
   padding: 18px 16px;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  height: auto;
+  gap: 8px;
   text-align: left;
-  overflow: hidden;
-  color: rgb(179, 179, 179) I !important;
   transition:
     border-color 0.2s,
     box-shadow 0.2s,
     transform 0.2s;
+}
+
+.deck-item img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 8px auto;
 }
 
 .deck-item:hover {
