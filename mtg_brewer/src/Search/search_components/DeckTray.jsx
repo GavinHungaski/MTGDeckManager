@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import "./DeckTray.css";
 
@@ -45,11 +45,15 @@ export function DeckTray({ decks, selectedCards, setSelectedCards, addCard }) {
               >
                 <span className="button-top">Go to</span>
               </button>
-              <img
-                className="commander-art"
-                src={deck.commander?.image || ""}
-                alt={deck.commander?.name || ""}
-              />
+              {deck.commanders.map((c) => {
+                return (
+                  <img
+                    className="commander-art"
+                    src={c?.image || ""}
+                    alt={c?.name || ""}
+                  />
+                );
+              })}
             </div>
           );
         })}
