@@ -64,6 +64,8 @@ function BattlefieldCard({ card }) {
           width={CARD_WIDTH}
           height={CARD_HEIGHT}
           cornerRadius={10}
+          perfectDrawEnabled={true}
+          imageSmoothingEnabled={false}
         />
       ) : (
         <Rect
