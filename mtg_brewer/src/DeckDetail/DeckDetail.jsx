@@ -247,7 +247,7 @@ function DeckDetail() {
             <div className="category-cards">
               {commanders.map((commander) => {
                 return (
-                  <div className="card-item">
+                  <div className="card-item" key={commander.id}>
                     <img
                       className="card-item-image"
                       src={commander.image}
