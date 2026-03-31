@@ -1,9 +1,11 @@
 import { useContext } from "react";
 import { PlaytestContext } from "../Playtest";
 import { HUD_HEIGHT } from "../playtest_utils/constants";
+import { useNavigate } from "react-router";
 
 function PlayerHUD() {
   const { state, actions } = useContext(PlaytestContext);
+  const navigate = useNavigate();
 
   const activePlayer = state.players.find((p) => p.id === state.activePlayerId);
 
@@ -22,6 +24,8 @@ function PlayerHUD() {
         boxSizing: "border-box",
       }}
     >
+      <button onClick={() => navigate(-1)}><span className="button-top">Back to Deck</span></button>
+
       {/* LEFT: Player Info */}
       <div>
         <strong>{activePlayer.name}</strong>
