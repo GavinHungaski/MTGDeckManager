@@ -235,7 +235,9 @@ function DeckDetail() {
           </span>
           <ExportDeckButton cards={cards} />
           <button onClick={() => navigate("playtest")}>
-            <span className="button-top">Playtester</span>
+            <span className="button-top" style={{ color: "black" }}>
+              Playtester
+            </span>
           </button>
         </div>
 

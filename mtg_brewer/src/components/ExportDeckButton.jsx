@@ -12,7 +12,9 @@ function ExportDeckButton({ cards }) {
   }
   return (
     <button onClick={exportDeck}>
-      <span className="button-top">Text Export</span>
+      <span className="button-top" style={{ color: "black" }}>
+        Text Export
+      </span>
     </button>
   );
 }
