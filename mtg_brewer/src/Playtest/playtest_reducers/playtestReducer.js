@@ -15,6 +15,7 @@ export const initialState = {
   contextMenu: null,
   viewingZone: null,
   tokenCreatorOpen: false,
+  turnNumber: 0,
 };
 
 export function playtestReducer(state, action) {
@@ -247,7 +248,12 @@ export function playtestReducer(state, action) {
     case "NEXT_TURN": {
       const idx = state.players.findIndex((p) => p.id === state.activePlayerId);
       const next = state.players[(idx + 1) % state.players.length];
-      return { ...state, activePlayerId: next.id };
+
+      return {
+        ...state,
+        activePlayerId: next.id,
+        turnNumber: state.turnNumber + 1,
+      };
     }
 
     case "TOGGLE_TOKEN_CREATOR": {

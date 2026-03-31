@@ -70,6 +70,7 @@ export function usePlaytestState() {
     nextTurn: () => {
       dispatch({ type: "UNTAP_ALL" });
       dispatch({ type: "DRAW_CARD" });
+      dispatch({ type: "NEXT_TURN" });
     },
   };
 
