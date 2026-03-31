@@ -152,7 +152,7 @@ export function playtestReducer(state, action) {
         battlefield: state.battlefield.filter(
           (c) => c.instanceId !== instanceId,
         ),
-        [zone]: [...state[zone], instanceId],
+        [zone]: [instanceId, ...state[zone]],
       };
     }
 

@@ -11,10 +11,41 @@ function ZonePanel() {
   const [commandOut, setCommandOut] = useState(false);
   const [exileOut, setExileOut] = useState(false);
 
+  const [graveyardIndex, setGraveyardIndex] = useState(0);
+  const [exileIndex, setExileIndex] = useState(0);
+  const [commandIndex, setCommandIndex] = useState(0);
+
+  const handleZoneScroll = (e, zoneLength, currentIndex, setIndex) => {
+    e.preventDefault();
+    if (zoneLength === 0) return;
+
+    const delta = e.deltaY > 0 ? 1 : -1;
+    const newIndex = currentIndex + delta;
+
+    // Stop at boundaries (no circular scrolling)
+    if (newIndex >= 0 && newIndex < zoneLength) {
+      setIndex(newIndex);
+    }
+  };
+
+  // Reset index when zone becomes empty or cards change
+  const safeIndex = (index, length) => {
+    if (length === 0) return 0;
+    return Math.min(index, length - 1);
+  };
+
   return (
     <div className="zone-container">
       {/* Graveyard */}
       <div
+        onWheel={(e) =>
+          handleZoneScroll(
+            e,
+            state.graveyard.length,
+            graveyardIndex,
+            setGraveyardIndex,
+          )
+        }
         style={{
           position: "fixed",
           bottom: `${HAND_HEIGHT + 10}px`,
@@ -32,41 +63,40 @@ function ZonePanel() {
         }}
       >
         {state.graveyard.length === 0 && (
-          <span
-            style={{
-              zIndex: 97,
-            }}
-          >
-            Graveyard
-          </span>
+          <span style={{ zIndex: 97 }}>Graveyard</span>
         )}
-        {state.graveyard.map((instanceId) => {
-          const card = state.cardLibrary[instanceId];
-          return (
-            <img
-              key={card?.instanceId}
-              src={card?.image}
-              alt={card?.name}
-              onClick={() =>
-                actions.playCard(card?.instanceId, window.innerWidth / 2, 200)
-              }
-              style={{
-                width: `${CARD_WIDTH}px`,
-                height: `${CARD_HEIGHT}px`,
-                borderRadius: 10,
-                cursor: "pointer",
-                flexShrink: 0,
-                transition: "transform 0.15s",
-                objectFit: "cover",
-                zIndex: 98,
-              }}
-            />
-          );
-        })}
+        {state.graveyard.length > 0 &&
+          (() => {
+            const safeIdx = safeIndex(graveyardIndex, state.graveyard.length);
+            const instanceId = state.graveyard[safeIdx];
+            const card = state.cardLibrary[instanceId];
+            return (
+              <img
+                key={card?.instanceId}
+                src={card?.image}
+                alt={card?.name}
+                onClick={() =>
+                  actions.playCard(card?.instanceId, window.innerWidth / 2, 200)
+                }
+                style={{
+                  width: `${CARD_WIDTH}px`,
+                  height: `${CARD_HEIGHT}px`,
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  transition: "opacity 0.2s",
+                  objectFit: "cover",
+                  zIndex: 98,
+                }}
+              />
+            );
+          })()}
       </div>
 
       {/* Exile */}
       <div
+        onWheel={(e) =>
+          handleZoneScroll(e, state.exile.length, exileIndex, setExileIndex)
+        }
         style={{
           position: "fixed",
           bottom: `${HAND_HEIGHT + 10}px`,
@@ -83,38 +113,32 @@ function ZonePanel() {
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
         }}
       >
-        {state.exile.length === 0 && (
-          <span
-            style={{
-              zIndex: 97,
-            }}
-          >
-            Exile
-          </span>
-        )}
-        {state.exile.map((instanceId) => {
-          const card = state.cardLibrary[instanceId];
-          return (
-            <img
-              key={card?.instanceId}
-              src={card?.image}
-              alt={card?.name}
-              onClick={() =>
-                actions.playCard(card?.instanceId, window.innerWidth / 2, 200)
-              }
-              style={{
-                width: `${CARD_WIDTH}px`,
-                height: `${CARD_HEIGHT}px`,
-                borderRadius: 10,
-                cursor: "pointer",
-                flexShrink: 0,
-                transition: "transform 0.15s",
-                objectFit: "cover",
-                zIndex: 98,
-              }}
-            />
-          );
-        })}
+        {state.exile.length === 0 && <span style={{ zIndex: 97 }}>Exile</span>}
+        {state.exile.length > 0 &&
+          (() => {
+            const safeIdx = safeIndex(exileIndex, state.exile.length);
+            const instanceId = state.exile[safeIdx];
+            const card = state.cardLibrary[instanceId];
+            return (
+              <img
+                key={card?.instanceId}
+                src={card?.image}
+                alt={card?.name}
+                onClick={() =>
+                  actions.playCard(card?.instanceId, window.innerWidth / 2, 200)
+                }
+                style={{
+                  width: `${CARD_WIDTH}px`,
+                  height: `${CARD_HEIGHT}px`,
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  transition: "opacity 0.2s",
+                  objectFit: "cover",
+                  zIndex: 98,
+                }}
+              />
+            );
+          })()}
         <button
           onClick={() => setExileOut((prev) => !prev)}
           style={{
@@ -130,6 +154,14 @@ function ZonePanel() {
 
       {/* Command Zone */}
       <div
+        onWheel={(e) =>
+          handleZoneScroll(
+            e,
+            state.commandZone.length,
+            commandIndex,
+            setCommandIndex,
+          )
+        }
         style={{
           position: "fixed",
           bottom: `${HAND_HEIGHT * 2 + 10}px`,
@@ -147,13 +179,7 @@ function ZonePanel() {
         }}
       >
         {state.commandZone.length === 0 && (
-          <span
-            style={{
-              zIndex: 97,
-            }}
-          >
-            Command Zone
-          </span>
+          <span style={{ zIndex: 97 }}>Command Zone</span>
         )}
         <button
           style={{
@@ -166,33 +192,35 @@ function ZonePanel() {
         >
           <span className="button-top">{commandOut ? ">" : "<"}</span>
         </button>
-        {state.commandZone.map((instanceId) => {
-          const card = state.cardLibrary[instanceId];
-          return (
-            <img
-              key={card?.instanceId}
-              src={card?.image}
-              alt={card?.name}
-              onClick={() =>
-                actions.playCommander(
-                  card?.instanceId,
-                  window.innerWidth / 2,
-                  200,
-                )
-              }
-              style={{
-                width: `${CARD_WIDTH}px`,
-                height: `${CARD_HEIGHT}px`,
-                borderRadius: 10,
-                cursor: "pointer",
-                flexShrink: 0,
-                transition: "transform 0.15s",
-                objectFit: "cover",
-                zIndex: 98,
-              }}
-            />
-          );
-        })}
+        {state.commandZone.length > 0 &&
+          (() => {
+            const safeIdx = safeIndex(commandIndex, state.commandZone.length);
+            const instanceId = state.commandZone[safeIdx];
+            const card = state.cardLibrary[instanceId];
+            return (
+              <img
+                key={card?.instanceId}
+                src={card?.image}
+                alt={card?.name}
+                onClick={() =>
+                  actions.playCommander(
+                    card?.instanceId,
+                    window.innerWidth / 2,
+                    200,
+                  )
+                }
+                style={{
+                  width: `${CARD_WIDTH}px`,
+                  height: `${CARD_HEIGHT}px`,
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  transition: "opacity 0.2s",
+                  objectFit: "cover",
+                  zIndex: 98,
+                }}
+              />
+            );
+          })()}
       </div>
     </div>
   );
