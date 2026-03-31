@@ -33,9 +33,7 @@ function TokenCreator() {
     debounceRef.current = setTimeout(async () => {
       try {
         setLoading(true);
-        const query = encodeURIComponent(
-          `!"${search}" OR ${search} t:token -is:digital`,
-        );
+        const query = encodeURIComponent(`"${search}" t:token -is:digital`);
         const res = await fetch(
           `https://api.scryfall.com/cards/search?q=${query}`,
         );
@@ -137,6 +135,21 @@ function TokenCreator() {
         onFocus={() => search && setShowDropdown(true)}
         style={{ width: "100%", maxHeight: "25px", marginBottom: "8px" }}
       />
+      
+      {/* Close button */}
+      <button
+        onClick={actions.toggleTokenCreator}
+        style={{
+          alignSelf: "flex-end",
+          background: "transparent",
+          border: "none",
+          fontSize: "18px",
+          cursor: "pointer",
+          marginBottom: "8px",
+        }}
+      >
+        <span className="button-top">✖</span>
+      </button>
 
       {showDropdown && (
         <div className="dropdown">
