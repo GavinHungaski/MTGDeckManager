@@ -8,9 +8,6 @@ export function usePlaytestState() {
   const [state, dispatch] = useReducer(playtestReducer, initialState);
 
   const actions = {
-    initGame: (library, deck, players) =>
-      dispatch({ type: "INIT_GAME", payload: { library, deck, players } }),
-
     drawCard: () => dispatch({ type: "DRAW_CARD" }),
 
     shuffle: () => dispatch({ type: "SHUFFLE_DECK" }),

@@ -192,7 +192,7 @@ function ZonePanel() {
         >
           <span className="button-top">{commandOut ? ">" : "<"}</span>
         </button>
-        {state.commandZone.length > 0 &&
+        {state.commandZone?.length > 0 &&
           (() => {
             const safeIdx = safeIndex(commandIndex, state.commandZone.length);
             const instanceId = state.commandZone[safeIdx];
