@@ -125,6 +125,13 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "UNTAP_ALL": {
+      return {
+        ...state,
+        battlefield: state.battlefield.map((c) => ({ ...c, tapped: false })),
+      };
+    }
+
     case "TAP_N": {
       return {
         ...state,

@@ -30,6 +30,8 @@ export function usePlaytestState() {
     tapCard: (instanceId) =>
       dispatch({ type: "TAP_CARD", payload: { instanceId } }),
 
+    untapAll: () => dispatch({ type: "UNTAP_ALL" }),
+
     tapMany: (instanceIds) =>
       dispatch({ type: "TAP_N", payload: { instanceIds } }),
 
@@ -67,6 +69,11 @@ export function usePlaytestState() {
 
     createToken: (token) =>
       dispatch({ type: "CREATE_TOKEN", payload: { token } }),
+
+    nextTurn: () => {
+      dispatch({ type: "UNTAP_ALL" });
+      dispatch({ type: "DRAW_CARD" });
+    },
   };
 
   return { state, dispatch, actions };
