@@ -40,22 +40,22 @@ function PlayerHUD() {
           Turn {state.turnNumber}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <button onClick={() => actions.setLife(activePlayer.id, -1)}>
-            <span className="button-top">-1</span>
-          </button>
           <button onClick={() => actions.setLife(activePlayer.id, -5)}>
             <span className="button-top">-5</span>
+          </button>
+          <button onClick={() => actions.setLife(activePlayer.id, -1)}>
+            <span className="button-top">-1</span>
           </button>
           <div
             style={{ fontSize: "20px", minWidth: "40px", textAlign: "center" }}
           >
             {activePlayer.life}
           </div>
-          <button onClick={() => actions.setLife(activePlayer.id, +5)}>
-            <span className="button-top">+5</span>
-          </button>
           <button onClick={() => actions.setLife(activePlayer.id, +1)}>
             <span className="button-top">+1</span>
+          </button>
+          <button onClick={() => actions.setLife(activePlayer.id, +5)}>
+            <span className="button-top">+5</span>
           </button>
         </div>
       </div>
