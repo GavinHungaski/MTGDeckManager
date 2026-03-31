@@ -130,7 +130,7 @@ export function playtestReducer(state, action) {
         ...state,
         battlefield: state.battlefield.map((c) =>
           action.payload.instanceIds.includes(c.instanceId)
-            ? { ...c, tapped: !c.tapped }
+            ? { ...c, tapped: true }
             : c,
         ),
       };
@@ -229,6 +229,13 @@ export function playtestReducer(state, action) {
       const idx = state.players.findIndex((p) => p.id === state.activePlayerId);
       const next = state.players[(idx + 1) % state.players.length];
       return { ...state, activePlayerId: next.id };
+    }
+
+    case "TOGGLE_TOKEN_CREATOR": {
+      return {
+        ...state,
+        tokenCreatorOpen: !state.tokenCreatorOpen,
+      };
     }
 
     default:

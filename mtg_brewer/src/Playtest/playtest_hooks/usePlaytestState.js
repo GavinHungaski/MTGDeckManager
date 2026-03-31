@@ -57,6 +57,13 @@ export function usePlaytestState() {
       dispatch({ type: "SELECT_CARDS", payload: { instanceIds } }),
 
     clearSelection: () => dispatch({ type: "CLEAR_SELECTION" }),
+
+    setLife: (playerId, delta) =>
+      dispatch({ type: "SET_LIFE", payload: { playerId, delta } }),
+
+    nextTurn: () => dispatch({ type: "NEXT_TURN" }),
+
+    toggleTokenCreator: () => dispatch({ type: "TOGGLE_TOKEN_CREATOR" }),
   };
 
   return { state, dispatch, actions };
