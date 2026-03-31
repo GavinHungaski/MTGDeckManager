@@ -58,7 +58,13 @@ function Playtest() {
 
         dispatch({
           type: "INIT_GAME",
-          payload: { library, deck, commandZone, players },
+          payload: {
+            library,
+            deck,
+            commandZone,
+            players,
+            drawStartingHand: 7,
+          },
         });
       } catch (err) {
         console.error("Error fetching deck:", err);

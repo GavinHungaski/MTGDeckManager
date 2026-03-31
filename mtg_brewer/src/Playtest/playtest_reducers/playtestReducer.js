@@ -20,11 +20,20 @@ export const initialState = {
 export function playtestReducer(state, action) {
   switch (action.type) {
     case "INIT_GAME": {
-      const { library, deck, commandZone, players } = action.payload;
+      const {
+        library,
+        deck,
+        commandZone = [],
+        players,
+        drawStartingHand = 7,
+      } = action.payload;
+      const startingHand = deck.slice(0, drawStartingHand);
+      const restOfDeck = deck.slice(drawStartingHand);
       return {
         ...initialState,
         cardLibrary: library,
-        deck,
+        deck: restOfDeck,
+        hand: startingHand,
         commandZone,
         players,
         activePlayerId: players[0].id,
