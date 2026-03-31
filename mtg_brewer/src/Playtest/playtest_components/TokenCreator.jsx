@@ -33,7 +33,7 @@ function TokenCreator() {
     debounceRef.current = setTimeout(async () => {
       try {
         setLoading(true);
-        const query = encodeURIComponent(`"${search}" t:token -is:digital`);
+        const query = encodeURIComponent(`"${search}" (t:emblem OR t:token) -is:digital`);
         const res = await fetch(
           `https://api.scryfall.com/cards/search?q=${query}`,
         );
@@ -104,7 +104,7 @@ function TokenCreator() {
 
     setSearch("");
     setShowDropdown(false);
-    actions.toggleTokenCreator(); // close creator modal
+    actions.toggleTokenCreator();
   };
 
   return (
@@ -130,7 +130,7 @@ function TokenCreator() {
     >
       <input
         value={search}
-        placeholder="Search tokens..."
+        placeholder="Search tokens and emblems..."
         onChange={(e) => setSearch(e.target.value)}
         onFocus={() => search && setShowDropdown(true)}
         style={{ width: "100%", maxHeight: "25px", marginBottom: "8px" }}
@@ -184,7 +184,7 @@ function TokenCreator() {
                 );
               })
             : !loading &&
-              search && <div className="dropdown-item">No tokens found</div>}
+              search && <div className="dropdown-item">No tokens or emblems found</div>}
         </div>
       )}
     </div>
