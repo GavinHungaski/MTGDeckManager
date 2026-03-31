@@ -123,7 +123,11 @@ function TokenCreator() {
         borderRadius: "8px",
         zIndex: 999,
         width: "300px",
+        minHeight: "300px",
         boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+        display: "flex",
+        flexDirection: "column",
+        overflowY: "auto",
       }}
     >
       <input
@@ -131,7 +135,7 @@ function TokenCreator() {
         placeholder="Search tokens..."
         onChange={(e) => setSearch(e.target.value)}
         onFocus={() => search && setShowDropdown(true)}
-        style={{ width: "100%", marginBottom: "8px" }}
+        style={{ width: "100%", maxHeight: "25px", marginBottom: "8px" }}
       />
 
       {showDropdown && (

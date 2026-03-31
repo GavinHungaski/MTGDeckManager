@@ -158,34 +158,37 @@ export function playtestReducer(state, action) {
 
     case "RETURN_TO_HAND": {
       const { instanceId } = action.payload;
+      const card = state.cardLibrary[instanceId];
       return {
         ...state,
         battlefield: state.battlefield.filter(
           (c) => c.instanceId !== instanceId,
         ),
-        hand: [...state.hand, instanceId],
+        hand: card?.isToken ? state.hand : [...state.hand, instanceId],
       };
     }
 
     case "RETURN_TO_DECK_TOP": {
       const { instanceId } = action.payload;
+      const card = state.cardLibrary[instanceId];
       return {
         ...state,
         battlefield: state.battlefield.filter(
           (c) => c.instanceId !== instanceId,
         ),
-        deck: [instanceId, ...state.deck],
+        deck: card?.isToken ? state.deck : [instanceId, ...state.deck],
       };
     }
 
     case "RETURN_TO_DECK_BOTTOM": {
       const { instanceId } = action.payload;
+      const card = state.cardLibrary[instanceId];
       return {
         ...state,
         battlefield: state.battlefield.filter(
           (c) => c.instanceId !== instanceId,
         ),
-        deck: [...state.deck, instanceId],
+        deck: card?.isToken ? state.deck : [...state.deck, instanceId],
       };
     }
 
