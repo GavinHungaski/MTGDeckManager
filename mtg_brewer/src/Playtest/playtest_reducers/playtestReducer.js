@@ -238,6 +238,31 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "CREATE_TOKEN": {
+      const { token } = action.payload;
+
+      return {
+        ...state,
+        cardLibrary: {
+          ...state.cardLibrary,
+          [token.instanceId]: token,
+        },
+        battlefield: [
+          ...state.battlefield,
+          {
+            instanceId: token.instanceId,
+            x: token.x,
+            y: token.y,
+            tapped: false,
+            facedown: false,
+            isToken: true,
+            counters: [],
+            stackId: null,
+          },
+        ],
+      };
+    }
+
     default:
       return state;
   }

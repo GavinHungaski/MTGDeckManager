@@ -1,3 +1,15 @@
+import { HAND_HEIGHT, HUD_HEIGHT } from "./constants";
+
+export function getPlayPosition() {
+  const width = window.innerWidth;
+  const height = window.innerHeight - HAND_HEIGHT - HUD_HEIGHT;
+
+  return {
+    x: width / 2,
+    y: height / 2,
+  };
+}
+
 export function expandAndShuffle(cards) {
   const library = {};
   const deck = [];

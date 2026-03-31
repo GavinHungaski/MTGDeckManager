@@ -64,6 +64,9 @@ export function usePlaytestState() {
     nextTurn: () => dispatch({ type: "NEXT_TURN" }),
 
     toggleTokenCreator: () => dispatch({ type: "TOGGLE_TOKEN_CREATOR" }),
+
+    createToken: (token) =>
+      dispatch({ type: "CREATE_TOKEN", payload: { token } }),
   };
 
   return { state, dispatch, actions };
