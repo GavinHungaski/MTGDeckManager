@@ -77,6 +77,8 @@ export function usePlaytestState() {
     createToken: (token) =>
       dispatch({ type: "CREATE_TOKEN", payload: { token } }),
 
+    addCounter: () => dispatch({ type: "ADD_COUNTER_BADGE" }),
+
     nextTurn: () => {
       dispatch({ type: "UNTAP_ALL" });
       dispatch({ type: "DRAW_CARD" });

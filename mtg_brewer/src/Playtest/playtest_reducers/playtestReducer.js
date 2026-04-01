@@ -10,6 +10,7 @@ export const initialState = {
   stacks: [],
   cardLibrary: {},
   players: [],
+  counters: [],
   activePlayerId: null,
   selectedInstanceIds: [],
   contextMenu: null,
@@ -335,6 +336,12 @@ export function playtestReducer(state, action) {
             stackId: null,
           },
         ],
+      };
+    }
+
+    case "ADD_COUNTER_BADGE": {
+      return {
+        ...state,
       };
     }
 

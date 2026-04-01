@@ -117,6 +117,17 @@ function ContextMenu() {
               <span className="button-top">To Command Zone</span>
             </button>
           )}
+
+          <hr style={{ width: "100%", border: "0.5px solid #444" }} />
+
+          <button
+            onClick={() => {
+              actions.addCounterBadge();
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">Add Counter</span>
+          </button>
         </>
       )}
       {type === "deck" && (
