@@ -51,7 +51,7 @@ function DeckSearcher() {
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "space-between",
           padding: "16px",
           gap: "4px",
           borderBottom: "1px solid black",
