@@ -21,7 +21,6 @@ function ContextMenu() {
 
   const card = state.cardLibrary[state.contextMenu.instanceId];
   const { type } = state.contextMenu;
-  console.log(type);
 
   return createPortal(
     <div
@@ -145,6 +144,14 @@ function ContextMenu() {
             }}
           >
             <span className="button-top">Look</span>
+          </button>
+          <button
+            onClick={() => {
+              actions.toggleDeckSearcher();
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">Reveal / Hide</span>
           </button>
         </>
       )}
