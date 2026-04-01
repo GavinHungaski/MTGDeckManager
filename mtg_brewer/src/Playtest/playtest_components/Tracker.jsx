@@ -22,14 +22,14 @@ function Tracker({ activePlayer, type }) {
       {/* Decrease buttons */}
       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
         <button
-          onClick={() => actions.setCount(activePlayer.id, -3, type)}
+          onClick={() => actions.setCount(activePlayer.id, -5, type)}
           style={btnSmall}
         >
           <span
             className="button-top"
             style={{ padding: "2px 8px ", color: "black" }}
           >
-            -3
+            -5
           </span>
         </button>
         <button
@@ -84,14 +84,14 @@ function Tracker({ activePlayer, type }) {
       {/* Increase buttons */}
       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
         <button
-          onClick={() => actions.setCount(activePlayer.id, +3, type)}
+          onClick={() => actions.setCount(activePlayer.id, +5, type)}
           style={btnSmall}
         >
           <span
             className="button-top"
             style={{ padding: "2px 8px ", color: "black" }}
           >
-            +3
+            +5
           </span>
         </button>
         <button
