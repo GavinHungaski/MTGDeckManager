@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext } from "react";
 import { PlaytestContext } from "../Playtest";
 import {
   CARD_BACK_IMAGE,
@@ -20,41 +20,22 @@ function DeckSearcher() {
     card.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const clickTimeout = useRef(null);
-
   const handleClick = (card) => {
-    if (clickTimeout.current) return;
-    clickTimeout.current = setTimeout(() => {
-      if (!revealedCards.has(card.instanceId)) {
-        setRevealedCards((prev) => new Set(prev).add(card.instanceId));
-      } else {
-        setSelectedCards((prev) => {
-          const next = new Set(prev);
-          if (next.has(card.instanceId)) {
-            next.delete(card.instanceId);
-          } else {
-            next.add(card.instanceId);
-          }
-          return next;
-        });
-      }
-      clickTimeout.current = null;
-    }, 0);
+    if (!revealedCards.has(card.instanceId)) {
+      setRevealedCards((prev) => new Set(prev).add(card.instanceId));
+    } else {
+      setSelectedCards((prev) => {
+        const next = new Set(prev);
+        if (next.has(card.instanceId)) {
+          next.delete(card.instanceId);
+        } else {
+          next.add(card.instanceId);
+        }
+        return next;
+      });
+    }
+    clickTimeout.current = null;
   };
-
-  // const handleDoubleClick = (card) => {
-  //   clearTimeout(clickTimeout.current);
-  //   clickTimeout.current = null;
-  //   if (!revealedCards.has(card.instanceId)) return;
-  //   actions.playSearchedCards([
-  //     {
-  //       instanceId: card.instanceId,
-  //       x: window.innerWidth / 2,
-  //       y: 200,
-  //     },
-  //   ]);
-  //   actions.toggleDeckSearcher();
-  // };
 
   const playSelected = () => {
     const cardsToPlay = deckCards
@@ -153,7 +134,6 @@ function DeckSearcher() {
           <div
             key={card.instanceId}
             onClick={() => handleClick(card)}
-            // onDoubleClick={() => handleDoubleClick(card)}
             style={{
               display: "flex",
               justifyContent: "center",
