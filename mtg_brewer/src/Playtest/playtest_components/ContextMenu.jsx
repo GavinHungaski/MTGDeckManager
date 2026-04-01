@@ -120,6 +120,18 @@ function ContextMenu() {
           )}
         </>
       )}
+      {type === "deck" && (
+        <>
+          <button
+            onClick={() => {
+              actions.drawCard();
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">Draw</span>
+          </button>
+        </>
+      )}
     </div>,
     document.body,
   );

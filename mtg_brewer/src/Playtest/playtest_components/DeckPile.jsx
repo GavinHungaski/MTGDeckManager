@@ -10,8 +10,14 @@ import {
 function DeckPile() {
   const { state, actions } = useContext(PlaytestContext);
 
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    actions.setContextMenu(e.clientX, e.clientY, "deck", null);
+  };
+
   return (
     <div
+      onContextMenu={handleContextMenu}
       style={{
         position: "fixed",
         bottom: `${HAND_HEIGHT * 2 + 10}px`,
