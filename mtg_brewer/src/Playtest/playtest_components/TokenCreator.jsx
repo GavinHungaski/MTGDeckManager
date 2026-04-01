@@ -158,7 +158,7 @@ function TokenCreator() {
             cursor: "pointer",
           }}
         >
-          ✖
+          <span className="button-top">✖</span>
         </button>
       </div>
 
