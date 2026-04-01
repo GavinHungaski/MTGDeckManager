@@ -10,7 +10,7 @@ export function usePlaytestState() {
   const actions = {
     drawCard: () => {
       dispatch({ type: "DRAW_CARD" });
-      dispatch({ type: "TOGGLE_REVEAL_DECK" });
+      dispatch({ type: "RESET_REVEAL_DECK" });
     },
 
     shuffle: () => dispatch({ type: "SHUFFLE_DECK" }),

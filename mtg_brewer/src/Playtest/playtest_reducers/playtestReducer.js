@@ -271,6 +271,13 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "RESET_REVEAL_DECK": {
+      return {
+        ...state,
+        deckTopRevealed: false,
+      };
+    }
+
     case "TOGGLE_TOKEN_CREATOR": {
       return {
         ...state,
