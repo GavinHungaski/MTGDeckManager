@@ -79,6 +79,7 @@ function DeckSearcher() {
               cursor: "pointer",
             }}
           >
+            {index + 1}
             <img
               src={
                 revealedCards.has(card.instanceId)
@@ -94,18 +95,6 @@ function DeckSearcher() {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
               }}
             />
-            {revealedCards.has(card.instanceId) && (
-              <div
-                style={{
-                  marginTop: "4px",
-                  fontSize: "12px",
-                  color: "#fff",
-                  textAlign: "center",
-                }}
-              >
-                {card.name}
-              </div>
-            )}
           </div>
         ))}
       </div>
