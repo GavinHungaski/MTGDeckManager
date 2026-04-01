@@ -103,7 +103,6 @@ function TokenCreator() {
     };
 
     actions.createToken(token);
-
     setSearch("");
     setShowDropdown(false);
     actions.toggleTokenCreator();
@@ -111,93 +110,121 @@ function TokenCreator() {
 
   return (
     <div
-      className="card-search"
       ref={wrapperRef}
       style={{
-        position: "absolute",
-        top: "100px",
+        position: "fixed",
+        top: "50%",
         left: "50%",
-        transform: "translateX(-50%)",
-        background: "var(--gold-dim)",
-        padding: "16px",
-        borderRadius: "8px",
-        zIndex: 999,
-        width: "300px",
-        minHeight: "300px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-        display: "flex",
-        flexDirection: "column",
-        overflowY: "auto",
+        transform: "translate(-50%, -50%)",
+        width: "400px",
+        maxWidth: "90%",
+        zIndex: 10000,
       }}
     >
-      <input
-        value={search}
-        placeholder="Search tokens and emblems..."
-        onChange={(e) => setSearch(e.target.value)}
-        onFocus={() => search && setShowDropdown(true)}
-        style={{ width: "90%", maxHeight: "25px", marginBottom: "8px" }}
-      />
-
-      {/* Close button */}
-      <button
-        onClick={actions.toggleTokenCreator}
+      {/* Search bar + X button */}
+      <div
         style={{
-          position: "absolute",
-          bottom: "10px",
-          alignSelf: "flex-end",
-          background: "transparent",
-          border: "none",
-          fontSize: "18px",
-          cursor: "pointer",
-          marginBottom: "8px",
+          display: "flex",
+          alignItems: "center",
+          background: "var(--gold-dim)",
+          borderRadius: "8px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          padding: "8px",
+          position: "relative",
+          zIndex: 10001,
         }}
       >
-        <span className="button-top">✖</span>
-      </button>
+        <input
+          type="text"
+          value={search}
+          placeholder="Search tokens and emblems..."
+          onChange={(e) => setSearch(e.target.value)}
+          onFocus={() => search && setShowDropdown(true)}
+          style={{
+            flex: 1,
+            padding: "8px",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+            outline: "none",
+          }}
+        />
+        <button
+          onClick={actions.toggleTokenCreator}
+          style={{
+            marginLeft: "8px",
+            background: "transparent",
+            border: "none",
+            fontSize: "18px",
+            cursor: "pointer",
+          }}
+        >
+          ✖
+        </button>
+      </div>
 
+      {/* Dropdown overlay */}
       {showDropdown && (
-        <div className="dropdown">
-          {loading && <div className="dropdown-item">Loading...</div>}
+        <div
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            right: 0,
+            background: "#1e1e1e",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            marginTop: "4px",
+            maxHeight: "300px",
+            overflowY: "auto",
+            zIndex: 10002,
+          }}
+        >
+          {loading && <div style={{ padding: "8px" }}>Loading...</div>}
 
-          {!loading && results.length > 0
-            ? results.map((card) => {
+          {!loading &&
+            (results.length > 0 ? (
+              results.map((card) => {
                 const image =
                   card.image_uris?.small ||
                   card.card_faces?.[0]?.image_uris?.small;
                 return (
                   <div
                     key={card.id}
-                    className="dropdown-item"
                     onClick={() => handleSelect(card)}
                     style={{
                       display: "flex",
                       alignItems: "center",
                       gap: "8px",
+                      padding: "6px 8px",
                       cursor: "pointer",
+                      borderBottom: "1px solid rgba(255,255,255,0.1)",
                     }}
                   >
                     {image && (
                       <img
                         src={image}
                         alt={card.name}
-                        className="dropdown-image"
+                        style={{
+                          width: "32px",
+                          height: "45px",
+                          borderRadius: "4px",
+                        }}
                       />
                     )}
-                    <span>{card.name}</span>
+                    <span style={{ color: "#fff" }}>{card.name}</span>
                     {card.power && (
-                      <>
-                        {"|"}
-                        <span>{card.power}</span> {"/"}
-                        <span>{card.toughness}</span>
-                      </>
+                      <span style={{ marginLeft: "auto", color: "#ccc" }}>
+                        {card.power}/{card.toughness}
+                      </span>
                     )}
                   </div>
                 );
               })
-            : !loading &&
-              search && (
-                <div className="dropdown-item">No tokens or emblems found</div>
-              )}
+            ) : (
+              <div style={{ padding: "8px", color: "#ccc" }}>
+                No tokens or emblems found
+              </div>
+            ))}
         </div>
       )}
     </div>
