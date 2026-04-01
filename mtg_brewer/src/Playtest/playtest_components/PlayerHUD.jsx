@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 function PlayerHUD() {
   const { state, actions } = useContext(PlaytestContext);
   const navigate = useNavigate();
+  const currentUrl = document.URL;
 
   const activePlayer = state.players.find((p) => p.id === state.activePlayerId);
 
@@ -33,7 +34,11 @@ function PlayerHUD() {
           gap: "10px",
         }}
       >
-        <button onClick={() => navigate(-1)}>
+        <button
+          onClick={() =>
+            navigate(location.pathname.replace(/\/playtest\/?$/, ""))
+          }
+        >
           <span className="button-top">Back to Deck</span>
         </button>
 
