@@ -19,18 +19,17 @@ function Tracker({ activePlayer, type }) {
         maxHeight: `${HUD_HEIGHT - 20}px`,
       }}
     >
-      {/* Decrease buttons */}
       <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
         <button
           onClick={() => actions.setCount(activePlayer.id, -5, type)}
-          style={btnSmall}
+          style={btnSmall(activePlayer[type] < 5)}
           disabled={activePlayer[type] < 5}
         >
           -5
         </button>
         <button
           onClick={() => actions.setCount(activePlayer.id, -1, type)}
-          style={btnSmall}
+          style={btnSmall(activePlayer[type] === 0)}
           disabled={activePlayer[type] === 0}
         >
           -1
@@ -77,13 +76,13 @@ function Tracker({ activePlayer, type }) {
       <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
         <button
           onClick={() => actions.setCount(activePlayer.id, +5, type)}
-          style={btnSmall}
+          style={btnSmall(false)}
         >
           +5
         </button>
         <button
           onClick={() => actions.setCount(activePlayer.id, +1, type)}
-          style={btnSmall}
+          style={btnSmall(false)}
         >
           +1
         </button>
@@ -92,16 +91,16 @@ function Tracker({ activePlayer, type }) {
   );
 }
 
-const btnSmall = {
+const btnSmall = (disabled = false) => ({
   fontSize: "12px",
   padding: "2px 4px",
   borderRadius: "4px",
   height: "25px",
   border: "none",
-  background: "#444",
-  color: "#fff",
-  cursor: "pointer",
+  background: disabled ? "#222" : "#444", // darker gray if disabled
+  color: disabled ? "#888" : "#fff", // lighter text if disabled
+  cursor: disabled ? "not-allowed" : "pointer",
   transition: "0.15s",
-};
+});
 
 export default Tracker;
