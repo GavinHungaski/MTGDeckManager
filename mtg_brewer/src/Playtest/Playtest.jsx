@@ -9,7 +9,6 @@ import ZonePanel from "./playtest_components/ZonePanel.jsx";
 import PlayerHUD from "./playtest_components/PlayerHUD.jsx";
 import ContextMenu from "./playtest_components/ContextMenu.jsx";
 import TokenCreator from "./playtest_components/TokenCreator.jsx";
-import CounterCreator from "./playtest_components/CounterCreator.jsx";
 import DeckSearcher from "./playtest_components/DeckSearcher.jsx";
 import "./Playtest.css";
 
@@ -84,7 +83,6 @@ function Playtest() {
       <ContextMenu />
       {state.deckSearcherOpen && <DeckSearcher />}
       {state.tokenCreatorOpen && <TokenCreator />}
-      {state.counterCreatorOpen && <CounterCreator />}
       <div className="container">
         <PlayerHUD />
         <Battlefield />
