@@ -47,7 +47,7 @@ function PlayerHUD() {
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
-          gap: "100px",
+          gap: "20px",
         }}
       >
         {/* LIFE TRACKER */}
@@ -55,6 +55,15 @@ function PlayerHUD() {
 
         {/* POISON TRACKER */}
         <Tracker activePlayer={activePlayer} type="poison" />
+
+        {/* EXPERIENCE TRACKER */}
+        <Tracker activePlayer={activePlayer} type="experience" />
+
+        {/* ENERGY TRACKER */}
+        <Tracker activePlayer={activePlayer} type="energy" />
+
+        {/* RAD TRACKER */}
+        <Tracker activePlayer={activePlayer} type="rad" />
       </div>
 
       {/* RIGHT: ACTIONS */}
