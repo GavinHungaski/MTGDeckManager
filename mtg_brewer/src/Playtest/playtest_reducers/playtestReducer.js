@@ -15,6 +15,7 @@ export const initialState = {
   contextMenu: null,
   viewingZone: null,
   tokenCreatorOpen: false,
+  deckSearcherOpen: false,
   turnNumber: 0,
 };
 
@@ -253,6 +254,13 @@ export function playtestReducer(state, action) {
         ...state,
         activePlayerId: next.id,
         turnNumber: state.turnNumber + 1,
+      };
+    }
+
+    case "TOGGLE_DECK_SEARCHER": {
+      return {
+        ...state,
+        deckSearcherOpen: !state.deckSearcherOpen,
       };
     }
 

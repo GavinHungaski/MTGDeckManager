@@ -64,6 +64,8 @@ export function usePlaytestState() {
 
     toggleTokenCreator: () => dispatch({ type: "TOGGLE_TOKEN_CREATOR" }),
 
+    toggleDeckSearcher: () => dispatch({ type: "TOGGLE_DECK_SEARCHER" }),
+
     createToken: (token) =>
       dispatch({ type: "CREATE_TOKEN", payload: { token } }),
 

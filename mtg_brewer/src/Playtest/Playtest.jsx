@@ -9,6 +9,7 @@ import ZonePanel from "./playtest_components/ZonePanel.jsx";
 import PlayerHUD from "./playtest_components/PlayerHUD.jsx";
 import ContextMenu from "./playtest_components/ContextMenu.jsx";
 import TokenCreator from "./playtest_components/TokenCreator.jsx";
+import DeckSearcher from "./playtest_components/DeckSearcher.jsx";
 import "./Playtest.css";
 
 export const PlaytestContext = createContext();
@@ -81,6 +82,7 @@ function Playtest() {
     <PlaytestContext.Provider value={{ state, dispatch, actions }}>
       <ContextMenu />
       {state.tokenCreatorOpen && <TokenCreator />}
+      {state.deckSearcherOpen && <DeckSearcher />}
       <div className="container">
         <PlayerHUD />
         <Battlefield />
