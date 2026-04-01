@@ -24,8 +24,7 @@ function BattlefieldCard({ card }) {
   const dragStartPos = useRef(null);
 
   const handleDragStart = (e) => {
-    const pos = e.target.getAbsolutePosition();
-    dragStartPos.current = { x: pos.x, y: pos.y };
+    dragStartPos.current = { x, y };
   };
 
   const handleDragEnd = (e) => {
