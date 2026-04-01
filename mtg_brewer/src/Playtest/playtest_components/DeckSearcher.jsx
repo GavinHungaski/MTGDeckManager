@@ -122,7 +122,10 @@ function DeckSearcher() {
           <span className="button-top">Reveal All</span>
         </button>
 
-        <button onClick={playSelected}>
+        <button
+          onClick={playSelected}
+          disabled={selectedCards.size === 0 ? true : false}
+        >
           <span className="button-top">Play Selected</span>
         </button>
 
