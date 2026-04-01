@@ -25,28 +25,31 @@ function PlayerHUD() {
         boxSizing: "border-box",
       }}
     >
-      <button onClick={() => navigate(-1)}>
-        <span className="button-top">Back to Deck</span>
-      </button>
-
-      {/* LEFT: Player Info */}
-      <div>
-        <strong>{activePlayer.name}</strong>
-      </div>
-
-      {/* TURN TRACKER */}
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           alignItems: "center",
-          gap: "4px",
+          gap: "10px",
         }}
       >
-        <div style={{ fontSize: "14px", fontWeight: "bold" }}>
-          Turn {state.turnNumber}
-        </div>
+        <button onClick={() => navigate(-1)}>
+          <span className="button-top">Back to Deck</span>
+        </button>
 
+        {/* LEFT: Player Info */}
+        <strong>{activePlayer.name}</strong>
+      </div>
+
+      {/* TRACKERS */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: "100px",
+        }}
+      >
         {/* LIFE TRACKER */}
         <Tracker activePlayer={activePlayer} type="life" />
 
@@ -56,6 +59,9 @@ function PlayerHUD() {
 
       {/* RIGHT: ACTIONS */}
       <div style={{ display: "flex", gap: "8px" }}>
+        <div style={{ fontSize: "14px", fontWeight: "bold" }}>
+          Turn {state.turnNumber}
+        </div>
         <button onClick={actions.nextTurn}>
           <span className="button-top">Next Turn</span>
         </button>
