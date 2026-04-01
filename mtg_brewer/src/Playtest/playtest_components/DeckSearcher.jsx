@@ -54,7 +54,6 @@ function DeckSearcher() {
           justifyContent: "center",
           padding: "16px",
           gap: "4px",
-          width: "100%",
           borderBottom: "1px solid black",
         }}
       >
@@ -75,6 +74,11 @@ function DeckSearcher() {
         {/* Reveal All Button */}
         <button onClick={() => revealAll()}>
           <span className="button-top">Reveal All</span>
+        </button>
+
+        {/* Close button */}
+        <button onClick={() => actions.toggleDeckSearcher()}>
+          <span className="button-top">✖</span>
         </button>
       </div>
 
@@ -121,22 +125,6 @@ function DeckSearcher() {
           </div>
         ))}
       </div>
-
-      {/* Close button */}
-      <button
-        onClick={() => actions.toggleDeckSearcher()}
-        style={{
-          position: "absolute",
-          bottom: "10px",
-          right: "10px",
-          background: "transparent",
-          border: "none",
-          fontSize: "18px",
-          cursor: "pointer",
-        }}
-      >
-        <span className="button-top">✖</span>
-      </button>
     </div>
   );
 }
