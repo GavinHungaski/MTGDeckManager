@@ -47,7 +47,13 @@ function DeckSearcher() {
       }}
     >
       <div
-        style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "4px",
+        }}
       >
         {/* Search input */}
         <input
@@ -56,10 +62,10 @@ function DeckSearcher() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
-            marginBottom: "12px",
-            padding: "8px",
             borderRadius: "4px",
             border: "1px solid #ccc",
+            minHeight: "25px",
+            minWidth: "200px",
           }}
         />
 
