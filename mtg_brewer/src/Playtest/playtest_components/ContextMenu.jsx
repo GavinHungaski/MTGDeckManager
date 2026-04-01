@@ -123,6 +123,15 @@ function ContextMenu() {
         <>
           <button
             onClick={() => {
+              actions.toggleDeckSearcher();
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">Look</span>
+          </button>
+          <hr style={{ width: "100%", border: "0.5px solid #444" }} />
+          <button
+            onClick={() => {
               actions.drawCard();
               actions.closeContextMenu();
             }}
@@ -136,14 +145,6 @@ function ContextMenu() {
             }}
           >
             <span className="button-top">Shuffle</span>
-          </button>
-          <button
-            onClick={() => {
-              actions.toggleDeckSearcher();
-              actions.closeContextMenu();
-            }}
-          >
-            <span className="button-top">Look</span>
           </button>
           <button
             onClick={() => {
