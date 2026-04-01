@@ -135,13 +135,15 @@ function TokenCreator() {
         placeholder="Search tokens and emblems..."
         onChange={(e) => setSearch(e.target.value)}
         onFocus={() => search && setShowDropdown(true)}
-        style={{ width: "100%", maxHeight: "25px", marginBottom: "8px" }}
+        style={{ width: "90%", maxHeight: "25px", marginBottom: "8px" }}
       />
 
       {/* Close button */}
       <button
         onClick={actions.toggleTokenCreator}
         style={{
+          position: "absolute",
+          bottom: "10px",
           alignSelf: "flex-end",
           background: "transparent",
           border: "none",
