@@ -35,7 +35,7 @@ function DeckSearcher() {
         left: "50%",
         transform: "translateX(-50%)",
         background: "var(--gold-dim)",
-        padding: "16px",
+        border: "1px solid black",
         borderRadius: "8px",
         zIndex: 999,
         width: "80%",
@@ -52,7 +52,10 @@ function DeckSearcher() {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
+          padding: "16px",
           gap: "4px",
+          width: "100%",
+          borderBottom: "1px solid black",
         }}
       >
         {/* Search input */}
@@ -82,6 +85,7 @@ function DeckSearcher() {
           gridTemplateColumns: `repeat(auto-fill, minmax(${CARD_WIDTH}px, 1fr))`,
           gap: "12px",
           overflowY: "auto",
+          padding: "16px",
           flex: 1,
           paddingBottom: "16px",
         }}
