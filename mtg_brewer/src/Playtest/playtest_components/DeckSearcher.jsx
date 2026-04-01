@@ -50,9 +50,38 @@ function DeckSearcher() {
     actions.toggleDeckSearcher();
   };
 
-  const handleScry = () => {};
-  const handleSurveil = () => {};
-  const handleDraw = () => {};
+  const handleDraw = () => {
+    const cardsToHand = deckCards.filter((card) =>
+      selectedCards.has(card.instanceId),
+    );
+    cardsToHand.forEach((card) => {
+      actions.returnToHand(card.instanceId);
+    });
+    setSelectedCards(new Set());
+    actions.toggleDeckSearcher();
+  };
+
+  const handleScry = () => {
+    const cardsToDeckBottom = deckCards.filter((card) =>
+      selectedCards.has(card.instanceId),
+    );
+    cardsToDeckBottom.forEach((card) => {
+      actions.returnToDeckBottom(card.instanceId);
+    });
+    setSelectedCards(new Set());
+    actions.toggleDeckSearcher();
+  };
+
+  const handleSurveil = () => {
+    const cardsToGraveyard = deckCards.filter((card) =>
+      selectedCards.has(card.instanceId),
+    );
+    cardsToGraveyard.forEach((card) => {
+      actions.sendToZone(card.instanceId, "graveyard");
+    });
+    setSelectedCards(new Set());
+    actions.toggleDeckSearcher();
+  };
 
   const revealAll = () => {
     setRevealedCards(new Set(deckCards.map((card) => card.instanceId)));

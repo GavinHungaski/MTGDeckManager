@@ -191,6 +191,7 @@ export function playtestReducer(state, action) {
       }
       return {
         ...state,
+        deck: state.deck.filter((id) => id !== instanceId),
         battlefield: state.battlefield.filter(
           (c) => c.instanceId !== instanceId,
         ),
@@ -203,6 +204,7 @@ export function playtestReducer(state, action) {
       const card = state.cardLibrary[instanceId];
       return {
         ...state,
+        deck: state.deck.filter((id) => id !== instanceId),
         battlefield: state.battlefield.filter(
           (c) => c.instanceId !== instanceId,
         ),
@@ -227,6 +229,7 @@ export function playtestReducer(state, action) {
       const card = state.cardLibrary[instanceId];
       return {
         ...state,
+        deck: state.deck.filter((id) => id !== instanceId),
         battlefield: state.battlefield.filter(
           (c) => c.instanceId !== instanceId,
         ),
