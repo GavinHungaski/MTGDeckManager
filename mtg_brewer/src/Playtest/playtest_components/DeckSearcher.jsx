@@ -39,22 +39,22 @@ function DeckSearcher() {
         });
       }
       clickTimeout.current = null;
-    }, 150);
+    }, 0);
   };
 
-  const handleDoubleClick = (card) => {
-    clearTimeout(clickTimeout.current);
-    clickTimeout.current = null;
-    if (!revealedCards.has(card.instanceId)) return;
-    actions.playSearchedCards([
-      {
-        instanceId: card.instanceId,
-        x: window.innerWidth / 2,
-        y: 200,
-      },
-    ]);
-    actions.toggleDeckSearcher();
-  };
+  // const handleDoubleClick = (card) => {
+  //   clearTimeout(clickTimeout.current);
+  //   clickTimeout.current = null;
+  //   if (!revealedCards.has(card.instanceId)) return;
+  //   actions.playSearchedCards([
+  //     {
+  //       instanceId: card.instanceId,
+  //       x: window.innerWidth / 2,
+  //       y: 200,
+  //     },
+  //   ]);
+  //   actions.toggleDeckSearcher();
+  // };
 
   const playSelected = () => {
     const cardsToPlay = deckCards
@@ -126,7 +126,9 @@ function DeckSearcher() {
           onClick={playSelected}
           disabled={selectedCards.size === 0 ? true : false}
         >
-          <span className="button-top">Play Selected</span>
+          <span className="button-top">
+            Play Selected {selectedCards.size > 0 && `${selectedCards.size}`}
+          </span>
         </button>
 
         {/* Close button */}
@@ -151,7 +153,7 @@ function DeckSearcher() {
           <div
             key={card.instanceId}
             onClick={() => handleClick(card)}
-            onDoubleClick={() => handleDoubleClick(card)}
+            // onDoubleClick={() => handleDoubleClick(card)}
             style={{
               display: "flex",
               justifyContent: "center",
