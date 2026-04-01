@@ -5,10 +5,12 @@ import {
   CARD_HEIGHT,
   CARD_WIDTH,
 } from "../playtest_utils/constants";
+import { getPlayPosition } from "../playtest_utils/deckUtils";
 
 function DeckSearcher() {
   const [search, setSearch] = useState("");
   const [revealedCards, setRevealedCards] = useState(new Set());
+  const [selectedCards, setSelectedCards] = useState(new Set());
   const { state, actions } = useContext(PlaytestContext);
 
   const deckCards = state.deck
@@ -19,8 +21,48 @@ function DeckSearcher() {
     card.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const revealCard = (card) => {
-    setRevealedCards((prev) => new Set(prev).add(card.instanceId));
+  const handleClick = (card) => {
+    if (!revealedCards.has(card.instanceId)) {
+      setRevealedCards((prev) => new Set(prev).add(card.instanceId));
+    } else {
+      setSelectedCards((prev) => {
+        const next = new Set(prev);
+        if (next.has(card.instanceId)) {
+          next.delete(card.instanceId);
+        } else {
+          next.add(card.instanceId);
+        }
+        return next;
+      });
+    }
+  };
+
+  const handleDoubleClick = (card) => {
+    const { posX, posY } = getPlayPosition();
+    actions.playSearchedCards({
+      cards: [
+        {
+          instanceId: card.instanceId,
+          x: posX,
+          y: posY,
+        },
+      ],
+    });
+  };
+
+  const playSelected = () => {
+    const { posX, posY } = getPlayPosition();
+    const cardsToPlay = deckCards
+      .filter((card) => selectedCards.has(card.instanceId))
+      .map((card, i) => ({
+        instanceId: card.instanceId,
+        x: posX + i * 20,
+        y: posY,
+      }));
+
+    actions.playSearchedCards({ cards: cardsToPlay });
+
+    setSelectedCards(new Set());
   };
 
   const revealAll = () => {
@@ -76,6 +118,10 @@ function DeckSearcher() {
           <span className="button-top">Reveal All</span>
         </button>
 
+        <button onClick={playSelected}>
+          <span className="button-top">Play Selected</span>
+        </button>
+
         {/* Close button */}
         <button onClick={() => actions.toggleDeckSearcher()}>
           <span className="button-top">✖</span>
@@ -97,7 +143,8 @@ function DeckSearcher() {
         {filteredCards.map((card, index) => (
           <div
             key={card.instanceId}
-            onClick={() => revealCard(card)}
+            onClick={() => handleClick(card)}
+            onDoubleClick={() => handleDoubleClick(card)}
             style={{
               display: "flex",
               justifyContent: "center",
@@ -120,6 +167,9 @@ function DeckSearcher() {
                 borderRadius: "12px",
                 objectFit: "cover",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                border: selectedCards.has(card.instanceId)
+                  ? "3px solid lime"
+                  : "2px solid transparent",
               }}
             />
           </div>

@@ -18,6 +18,9 @@ export function usePlaytestState() {
     playCard: (instanceId, x, y) =>
       dispatch({ type: "PLAY_CARD", payload: { instanceId, x, y } }),
 
+    playSearchedCardS: (cards) =>
+      dispatch({ type: "PLAY_CARD", payload: { cards } }),
+
     playCommander: (instanceId, x, y) =>
       dispatch({ type: "PLAY_COMMANDER", payload: { instanceId, x, y } }),
 

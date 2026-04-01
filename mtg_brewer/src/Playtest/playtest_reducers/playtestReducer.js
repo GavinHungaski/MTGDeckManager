@@ -84,6 +84,30 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "PLAY_SEARCHED_CARDS": {
+      const { cards } = action.payload;
+
+      const cardIds = cards.map((c) => c.instanceId);
+
+      return {
+        ...state,
+        deck: state.deck.filter((id) => !cardIds.includes(id)),
+        battlefield: [
+          ...state.battlefield,
+          ...cards.map(({ instanceId, x, y }) => ({
+            instanceId,
+            x,
+            y,
+            tapped: false,
+            facedown: false,
+            isToken: false,
+            counters: [],
+            stackId: null,
+          })),
+        ],
+      };
+    }
+
     case "PLAY_COMMANDER": {
       const { instanceId, x, y } = action.payload;
       return {
