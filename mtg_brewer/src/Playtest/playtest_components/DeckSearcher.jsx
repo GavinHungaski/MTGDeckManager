@@ -23,6 +23,10 @@ function DeckSearcher() {
     setRevealedCards((prev) => new Set(prev).add(card.instanceId));
   };
 
+  const revealAll = () => {
+    setRevealedCards(new Set(deckCards.map((card) => card.instanceId)));
+  };
+
   return (
     <div
       style={{
@@ -42,19 +46,28 @@ function DeckSearcher() {
         flexDirection: "column",
       }}
     >
-      {/* Search input */}
-      <input
-        type="text"
-        placeholder="Search deck..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{
-          marginBottom: "12px",
-          padding: "8px",
-          borderRadius: "4px",
-          border: "1px solid #ccc",
-        }}
-      />
+      <div
+        style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+      >
+        {/* Search input */}
+        <input
+          type="text"
+          placeholder="Search deck..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            marginBottom: "12px",
+            padding: "8px",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+          }}
+        />
+
+        {/* Reveal All Button */}
+        <button onClick={() => revealAll()}>
+          <span className="button-top">Reveal All</span>
+        </button>
+      </div>
 
       {/* Card grid */}
       <div
