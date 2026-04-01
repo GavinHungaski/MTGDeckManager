@@ -8,17 +8,20 @@ import {
 
 function DeckSearcher() {
   const [search, setSearch] = useState("");
+  const [revealedCards, setRevealedCards] = useState(new Set());
   const { state, actions } = useContext(PlaytestContext);
 
-  // Map deck IDs to full card objects, preserving order
   const deckCards = state.deck
     .map((id) => state.cardLibrary[id])
-    .filter(Boolean); // safety: remove missing cards
+    .filter(Boolean);
 
-  // Filter cards by search string
   const filteredCards = deckCards.filter((card) =>
     card.name.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const revealCard = (card) => {
+    setRevealedCards((prev) => new Set(prev).add(card.instanceId));
+  };
 
   return (
     <div
@@ -37,7 +40,6 @@ function DeckSearcher() {
         boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
         display: "flex",
         flexDirection: "column",
-        overflowY: "auto",
       }}
     >
       {/* Search input */}
@@ -54,25 +56,56 @@ function DeckSearcher() {
         }}
       />
 
-      {/* Card list */}
-      <div style={{ flex: 1, overflowY: "auto" }}>
+      {/* Card grid */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(auto-fill, minmax(${CARD_WIDTH}px, 1fr))`,
+          gap: "12px",
+          overflowY: "auto",
+          flex: 1,
+          paddingBottom: "16px",
+        }}
+      >
         {filteredCards.map((card, index) => (
           <div
             key={card.instanceId}
+            onClick={() => revealCard(card)}
             style={{
-              padding: "4px 8px",
-              borderBottom: "1px solid rgba(0,0,0,0.2)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              cursor: "pointer",
             }}
           >
             <img
-              src={CARD_BACK_IMAGE}
+              src={
+                revealedCards.has(card.instanceId)
+                  ? card.image
+                  : CARD_BACK_IMAGE
+              }
               alt={card.name}
               style={{
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
                 borderRadius: "12px",
+                objectFit: "cover",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
               }}
             />
+            {revealedCards.has(card.instanceId) && (
+              <div
+                style={{
+                  marginTop: "4px",
+                  fontSize: "12px",
+                  color: "#fff",
+                  textAlign: "center",
+                }}
+              >
+                {card.name}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -90,7 +123,7 @@ function DeckSearcher() {
           cursor: "pointer",
         }}
       >
-        ✖
+        <span className="button-top">✖</span>
       </button>
     </div>
   );
