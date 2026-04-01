@@ -50,6 +50,10 @@ function DeckSearcher() {
     actions.toggleDeckSearcher();
   };
 
+  const handleScry = () => {};
+  const handleSurveil = () => {};
+  const handleDraw = () => {};
+
   const revealAll = () => {
     setRevealedCards(new Set(deckCards.map((card) => card.instanceId)));
   };
@@ -103,12 +107,45 @@ function DeckSearcher() {
           <span className="button-top">Reveal All</span>
         </button>
 
+        {/* Play Cards Button */}
         <button
           onClick={playSelected}
           disabled={selectedCards.size === 0 ? true : false}
         >
           <span className="button-top">
             Play Selected {selectedCards.size > 0 && `${selectedCards.size}`}
+          </span>
+        </button>
+
+        {/* Send to Hand Button */}
+        <button
+          onClick={handleDraw}
+          disabled={selectedCards.size === 0 ? true : false}
+        >
+          <span className="button-top">
+            Send to Hand {selectedCards.size > 0 && `${selectedCards.size}`}
+          </span>
+        </button>
+
+        {/* Send to Bottom Button */}
+        <button
+          onClick={handleScry}
+          disabled={selectedCards.size === 0 ? true : false}
+        >
+          <span className="button-top">
+            Send to Deck Bottom{" "}
+            {selectedCards.size > 0 && `${selectedCards.size}`}
+          </span>
+        </button>
+
+        {/* Send to Graveyard Button */}
+        <button
+          onClick={handleSurveil}
+          disabled={selectedCards.size === 0 ? true : false}
+        >
+          <span className="button-top">
+            Send to Graveyard{" "}
+            {selectedCards.size > 0 && `${selectedCards.size}`}
           </span>
         </button>
 
