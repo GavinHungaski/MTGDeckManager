@@ -138,6 +138,14 @@ function ContextMenu() {
           >
             <span className="button-top">Shuffle</span>
           </button>
+          <button
+            onClick={() => {
+              actions.toggleDeckSearcher();
+              actions.closeContextMenu();
+            }}
+          >
+            <span className="button-top">Look</span>
+          </button>
         </>
       )}
     </div>,

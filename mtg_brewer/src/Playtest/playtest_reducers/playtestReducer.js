@@ -249,7 +249,6 @@ export function playtestReducer(state, action) {
     case "NEXT_TURN": {
       const idx = state.players.findIndex((p) => p.id === state.activePlayerId);
       const next = state.players[(idx + 1) % state.players.length];
-
       return {
         ...state,
         activePlayerId: next.id,
