@@ -113,7 +113,7 @@ function TokenCreator() {
       ref={wrapperRef}
       style={{
         position: "fixed",
-        top: "50%",
+        top: "35%",
         left: "50%",
         transform: "translate(-50%, -50%)",
         width: "400px",
@@ -167,7 +167,6 @@ function TokenCreator() {
         <div
           style={{
             position: "absolute",
-            top: "100%",
             left: 0,
             right: 0,
             background: "#1e1e1e",
