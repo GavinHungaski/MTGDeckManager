@@ -8,7 +8,10 @@ export function usePlaytestState() {
   const [state, dispatch] = useReducer(playtestReducer, initialState);
 
   const actions = {
-    drawCard: () => dispatch({ type: "DRAW_CARD" }),
+    drawCard: () => {
+      dispatch({ type: "DRAW_CARD" });
+      dispatch({ type: "TOGGLE_REVEAL_DECK" });
+    },
 
     shuffle: () => dispatch({ type: "SHUFFLE_DECK" }),
 
