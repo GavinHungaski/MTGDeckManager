@@ -11,37 +11,27 @@ function Tracker({ activePlayer, type }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: "12px",
-        padding: "8px 12px",
+        gap: "6px",
+        padding: "4px 6px",
         background: "#1e1e1e",
-        borderRadius: "10px",
+        borderRadius: "8px",
         width: "fit-content",
         maxHeight: `${HUD_HEIGHT - 20}px`,
       }}
     >
       {/* Decrease buttons */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
         <button
           onClick={() => actions.setCount(activePlayer.id, -5, type)}
           style={btnSmall}
         >
-          <span
-            className="button-top"
-            style={{ padding: "2px 8px ", color: "black" }}
-          >
-            -5
-          </span>
+          -5
         </button>
         <button
           onClick={() => actions.setCount(activePlayer.id, -1, type)}
           style={btnSmall}
         >
-          <span
-            className="button-top"
-            style={{ padding: "2px 8px ", color: "black" }}
-          >
-            -1
-          </span>
+          -1
         </button>
       </div>
 
@@ -51,7 +41,7 @@ function Tracker({ activePlayer, type }) {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "4px",
+          gap: "2px",
         }}
       >
         <div
@@ -66,15 +56,15 @@ function Tracker({ activePlayer, type }) {
         </div>
         <div
           style={{
-            fontSize: "28px",
+            fontSize: "30px",
             fontWeight: "bold",
-            minWidth: "60px",
+            minWidth: "50px",
             textAlign: "center",
             color: "#fff",
             background: "#2c2c2c",
-            padding: "10px 14px",
-            borderRadius: "8px",
-            boxShadow: "inset 0 0 6px rgba(0,0,0,0.6)",
+            padding: "6px 10px",
+            borderRadius: "6px",
+            boxShadow: "inset 0 0 4px rgba(0,0,0,0.5)",
           }}
         >
           {activePlayer[type]}
@@ -82,28 +72,18 @@ function Tracker({ activePlayer, type }) {
       </div>
 
       {/* Increase buttons */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
         <button
           onClick={() => actions.setCount(activePlayer.id, +5, type)}
           style={btnSmall}
         >
-          <span
-            className="button-top"
-            style={{ padding: "2px 8px ", color: "black" }}
-          >
-            +5
-          </span>
+          +5
         </button>
         <button
           onClick={() => actions.setCount(activePlayer.id, +1, type)}
           style={btnSmall}
         >
-          <span
-            className="button-top"
-            style={{ padding: "2px 8px ", color: "black" }}
-          >
-            +1
-          </span>
+          +1
         </button>
       </div>
     </div>
@@ -112,8 +92,9 @@ function Tracker({ activePlayer, type }) {
 
 const btnSmall = {
   fontSize: "12px",
-  padding: "4px 6px",
-  borderRadius: "6px",
+  padding: "2px 4px",
+  borderRadius: "4px",
+  height: "25px",
   border: "none",
   background: "#444",
   color: "#fff",
