@@ -108,30 +108,21 @@ function DeckSearcher() {
         </button>
 
         {/* Play Cards Button */}
-        <button
-          onClick={playSelected}
-          disabled={selectedCards.size === 0 ? true : false}
-        >
+        <button onClick={playSelected} disabled={selectedCards.size === 0}>
           <span className="button-top">
             Play Selected {selectedCards.size > 0 && `${selectedCards.size}`}
           </span>
         </button>
 
         {/* Send to Hand Button */}
-        <button
-          onClick={handleDraw}
-          disabled={selectedCards.size === 0 ? true : false}
-        >
+        <button onClick={handleDraw} disabled={selectedCards.size === 0}>
           <span className="button-top">
             Send to Hand {selectedCards.size > 0 && `${selectedCards.size}`}
           </span>
         </button>
 
         {/* Send to Bottom Button */}
-        <button
-          onClick={handleScry}
-          disabled={selectedCards.size === 0 ? true : false}
-        >
+        <button onClick={handleScry} disabled={selectedCards.size === 0}>
           <span className="button-top">
             Send to Deck Bottom{" "}
             {selectedCards.size > 0 && `${selectedCards.size}`}
@@ -139,10 +130,7 @@ function DeckSearcher() {
         </button>
 
         {/* Send to Graveyard Button */}
-        <button
-          onClick={handleSurveil}
-          disabled={selectedCards.size === 0 ? true : false}
-        >
+        <button onClick={handleSurveil} disabled={selectedCards.size === 0}>
           <span className="button-top">
             Send to Graveyard{" "}
             {selectedCards.size > 0 && `${selectedCards.size}`}
