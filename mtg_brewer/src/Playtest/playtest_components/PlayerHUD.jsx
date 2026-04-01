@@ -52,7 +52,7 @@ function PlayerHUD() {
       >
         {/* LIFE TRACKER */}
         <Tracker activePlayer={activePlayer} type="life" />
-
+        {"|"}
         {/* POISON TRACKER */}
         <Tracker activePlayer={activePlayer} type="poison" />
 
