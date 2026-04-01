@@ -268,7 +268,9 @@ export function playtestReducer(state, action) {
       return {
         ...state,
         players: state.players.map((p) =>
-          p.id === playerId ? { ...p, [tracker]: p[tracker] + delta } : p,
+          p.id === playerId
+            ? { ...p, [tracker]: Math.max(0, p[tracker] + delta) }
+            : p,
         ),
       };
     }
