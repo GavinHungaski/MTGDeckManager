@@ -236,7 +236,7 @@ export function playtestReducer(state, action) {
     }
 
     case "SET_COUNT": {
-      const { playerId, delta, tracker = "poison" } = action.payload;
+      const { playerId, delta, tracker } = action.payload;
       return {
         ...state,
         players: state.players.map((p) =>

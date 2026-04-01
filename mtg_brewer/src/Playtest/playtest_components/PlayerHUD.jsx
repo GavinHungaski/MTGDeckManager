@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { PlaytestContext } from "../Playtest";
 import { HUD_HEIGHT } from "../playtest_utils/constants";
+import Tracker from "./Tracker.jsx";
 import { useNavigate } from "react-router";
 
 function PlayerHUD() {
@@ -33,7 +34,7 @@ function PlayerHUD() {
         <strong>{activePlayer.name}</strong>
       </div>
 
-      {/* CENTER: TURN + LIFE TRACKER */}
+      {/* TURN TRACKER */}
       <div
         style={{
           display: "flex",
@@ -45,25 +46,12 @@ function PlayerHUD() {
         <div style={{ fontSize: "14px", fontWeight: "bold" }}>
           Turn {state.turnNumber}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <button onClick={() => actions.setCount(activePlayer.id, -5, "life")}>
-            <span className="button-top">-5</span>
-          </button>
-          <button onClick={() => actions.setCount(activePlayer.id, -1, "life")}>
-            <span className="button-top">-1</span>
-          </button>
-          <div
-            style={{ fontSize: "20px", minWidth: "40px", textAlign: "center" }}
-          >
-            {activePlayer.life}
-          </div>
-          <button onClick={() => actions.setCount(activePlayer.id, +1, "life")}>
-            <span className="button-top">+1</span>
-          </button>
-          <button onClick={() => actions.setCount(activePlayer.id, +5, "life")}>
-            <span className="button-top">+5</span>
-          </button>
-        </div>
+
+        {/* LIFE TRACKER */}
+        <Tracker activePlayer={activePlayer} type="life" />
+
+        {/* POISON TRACKER */}
+        <Tracker activePlayer={activePlayer} type="poison" />
       </div>
 
       {/* RIGHT: ACTIONS */}
