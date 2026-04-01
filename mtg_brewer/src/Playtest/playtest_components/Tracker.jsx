@@ -24,12 +24,14 @@ function Tracker({ activePlayer, type }) {
         <button
           onClick={() => actions.setCount(activePlayer.id, -5, type)}
           style={btnSmall}
+          disabled={activePlayer[type] < 5}
         >
           -5
         </button>
         <button
           onClick={() => actions.setCount(activePlayer.id, -1, type)}
           style={btnSmall}
+          disabled={activePlayer[type] === 0}
         >
           -1
         </button>
