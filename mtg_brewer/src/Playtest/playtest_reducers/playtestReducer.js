@@ -235,12 +235,12 @@ export function playtestReducer(state, action) {
       return { ...state, selectedInstanceIds: [] };
     }
 
-    case "SET_LIFE": {
-      const { playerId, delta } = action.payload;
+    case "SET_COUNT": {
+      const { playerId, delta, tracker = "poison" } = action.payload;
       return {
         ...state,
         players: state.players.map((p) =>
-          p.id === playerId ? { ...p, life: p.life + delta } : p,
+          p.id === playerId ? { ...p, [tracker]: p[tracker] + delta } : p,
         ),
       };
     }

@@ -52,6 +52,10 @@ function Playtest() {
             id: crypto.randomUUID(),
             name: "Player 1",
             life: 40,
+            experience: 0,
+            poison: 0,
+            energy: 0,
+            rad: 0,
             commanderDamage: {},
           },
         ];

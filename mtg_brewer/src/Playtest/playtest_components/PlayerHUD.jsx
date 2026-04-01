@@ -24,7 +24,9 @@ function PlayerHUD() {
         boxSizing: "border-box",
       }}
     >
-      <button onClick={() => navigate(-1)}><span className="button-top">Back to Deck</span></button>
+      <button onClick={() => navigate(-1)}>
+        <span className="button-top">Back to Deck</span>
+      </button>
 
       {/* LEFT: Player Info */}
       <div>
@@ -44,10 +46,10 @@ function PlayerHUD() {
           Turn {state.turnNumber}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <button onClick={() => actions.setLife(activePlayer.id, -5)}>
+          <button onClick={() => actions.setCount(activePlayer.id, -5, "life")}>
             <span className="button-top">-5</span>
           </button>
-          <button onClick={() => actions.setLife(activePlayer.id, -1)}>
+          <button onClick={() => actions.setCount(activePlayer.id, -1, "life")}>
             <span className="button-top">-1</span>
           </button>
           <div
@@ -55,10 +57,10 @@ function PlayerHUD() {
           >
             {activePlayer.life}
           </div>
-          <button onClick={() => actions.setLife(activePlayer.id, +1)}>
+          <button onClick={() => actions.setCount(activePlayer.id, +1, "life")}>
             <span className="button-top">+1</span>
           </button>
-          <button onClick={() => actions.setLife(activePlayer.id, +5)}>
+          <button onClick={() => actions.setCount(activePlayer.id, +5, "life")}>
             <span className="button-top">+5</span>
           </button>
         </div>

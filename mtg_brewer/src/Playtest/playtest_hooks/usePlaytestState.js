@@ -57,8 +57,8 @@ export function usePlaytestState() {
 
     clearSelection: () => dispatch({ type: "CLEAR_SELECTION" }),
 
-    setLife: (playerId, delta) =>
-      dispatch({ type: "SET_LIFE", payload: { playerId, delta } }),
+    setCount: (playerId, delta, tracker) =>
+      dispatch({ type: "SET_COUNT", payload: { playerId, delta, tracker } }),
 
     nextTurn: () => dispatch({ type: "NEXT_TURN" }),
 
