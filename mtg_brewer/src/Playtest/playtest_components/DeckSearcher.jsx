@@ -1,5 +1,10 @@
 import React, { useState, useContext } from "react";
 import { PlaytestContext } from "../Playtest";
+import {
+  CARD_BACK_IMAGE,
+  CARD_HEIGHT,
+  CARD_WIDTH,
+} from "../playtest_utils/constants";
 
 function DeckSearcher() {
   const [search, setSearch] = useState("");
@@ -59,7 +64,15 @@ function DeckSearcher() {
               borderBottom: "1px solid rgba(0,0,0,0.2)",
             }}
           >
-            {card.name}
+            <img
+              src={CARD_BACK_IMAGE}
+              alt={card.name}
+              style={{
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                borderRadius: "12px",
+              }}
+            />
           </div>
         ))}
       </div>
