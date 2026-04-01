@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { PlaytestContext } from "../Playtest";
+import { HUD_HEIGHT } from "../playtest_utils/constants";
 
 function Tracker({ activePlayer, type }) {
   const { actions } = useContext(PlaytestContext);
@@ -15,6 +16,7 @@ function Tracker({ activePlayer, type }) {
         background: "#1e1e1e",
         borderRadius: "10px",
         width: "fit-content",
+        maxHeight: `${HUD_HEIGHT - 20}px`,
       }}
     >
       {/* Decrease buttons */}
