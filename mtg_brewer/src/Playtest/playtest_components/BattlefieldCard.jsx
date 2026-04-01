@@ -24,11 +24,15 @@ function BattlefieldCard({ card }) {
   const dragStartPos = useRef(null);
 
   const handleDragStart = (e) => {
-    dragStartPos.current = { x, y };
+    const pos = e.target.getAbsolutePosition();
+    dragStartPos.current = { x: pos.x, y: pos.y };
   };
 
   const handleDragEnd = (e) => {
-    actions.moveCard(instanceId, e.target.x(), e.target.y());
+    const node = e.target;
+    const pos = node.getAbsolutePosition();
+
+    actions.moveCard(instanceId, pos.x, pos.y);
   };
 
   const handleContextMenu = (e) => {

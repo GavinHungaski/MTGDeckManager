@@ -1,11 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { PlaytestContext } from "../Playtest";
 import {
   CARD_BACK_IMAGE,
   CARD_HEIGHT,
   CARD_WIDTH,
 } from "../playtest_utils/constants";
-import { getPlayPosition } from "../playtest_utils/deckUtils";
 
 function DeckSearcher() {
   const [search, setSearch] = useState("");
@@ -21,48 +20,53 @@ function DeckSearcher() {
     card.name.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const clickTimeout = useRef(null);
+
   const handleClick = (card) => {
-    if (!revealedCards.has(card.instanceId)) {
-      setRevealedCards((prev) => new Set(prev).add(card.instanceId));
-    } else {
-      setSelectedCards((prev) => {
-        const next = new Set(prev);
-        if (next.has(card.instanceId)) {
-          next.delete(card.instanceId);
-        } else {
-          next.add(card.instanceId);
-        }
-        return next;
-      });
-    }
+    if (clickTimeout.current) return;
+    clickTimeout.current = setTimeout(() => {
+      if (!revealedCards.has(card.instanceId)) {
+        setRevealedCards((prev) => new Set(prev).add(card.instanceId));
+      } else {
+        setSelectedCards((prev) => {
+          const next = new Set(prev);
+          if (next.has(card.instanceId)) {
+            next.delete(card.instanceId);
+          } else {
+            next.add(card.instanceId);
+          }
+          return next;
+        });
+      }
+      clickTimeout.current = null;
+    }, 150);
   };
 
   const handleDoubleClick = (card) => {
-    const { posX, posY } = getPlayPosition();
-    actions.playSearchedCards({
-      cards: [
-        {
-          instanceId: card.instanceId,
-          x: posX,
-          y: posY,
-        },
-      ],
-    });
+    clearTimeout(clickTimeout.current);
+    clickTimeout.current = null;
+    if (!revealedCards.has(card.instanceId)) return;
+    actions.playSearchedCards([
+      {
+        instanceId: card.instanceId,
+        x: window.innerWidth / 2,
+        y: 200,
+      },
+    ]);
+    actions.toggleDeckSearcher();
   };
 
   const playSelected = () => {
-    const { posX, posY } = getPlayPosition();
     const cardsToPlay = deckCards
       .filter((card) => selectedCards.has(card.instanceId))
       .map((card, i) => ({
         instanceId: card.instanceId,
-        x: posX + i * 20,
-        y: posY,
+        x: window.innerWidth / 2,
+        y: 200,
       }));
-
-    actions.playSearchedCards({ cards: cardsToPlay });
-
+    actions.playSearchedCards(cardsToPlay);
     setSelectedCards(new Set());
+    actions.toggleDeckSearcher();
   };
 
   const revealAll = () => {

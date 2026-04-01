@@ -71,7 +71,7 @@ export function playtestReducer(state, action) {
         battlefield: [
           ...state.battlefield,
           {
-            instanceId,
+            instanceId: String(instanceId),
             x,
             y,
             tapped: false,
@@ -86,16 +86,14 @@ export function playtestReducer(state, action) {
 
     case "PLAY_SEARCHED_CARDS": {
       const { cards } = action.payload;
-
-      const cardIds = cards.map((c) => c.instanceId);
-
+      const cardIdSet = new Set(cards.map((c) => c.instanceId));
       return {
         ...state,
-        deck: state.deck.filter((id) => !cardIds.includes(id)),
+        deck: state.deck.filter((id) => !cardIdSet.has(id)),
         battlefield: [
           ...state.battlefield,
           ...cards.map(({ instanceId, x, y }) => ({
-            instanceId,
+            instanceId: String(instanceId),
             x,
             y,
             tapped: false,
@@ -116,7 +114,7 @@ export function playtestReducer(state, action) {
         battlefield: [
           ...state.battlefield,
           {
-            instanceId,
+            instanceId: String(instanceId),
             x,
             y,
             tapped: false,
@@ -131,6 +129,7 @@ export function playtestReducer(state, action) {
 
     case "MOVE_CARD": {
       const { instanceId, x, y } = action.payload;
+      console.log("moving:", instanceId);
       return {
         ...state,
         battlefield: state.battlefield.map((c) =>
