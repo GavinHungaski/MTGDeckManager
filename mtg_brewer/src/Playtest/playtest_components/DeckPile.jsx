@@ -15,6 +15,13 @@ function DeckPile() {
     actions.setContextMenu(e.clientX, e.clientY, "deck", null);
   };
 
+  const top_card_img = () => {
+    if (!state.deck || state.deck.length === 0) return null;
+    const topCardId = state.deck[0];
+    const card = state.cardLibrary[topCardId];
+    return card?.image || null;
+  };
+
   return (
     <div
       onContextMenu={handleContextMenu}
@@ -39,7 +46,7 @@ function DeckPile() {
         {state.deck.length}
       </span>
       <img
-        src={CARD_BACK_IMAGE}
+        src={state.deckTopRevealed ? top_card_img() : CARD_BACK_IMAGE}
         alt="Deck"
         onClick={() => actions.drawCard()}
         style={{

@@ -147,7 +147,7 @@ function ContextMenu() {
           </button>
           <button
             onClick={() => {
-              actions.toggleDeckSearcher();
+              actions.toggleRevealDeck();
               actions.closeContextMenu();
             }}
           >

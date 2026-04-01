@@ -16,6 +16,7 @@ export const initialState = {
   viewingZone: null,
   tokenCreatorOpen: false,
   deckSearcherOpen: false,
+  deckTopRevealed: false,
   turnNumber: 0,
 };
 
@@ -260,6 +261,13 @@ export function playtestReducer(state, action) {
       return {
         ...state,
         deckSearcherOpen: !state.deckSearcherOpen,
+      };
+    }
+
+    case "TOGGLE_REVEAL_DECK": {
+      return {
+        ...state,
+        deckTopRevealed: !state.deckTopRevealed,
       };
     }
 
