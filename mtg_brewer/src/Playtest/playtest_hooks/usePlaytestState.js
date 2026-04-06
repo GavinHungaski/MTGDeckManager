@@ -73,6 +73,8 @@ export function usePlaytestState() {
 
     toggleTokenCreator: () => dispatch({ type: "TOGGLE_TOKEN_CREATOR" }),
 
+    toggleCardCreator: () => dispatch({ type: "TOGGLE_CARD_CREATOR" }),
+
     toggleDeckSearcher: () => dispatch({ type: "TOGGLE_DECK_SEARCHER" }),
 
     toggleRevealDeck: () => dispatch({ type: "TOGGLE_REVEAL_DECK" }),

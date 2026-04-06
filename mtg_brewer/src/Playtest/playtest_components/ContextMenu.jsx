@@ -120,6 +120,18 @@ function ContextMenu() {
             </button>
           )}
 
+          {card?.removable && (
+            <button
+              style={{ borderTop: "1px solid #555", marginTop: "4px" }}
+              onClick={() => {
+                actions.sendToZone(state.contextMenu.instanceId, "commandZone");
+                actions.closeContextMenu();
+              }}
+            >
+              <span className="button-top">Remove from Game</span>
+            </button>
+          )}
+
           <hr style={{ width: "100%", border: "0.5px solid #444" }} />
 
           <button

@@ -83,6 +83,10 @@ function PlayerHUD() {
         <button onClick={actions.toggleTokenCreator}>
           <span className="button-top">Create Token / Emblem</span>
         </button>
+
+        <button onClick={actions.toggleCardCreator}>
+          <span className="button-top">Add Card</span>
+        </button>
       </div>
     </div>
   );

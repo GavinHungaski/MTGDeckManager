@@ -16,6 +16,7 @@ export const initialState = {
   contextMenu: null,
   viewingZone: null,
   tokenCreatorOpen: false,
+  cardCreatorOpen: false,
   deckSearcherOpen: false,
   deckTopRevealed: false,
   turnNumber: 0,
@@ -338,9 +339,15 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "TOGGLE_CARD_CREATOR": {
+      return {
+        ...state,
+        cardCreatorOpen: !state.cardCreatorOpen,
+      };
+    }
+
     case "CREATE_TOKEN": {
       const { token } = action.payload;
-
       return {
         ...state,
         cardLibrary: {
@@ -365,7 +372,6 @@ export function playtestReducer(state, action) {
 
     case "ADD_COUNTER": {
       const { instanceId } = action.payload;
-
       return {
         ...state,
         battlefield: state.battlefield.map((c) =>

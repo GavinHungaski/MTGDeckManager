@@ -10,6 +10,7 @@ import PlayerHUD from "./playtest_components/PlayerHUD.jsx";
 import ContextMenu from "./playtest_components/ContextMenu.jsx";
 import TokenCreator from "./playtest_components/TokenCreator.jsx";
 import DeckSearcher from "./playtest_components/DeckSearcher.jsx";
+import CardCreator from "./playtest_components/CardCreator.jsx";
 import "./Playtest.css";
 
 export const PlaytestContext = createContext();
@@ -83,6 +84,7 @@ function Playtest() {
       <ContextMenu />
       {state.deckSearcherOpen && <DeckSearcher />}
       {state.tokenCreatorOpen && <TokenCreator />}
+      {state.cardCreatorOpen && <CardCreator />}
       <div className="container">
         <PlayerHUD />
         <Battlefield />
