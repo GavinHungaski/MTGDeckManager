@@ -10,6 +10,7 @@ function Battlefield() {
     width: window.innerWidth,
     height: window.innerHeight - HAND_HEIGHT - HUD_HEIGHT,
   });
+
   const stageRef = useRef(null);
 
   useEffect(() => {
@@ -21,10 +22,7 @@ function Battlefield() {
     };
 
     window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleStageClick = (e) => {
@@ -39,7 +37,6 @@ function Battlefield() {
       ref={stageRef}
       width={windowSize.width}
       height={windowSize.height}
-      pixelRatio={window.devicePixelRatio}
       onClick={handleStageClick}
       onContextMenu={(e) => {
         e.evt.preventDefault();

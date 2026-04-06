@@ -12,6 +12,7 @@ import CounterBadge from "./CounterBadge";
 function BattlefieldCard({ card }) {
   const { state, actions } = useContext(PlaytestContext);
   const { instanceId, x, y, tapped, flipped } = card;
+
   const cardData = state.cardLibrary[instanceId];
   const [image] = useImage(cardData?.image);
   const [back_image] = useImage(cardData?.back_image || CARD_BACK_IMAGE);
@@ -24,14 +25,12 @@ function BattlefieldCard({ card }) {
 
   const dragStartPos = useRef(null);
 
-  const handleDragStart = (e) => {
+  const handleDragStart = () => {
     dragStartPos.current = { x, y };
   };
 
   const handleDragEnd = (e) => {
-    const node = e.target;
-    const pos = node.getAbsolutePosition();
-
+    const pos = e.target.getAbsolutePosition();
     actions.moveCard(instanceId, pos.x, pos.y);
   };
 
@@ -71,15 +70,9 @@ function BattlefieldCard({ card }) {
           width={CARD_WIDTH}
           height={CARD_HEIGHT}
           cornerRadius={10}
-          imageSmoothingEnabled={false}
         />
       ) : (
-        <Rect
-          width={CARD_WIDTH}
-          height={CARD_HEIGHT}
-          fill="#1a1a2e"
-          cornerRadius={10}
-        />
+        <Rect width={CARD_WIDTH} height={CARD_HEIGHT} fill="#1a1a2e" />
       )}
 
       {card.counters.map((counter, index) => (
@@ -98,7 +91,6 @@ function BattlefieldCard({ card }) {
           stroke="#00bfff"
           strokeWidth={2}
           fill="transparent"
-          cornerRadius={4}
           listening={false}
         />
       )}

@@ -354,6 +354,8 @@ export function playtestReducer(state, action) {
                     id: crypto.randomUUID(),
                     type: "+1/+1",
                     value: 1,
+                    x: null,
+                    y: null,
                   },
                 ],
               }
