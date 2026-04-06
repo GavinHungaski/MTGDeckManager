@@ -51,6 +51,14 @@ export function playtestReducer(state, action) {
       return { ...state, deck: rest, hand: [...state.hand, top] };
     }
 
+    case "REORDER_HAND": {
+      const { startIndex, endIndex } = action.payload;
+      const newHand = [...state.hand];
+      const [removed] = newHand.splice(startIndex, 1);
+      newHand.splice(endIndex, 0, removed);
+      return { ...state, hand: newHand };
+    }
+
     case "DRAW_N": {
       const n = Math.min(action.payload.n, state.deck.length);
       const drawn = state.deck.slice(0, n);

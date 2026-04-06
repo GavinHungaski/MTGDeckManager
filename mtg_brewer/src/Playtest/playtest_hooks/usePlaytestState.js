@@ -13,6 +13,9 @@ export function usePlaytestState() {
       dispatch({ type: "RESET_REVEAL_DECK" });
     },
 
+    reorderHand: (startIndex, endIndex) =>
+      dispatch({ type: "REORDER_HAND", payload: { startIndex, endIndex } }),
+
     shuffle: () => dispatch({ type: "SHUFFLE_DECK" }),
 
     playCard: (instanceId, x, y) =>
