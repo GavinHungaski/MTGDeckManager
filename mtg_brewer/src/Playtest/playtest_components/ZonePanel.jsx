@@ -149,10 +149,12 @@ function ZonePanel() {
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
         }}
       >
-        <ScrollIndicator
-          length={state.exile.length}
-          currentIndex={safeIndex(exileIndex, state.exile.length)}
-        />
+        {exileOut && (
+          <ScrollIndicator
+            length={state.exile.length}
+            currentIndex={safeIndex(exileIndex, state.exile.length)}
+          />
+        )}
         {state.exile.length === 0 && <span style={{ zIndex: 97 }}>Exile</span>}
         {state.exile.length > 0 &&
           (() => {
@@ -218,10 +220,12 @@ function ZonePanel() {
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
         }}
       >
-        <ScrollIndicator
-          length={state.commandZone.length}
-          currentIndex={safeIndex(commandIndex, state.commandZone.length)}
-        />
+        {commandOut && (
+          <ScrollIndicator
+            length={state.commandZone.length}
+            currentIndex={safeIndex(commandIndex, state.commandZone.length)}
+          />
+        )}
         {state.commandZone.length === 0 && (
           <span style={{ zIndex: 97 }}>Command Zone</span>
         )}
