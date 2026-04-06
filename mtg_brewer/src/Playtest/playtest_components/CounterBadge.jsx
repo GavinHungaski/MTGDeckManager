@@ -1,17 +1,10 @@
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { Group, Rect, Text } from "react-konva";
-import { useContext, useState, useEffect, useRef } from "react";
+import { Html } from "react-konva-utils";
 import { PlaytestContext } from "../Playtest";
 import { CARD_WIDTH } from "../playtest_utils/constants";
-import { createPortal } from "react-dom";
 
-const COUNTER_TYPES = [
-  "+1/+1",
-  "-1/-1",
-  "Loyalty",
-  "Charge",
-  "Energy",
-  "Custom",
-];
+const COUNTER_TYPES = ["+1/+1", "-1/-1", "Loyalty", "Charge", "Generic"];
 
 function CounterBadge({ counter, instanceId, index }) {
   const { actions } = useContext(PlaytestContext);
@@ -21,103 +14,38 @@ function CounterBadge({ counter, instanceId, index }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [hoveredBtn, setHoveredBtn] = useState(null);
-  const [screenPos, setScreenPos] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
 
-  const groupRef = useRef(null);
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
 
   useEffect(() => setInputValue(counter.value), [counter.value]);
 
+  // Handle clicking outside
   useEffect(() => {
-    if (!editing) return;
+    if (!editing && !dropdownOpen) return;
+
     const handleClickOutside = (e) => {
-      if (inputRef.current && !inputRef.current.contains(e.target)) {
+      if (editing && inputRef.current && !inputRef.current.contains(e.target)) {
         commitInput();
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [editing, inputValue]);
-
-  useEffect(() => {
-    if (!dropdownOpen) return;
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (
+        dropdownOpen &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target)
+      ) {
         setDropdownOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [dropdownOpen]);
+  }, [editing, dropdownOpen, inputValue]);
 
   const defaultX = CARD_WIDTH - 55;
   const defaultY = 10 + index * 32;
   const x = counter.x ?? defaultX;
   const y = counter.y ?? defaultY;
-
-  const getLocalPos = (absX, absY) => {
-    const node = groupRef.current;
-    const parent = node.getParent();
-    const transform = parent.getAbsoluteTransform().copy().invert();
-    return transform.point({ x: absX, y: absY });
-  };
-
-  const getScreenPos = () => {
-    const stage = groupRef.current?.getStage();
-    const abs = groupRef.current?.getAbsolutePosition();
-    if (!stage || !abs) return { x: 0, y: 0 };
-    const rect = stage.container().getBoundingClientRect();
-    return { x: rect.left + abs.x, y: rect.top + abs.y };
-  };
-
-  const openEditor = () => {
-    if (dragging) return;
-    requestAnimationFrame(() => {
-      setScreenPos(getScreenPos());
-      setEditing(true);
-    });
-  };
-
-  const openDropdown = () => {
-    if (dragging) return;
-    requestAnimationFrame(() => {
-      setScreenPos(getScreenPos());
-      setDropdownOpen(true);
-    });
-  };
-
-  const increment = (e) => {
-    if (dragging) return;
-    e.cancelBubble = true;
-    e.evt?.stopPropagation();
-    actions.updateCounter(instanceId, counter.id, { value: counter.value + 1 });
-  };
-
-  const decrement = (e) => {
-    if (dragging) return;
-    e.cancelBubble = true;
-    e.evt?.stopPropagation();
-    actions.updateCounter(instanceId, counter.id, {
-      value: Math.max(0, counter.value - 1),
-    });
-  };
-
-  const handleDragEnd = (e) => {
-    e.cancelBubble = true;
-    e.evt?.stopPropagation();
-
-    const abs = e.target.getAbsolutePosition();
-    const local = getLocalPos(abs.x, abs.y);
-    actions.updateCounter(instanceId, counter.id, { x: local.x, y: local.y });
-
-    setTimeout(() => setDragging(false), 100);
-  };
-
-  const handleDragMove = () => {
-    if (!dragging) setDragging(true);
-  };
 
   const handleInputChange = (e) =>
     setInputValue(e.target.value.replace(/[^0-9]/g, ""));
@@ -129,209 +57,179 @@ function CounterBadge({ counter, instanceId, index }) {
     setEditing(false);
   };
 
-  const handleRemove = (e) => {
-    e.evt.preventDefault();
-    e.cancelBubble = true;
-    e.evt?.stopPropagation();
+  const handleDragEnd = (e) => {
+    e.cancelBubble = true; // Stop Konva bubble
+    const node = e.target;
+    const parent = node.getParent();
+    const transform = parent.getAbsoluteTransform().copy().invert();
+    const abs = node.getAbsolutePosition();
+    const local = transform.point(abs);
 
-    if (window.confirm(`Remove ${counter.type} counter?`)) {
-      actions.removeCounter(instanceId, counter.id);
-    }
+    actions.updateCounter(instanceId, counter.id, { x: local.x, y: local.y });
+    setTimeout(() => setDragging(false), 50);
   };
 
   return (
-    <>
-      <Group
-        ref={groupRef}
-        x={x}
-        y={y}
-        draggable
-        dragDistance={5}
-        onDragStart={(e) => {
+    <Group
+      x={x}
+      y={y}
+      draggable
+      onDragStart={(e) => {
+        e.cancelBubble = true;
+        setDragging(true);
+      }}
+      onDragEnd={handleDragEnd}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => {
+        setHovered(false);
+        setHoveredBtn(null);
+      }}
+      onContextMenu={(e) => {
+        e.evt.preventDefault();
+        e.cancelBubble = true;
+        if (window.confirm(`Remove ${counter.type} counter?`)) {
+          actions.removeCounter(instanceId, counter.id);
+        }
+      }}
+    >
+      {/* 1. STABLE KONVA NODES (These never change structure) */}
+      <Rect
+        width={50}
+        height={28}
+        cornerRadius={6}
+        fill={hovered ? "#333" : "#222"}
+        stroke={hovered ? "#00bfff" : "#888"}
+        strokeWidth={1}
+      />
+
+      <Text
+        text={String(counter.value)}
+        x={18}
+        y={2}
+        fontSize={12}
+        fill={hoveredBtn === "value" ? "#00ffcc" : "white"}
+        onMouseEnter={() => setHoveredBtn("value")}
+        onMouseLeave={() => setHoveredBtn(null)}
+        onClick={(e) => {
+          e.cancelBubble = true; // CRITICAL: Stop stage from de-selecting
+          if (!dragging) setEditing(true);
+        }}
+      />
+
+      <Text
+        text={counter.type}
+        x={4}
+        y={14}
+        fontSize={9}
+        fill={hoveredBtn === "label" ? "#00bfff" : "#ccc"}
+        onMouseEnter={() => setHoveredBtn("label")}
+        onMouseLeave={() => setHoveredBtn(null)}
+        onClick={(e) => {
           e.cancelBubble = true;
-          e.evt?.stopPropagation();
-          setDragging(true);
+          if (!dragging) setDropdownOpen(true);
         }}
-        onDragMove={handleDragMove}
-        onDragEnd={handleDragEnd}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => {
-          setHovered(false);
-          setHoveredBtn(null);
-        }}
-        onMouseDown={(e) => {
+      />
+
+      <Text
+        text="+"
+        x={38}
+        y={2}
+        fontSize={12}
+        fill={hoveredBtn === "+" ? "#00ff00" : "green"}
+        onClick={(e) => {
           e.cancelBubble = true;
-          e.evt?.stopPropagation();
+          actions.updateCounter(instanceId, counter.id, {
+            value: counter.value + 1,
+          });
         }}
-        onContextMenu={handleRemove}
-        cursor={dragging ? "grabbing" : "grab"}
-      >
-        {/* BACKGROUND */}
-        <Rect
-          width={50}
-          height={28}
-          cornerRadius={6}
-          fill={hovered ? "#333" : "#222"}
-          stroke={hovered ? "#00bfff" : "#888"}
-          strokeWidth={1}
-        />
+      />
 
-        {/* VALUE */}
-        <Text
-          text={String(counter.value)}
-          x={18}
-          y={2}
-          fontSize={12}
-          fill={hoveredBtn === "value" ? "#00ffcc" : "white"}
-          onMouseEnter={() => setHoveredBtn("value")}
-          onMouseLeave={() => setHoveredBtn(null)}
-          onMouseDown={(e) => {
-            e.cancelBubble = true;
-            e.evt?.stopPropagation();
-          }}
-          onClick={(e) => {
-            if (dragging) return;
-            e.cancelBubble = true;
-            e.evt?.stopPropagation();
-            openEditor();
-          }}
-        />
+      <Text
+        text="-"
+        x={4}
+        y={2}
+        fontSize={12}
+        fill={hoveredBtn === "-" ? "#ff4444" : "red"}
+        onClick={(e) => {
+          e.cancelBubble = true;
+          actions.updateCounter(instanceId, counter.id, {
+            value: Math.max(0, counter.value - 1),
+          });
+        }}
+      />
 
-        {/* LABEL / TYPE */}
-        <Text
-          text={counter.type}
-          x={4}
-          y={14}
-          fontSize={9}
-          fill={hoveredBtn === "label" ? "#00bfff" : "#ccc"}
-          onMouseEnter={() => setHoveredBtn("label")}
-          onMouseLeave={() => setHoveredBtn(null)}
-          onMouseDown={(e) => {
-            e.cancelBubble = true;
-            e.evt?.stopPropagation();
-          }}
-          onClick={(e) => {
-            if (dragging) return;
-            e.cancelBubble = true;
-            e.evt?.stopPropagation();
-            openDropdown();
-          }}
-        />
-
-        {/* + BUTTON */}
-        <Text
-          text="+"
-          x={38}
-          y={2}
-          fontSize={12}
-          fill={hoveredBtn === "+" ? "#00ff00" : "green"}
-          onMouseEnter={() => setHoveredBtn("+")}
-          onMouseLeave={() => setHoveredBtn(null)}
-          onMouseDown={(e) => {
-            e.cancelBubble = true;
-            e.evt?.stopPropagation();
-          }}
-          onClick={increment}
-        />
-
-        {/* - BUTTON */}
-        <Text
-          text="-"
-          x={4}
-          y={2}
-          fontSize={12}
-          fill={hoveredBtn === "-" ? "#ff4444" : "red"}
-          onMouseEnter={() => setHoveredBtn("-")}
-          onMouseLeave={() => setHoveredBtn(null)}
-          onMouseDown={(e) => {
-            e.cancelBubble = true;
-            e.evt?.stopPropagation();
-          }}
-          onClick={decrement}
-        />
-      </Group>
-
-      {/* INPUT */}
-      {editing &&
-        createPortal(
+      {/* 2. STABLE HTML OVERLAY (Always in tree, CSS visibility toggled) */}
+      <Html divProps={{ style: { pointerEvents: "none" } }}>
+        <div style={{ position: "relative", pointerEvents: "auto" }}>
+          {/* INPUT EDITOR */}
           <input
             ref={inputRef}
-            autoFocus
             value={inputValue}
             onChange={handleInputChange}
             onBlur={commitInput}
             onKeyDown={(e) => {
               if (e.key === "Enter") commitInput();
-              if (e.key === "Escape") {
-                setInputValue(counter.value);
-                setEditing(false);
-              }
+              if (e.key === "Escape") setEditing(false);
             }}
-            onMouseDown={(e) => e.stopPropagation()}
             style={{
-              position: "fixed",
-              top: screenPos.y,
-              left: screenPos.x,
+              display: editing ? "block" : "none",
+              position: "absolute",
+              top: 0,
+              left: 0,
               width: "50px",
-              height: "20px",
+              height: "22px",
               fontSize: "12px",
-              borderRadius: "4px",
-              border: "1px solid #555",
-              background: "#222",
+              background: "#111",
               color: "white",
+              border: "1px solid #00bfff",
               textAlign: "center",
-              zIndex: 10000,
+              zIndex: 10,
             }}
-          />,
-          document.body,
-        )}
+          />
 
-      {/* DROPDOWN */}
-      {dropdownOpen &&
-        createPortal(
+          {/* DROPDOWN MENU */}
           <div
             ref={dropdownRef}
             style={{
-              position: "fixed",
-              top: screenPos.y + 28,
-              left: screenPos.x,
+              display: dropdownOpen ? "block" : "none",
+              position: "absolute",
+              top: "28px",
+              left: 0,
               background: "#222",
               border: "1px solid #555",
               borderRadius: "4px",
-              zIndex: 10000,
-              overflow: "hidden",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
+              minWidth: "75px",
+              zIndex: 100,
+              boxShadow: "0 4px 10px rgba(0,0,0,0.5)",
             }}
           >
             {COUNTER_TYPES.map((type) => (
               <div
                 key={type}
-                style={{
-                  padding: "4px 8px",
-                  cursor: "pointer",
-                  color: "white",
-                  fontSize: "12px",
-                  transition: "background 0.15s",
-                }}
-                onMouseDown={(e) => e.stopPropagation()}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = "#333")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background = "transparent")
-                }
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   actions.updateCounter(instanceId, counter.id, { type });
                   setDropdownOpen(false);
+                }}
+                onMouseEnter={(e) => (e.target.style.background = "#444")}
+                onMouseLeave={(e) =>
+                  (e.target.style.background = "transparent")
+                }
+                style={{
+                  padding: "4px 8px",
+                  color: "white",
+                  fontSize: "11px",
+                  cursor: "pointer",
+                  borderBottom: "1px solid #333",
                 }}
               >
                 {type}
               </div>
             ))}
-          </div>,
-          document.body,
-        )}
-    </>
+          </div>
+        </div>
+      </Html>
+    </Group>
   );
 }
 
