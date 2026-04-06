@@ -71,6 +71,9 @@ function CounterBadge({ counter, instanceId, index }) {
         e.cancelBubble = true;
         setDragging(true);
       }}
+      onDblClick={(e) => {
+        e.cancelBubble = true;
+      }}
       onDragEnd={(e) => {
         e.cancelBubble = true;
         const node = e.target;
