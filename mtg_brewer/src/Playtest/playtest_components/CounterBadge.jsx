@@ -29,7 +29,7 @@ function CounterBadge({ counter, instanceId, index }) {
   const dropdownRef = useRef(null);
 
   const BADGE_WIDTH = 70;
-  const BADGE_HEIGHT = 30;
+  const BADGE_HEIGHT = 35;
 
   useEffect(() => setInputValue(counter.value), [counter.value]);
 
