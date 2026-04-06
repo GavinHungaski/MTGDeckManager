@@ -370,6 +370,19 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "REMOVE_CARD": {
+      const { instanceId } = action.payload;
+      return {
+        ...state,
+        battlefield: state.battlefield.filter(
+          (c) => c.instanceId !== instanceId,
+        ),
+        selectedInstanceIds: state.selectedInstanceIds.filter(
+          (id) => id !== instanceId,
+        ),
+      };
+    }
+
     case "ADD_COUNTER": {
       const { instanceId } = action.payload;
       return {

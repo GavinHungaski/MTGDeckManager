@@ -82,6 +82,9 @@ export function usePlaytestState() {
     createToken: (token) =>
       dispatch({ type: "CREATE_TOKEN", payload: { token } }),
 
+    removeCard: (instanceId) =>
+      dispatch({ type: "REMOVE_CARD", payload: { instanceId } }),
+
     addCounter: (instanceId) =>
       dispatch({ type: "ADD_COUNTER", payload: { instanceId } }),
 
