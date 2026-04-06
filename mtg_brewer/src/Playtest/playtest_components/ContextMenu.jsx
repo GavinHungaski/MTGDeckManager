@@ -6,16 +6,18 @@ function ContextMenu() {
   const { state, actions } = useContext(PlaytestContext);
   const ref = useRef(null);
 
-  // Close menu when clicking outside
   useEffect(() => {
+    if (!state.contextMenu) return;
+
     const handleClick = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
         actions.closeContextMenu();
       }
     };
+
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, [actions]);
+  }, [actions, state.contextMenu]);
 
   if (!state.contextMenu) return null;
 
@@ -31,7 +33,7 @@ function ContextMenu() {
         left: `${state.contextMenu.x}px`,
         display: "flex",
         flexDirection: "column",
-        zIndex: 999,
+        zIndex: 9999,
         background: "#2a2a2a",
         border: "1px solid #555",
         borderRadius: "8px",
