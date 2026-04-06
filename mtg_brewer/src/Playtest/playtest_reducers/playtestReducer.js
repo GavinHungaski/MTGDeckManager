@@ -339,9 +339,60 @@ export function playtestReducer(state, action) {
       };
     }
 
-    case "ADD_COUNTER_BADGE": {
+    case "ADD_COUNTER": {
+      const { instanceId } = action.payload;
+
       return {
         ...state,
+        battlefield: state.battlefield.map((c) =>
+          c.instanceId === instanceId
+            ? {
+                ...c,
+                counters: [
+                  ...c.counters,
+                  {
+                    id: crypto.randomUUID(),
+                    type: "+1/+1",
+                    value: 1,
+                  },
+                ],
+              }
+            : c,
+        ),
+      };
+    }
+
+    case "UPDATE_COUNTER": {
+      const { instanceId, counterId, updates } = action.payload;
+
+      return {
+        ...state,
+        battlefield: state.battlefield.map((c) =>
+          c.instanceId === instanceId
+            ? {
+                ...c,
+                counters: c.counters.map((ctr) =>
+                  ctr.id === counterId ? { ...ctr, ...updates } : ctr,
+                ),
+              }
+            : c,
+        ),
+      };
+    }
+
+    case "REMOVE_COUNTER": {
+      const { instanceId, counterId } = action.payload;
+
+      return {
+        ...state,
+        battlefield: state.battlefield.map((c) =>
+          c.instanceId === instanceId
+            ? {
+                ...c,
+                counters: c.counters.filter((ctr) => ctr.id !== counterId),
+              }
+            : c,
+        ),
       };
     }
 

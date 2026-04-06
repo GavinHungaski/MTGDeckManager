@@ -77,7 +77,20 @@ export function usePlaytestState() {
     createToken: (token) =>
       dispatch({ type: "CREATE_TOKEN", payload: { token } }),
 
-    addCounter: () => dispatch({ type: "ADD_COUNTER_BADGE" }),
+    addCounter: (instanceId) =>
+      dispatch({ type: "ADD_COUNTER", payload: { instanceId } }),
+
+    updateCounter: (instanceId, counterId, updates) =>
+      dispatch({
+        type: "UPDATE_COUNTER",
+        payload: { instanceId, counterId, updates },
+      }),
+
+    removeCounter: (instanceId, counterId) =>
+      dispatch({
+        type: "REMOVE_COUNTER",
+        payload: { instanceId, counterId },
+      }),
 
     nextTurn: () => {
       dispatch({ type: "UNTAP_ALL" });

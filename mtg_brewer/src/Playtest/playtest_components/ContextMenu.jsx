@@ -122,7 +122,7 @@ function ContextMenu() {
 
           <button
             onClick={() => {
-              actions.addCounterBadge();
+              actions.addCounter(state.contextMenu.instanceId);
               actions.closeContextMenu();
             }}
           >

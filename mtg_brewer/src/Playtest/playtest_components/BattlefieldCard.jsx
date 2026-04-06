@@ -7,6 +7,7 @@ import {
   CARD_HEIGHT,
   CARD_BACK_IMAGE,
 } from "../playtest_utils/constants";
+import CounterBadge from "./CounterBadge";
 
 function BattlefieldCard({ card }) {
   const { state, actions } = useContext(PlaytestContext);
@@ -80,6 +81,15 @@ function BattlefieldCard({ card }) {
           cornerRadius={10}
         />
       )}
+
+      {card.counters.map((counter, index) => (
+        <CounterBadge
+          key={counter.id}
+          counter={counter}
+          instanceId={instanceId}
+          index={index}
+        />
+      ))}
 
       {isSelected && (
         <Rect
