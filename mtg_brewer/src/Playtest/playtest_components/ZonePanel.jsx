@@ -6,6 +6,40 @@ import {
   HAND_HEIGHT,
 } from "../playtest_utils/constants";
 
+const ScrollIndicator = ({ length, currentIndex }) => {
+  if (length <= 1) return null;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        right: "-8px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "4px",
+        zIndex: 110,
+        pointerEvents: "none",
+      }}
+    >
+      {Array.from({ length }).map((_, i) => (
+        <div
+          key={i}
+          style={{
+            width: "6px",
+            height: "6px",
+            borderRadius: "50%",
+            background:
+              i === currentIndex ? "#ffffff" : "rgba(255, 255, 255, 0.3)",
+            boxShadow: i === currentIndex ? "0 0 8px #ffffff" : "none",
+            transition: "all 0.2s ease",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 function ZonePanel() {
   const { state, actions } = useContext(PlaytestContext);
   const [commandOut, setCommandOut] = useState(false);
@@ -22,13 +56,11 @@ function ZonePanel() {
     const delta = e.deltaY > 0 ? 1 : -1;
     const newIndex = currentIndex + delta;
 
-    // Stop at boundaries (no circular scrolling)
     if (newIndex >= 0 && newIndex < zoneLength) {
       setIndex(newIndex);
     }
   };
 
-  // Reset index when zone becomes empty or cards change
   const safeIndex = (index, length) => {
     if (length === 0) return 0;
     return Math.min(index, length - 1);
@@ -62,6 +94,10 @@ function ZonePanel() {
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
         }}
       >
+        <ScrollIndicator
+          length={state.graveyard.length}
+          currentIndex={safeIndex(graveyardIndex, state.graveyard.length)}
+        />
         {state.graveyard.length === 0 && (
           <span style={{ zIndex: 97 }}>Graveyard</span>
         )}
@@ -113,6 +149,10 @@ function ZonePanel() {
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
         }}
       >
+        <ScrollIndicator
+          length={state.exile.length}
+          currentIndex={safeIndex(exileIndex, state.exile.length)}
+        />
         {state.exile.length === 0 && <span style={{ zIndex: 97 }}>Exile</span>}
         {state.exile.length > 0 &&
           (() => {
@@ -178,6 +218,10 @@ function ZonePanel() {
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
         }}
       >
+        <ScrollIndicator
+          length={state.commandZone.length}
+          currentIndex={safeIndex(commandIndex, state.commandZone.length)}
+        />
         {state.commandZone.length === 0 && (
           <span style={{ zIndex: 97 }}>Command Zone</span>
         )}
