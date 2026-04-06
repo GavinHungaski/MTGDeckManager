@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import { Group, Rect, Text } from "react-konva";
+import { Group, Rect, Text, Circle } from "react-konva";
 import { Html } from "react-konva-utils";
 import { PlaytestContext } from "../Playtest";
 import { CARD_WIDTH } from "../playtest_utils/constants";
@@ -19,54 +19,38 @@ function CounterBadge({ counter, instanceId, index }) {
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
 
+  const BADGE_WIDTH = 65;
+  const BADGE_HEIGHT = 30;
+
   useEffect(() => setInputValue(counter.value), [counter.value]);
 
-  // Handle clicking outside
   useEffect(() => {
     if (!editing && !dropdownOpen) return;
-
     const handleClickOutside = (e) => {
-      if (editing && inputRef.current && !inputRef.current.contains(e.target)) {
+      if (editing && inputRef.current && !inputRef.current.contains(e.target))
         commitInput();
-      }
       if (
         dropdownOpen &&
         dropdownRef.current &&
         !dropdownRef.current.contains(e.target)
-      ) {
+      )
         setDropdownOpen(false);
-      }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [editing, dropdownOpen, inputValue]);
 
-  const defaultX = CARD_WIDTH - 55;
-  const defaultY = 10 + index * 32;
-  const x = counter.x ?? defaultX;
-  const y = counter.y ?? defaultY;
+  const x = counter.x ?? CARD_WIDTH - (BADGE_WIDTH + 10);
+  const y = counter.y ?? 15 + index * 36;
 
   const handleInputChange = (e) =>
     setInputValue(e.target.value.replace(/[^0-9]/g, ""));
 
   const commitInput = () => {
     actions.updateCounter(instanceId, counter.id, {
-      value: Number(inputValue) || 0,
+      value: Math.max(0, Number(inputValue) || 0),
     });
     setEditing(false);
-  };
-
-  const handleDragEnd = (e) => {
-    e.cancelBubble = true; // Stop Konva bubble
-    const node = e.target;
-    const parent = node.getParent();
-    const transform = parent.getAbsoluteTransform().copy().invert();
-    const abs = node.getAbsolutePosition();
-    const local = transform.point(abs);
-
-    actions.updateCounter(instanceId, counter.id, { x: local.x, y: local.y });
-    setTimeout(() => setDragging(false), 50);
   };
 
   return (
@@ -78,93 +62,138 @@ function CounterBadge({ counter, instanceId, index }) {
         e.cancelBubble = true;
         setDragging(true);
       }}
-      onDragEnd={handleDragEnd}
+      onDragEnd={(e) => {
+        e.cancelBubble = true;
+        const node = e.target;
+        const local = node
+          .getParent()
+          .getAbsoluteTransform()
+          .copy()
+          .invert()
+          .point(node.getAbsolutePosition());
+        actions.updateCounter(instanceId, counter.id, {
+          x: local.x,
+          y: local.y,
+        });
+        setTimeout(() => setDragging(false), 50);
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => {
         setHovered(false);
         setHoveredBtn(null);
       }}
-      onContextMenu={(e) => {
-        e.evt.preventDefault();
-        e.cancelBubble = true;
-        if (window.confirm(`Remove ${counter.type} counter?`)) {
-          actions.removeCounter(instanceId, counter.id);
-        }
-      }}
     >
-      {/* 1. STABLE KONVA NODES (These never change structure) */}
+      {/* BACKGROUND */}
       <Rect
-        width={50}
-        height={28}
-        cornerRadius={6}
-        fill={hovered ? "#333" : "#222"}
-        stroke={hovered ? "#00bfff" : "#888"}
-        strokeWidth={1}
+        width={BADGE_WIDTH}
+        height={BADGE_HEIGHT}
+        cornerRadius={8}
+        fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+        fillLinearGradientEndPoint={{ x: 0, y: 30 }}
+        fillLinearGradientColorStops={[0, "#3a3a3a", 1, "#1a1a1a"]}
+        stroke={hovered ? "#00d4ff" : "#555"}
+        strokeWidth={hovered ? 2 : 1}
+        shadowBlur={hovered ? 4 : 0}
+        shadowColor="#00d4ff"
       />
 
-      <Text
-        text={String(counter.value)}
-        x={18}
-        y={2}
-        fontSize={12}
-        fill={hoveredBtn === "value" ? "#00ffcc" : "white"}
-        onMouseEnter={() => setHoveredBtn("value")}
-        onMouseLeave={() => setHoveredBtn(null)}
-        onClick={(e) => {
-          e.cancelBubble = true; // CRITICAL: Stop stage from de-selecting
-          if (!dragging) setEditing(true);
-        }}
-      />
+      {/* CENTRAL TEXT AREA */}
+      <Group x={17} width={31}>
+        <Text
+          text={String(counter.value)}
+          width={31}
+          y={4}
+          align="center"
+          fontSize={13}
+          fontStyle="bold"
+          fill={hoveredBtn === "value" ? "#00d4ff" : "white"}
+          onClick={(e) => {
+            e.cancelBubble = true;
+            if (!dragging) setEditing(true);
+          }}
+          onMouseEnter={() => setHoveredBtn("value")}
+          onMouseLeave={() => setHoveredBtn(null)}
+        />
+        <Text
+          text={counter.type.toUpperCase()}
+          width={31}
+          y={18}
+          align="center"
+          fontSize={7}
+          fontStyle="bold"
+          fill={hoveredBtn === "label" ? "#00d4ff" : "#aaa"}
+          onClick={(e) => {
+            e.cancelBubble = true;
+            if (!dragging) setDropdownOpen(true);
+          }}
+          onMouseEnter={() => setHoveredBtn("label")}
+          onMouseLeave={() => setHoveredBtn(null)}
+        />
+      </Group>
 
-      <Text
-        text={counter.type}
-        x={4}
-        y={14}
-        fontSize={9}
-        fill={hoveredBtn === "label" ? "#00bfff" : "#ccc"}
-        onMouseEnter={() => setHoveredBtn("label")}
-        onMouseLeave={() => setHoveredBtn(null)}
-        onClick={(e) => {
-          e.cancelBubble = true;
-          if (!dragging) setDropdownOpen(true);
-        }}
-      />
-
-      <Text
-        text="+"
-        x={38}
-        y={2}
-        fontSize={12}
-        fill={hoveredBtn === "+" ? "#00ff00" : "green"}
-        onClick={(e) => {
-          e.cancelBubble = true;
-          actions.updateCounter(instanceId, counter.id, {
-            value: counter.value + 1,
-          });
-        }}
-      />
-
-      <Text
-        text="-"
-        x={4}
-        y={2}
-        fontSize={12}
-        fill={hoveredBtn === "-" ? "#ff4444" : "red"}
+      {/* MINUS (Left) */}
+      <Group
+        x={10}
+        y={15}
         onClick={(e) => {
           e.cancelBubble = true;
           actions.updateCounter(instanceId, counter.id, {
             value: Math.max(0, counter.value - 1),
           });
         }}
-      />
+        onMouseEnter={() => setHoveredBtn("-")}
+        onMouseLeave={() => setHoveredBtn(null)}
+      >
+        <Circle radius={9} fill={hoveredBtn === "-" ? "#e74c3c" : "#333"} />
+        <Text
+          text="-"
+          fontSize={14}
+          fill="white"
+          x={-3}
+          y={-7}
+          listening={false}
+          fontStyle="bold"
+        />
+      </Group>
 
-      {/* 2. STABLE HTML OVERLAY (Always in tree, CSS visibility toggled) */}
+      {/* PLUS (Right) */}
+      <Group
+        x={55}
+        y={15}
+        onClick={(e) => {
+          e.cancelBubble = true;
+          actions.updateCounter(instanceId, counter.id, {
+            value: counter.value + 1,
+          });
+        }}
+        onMouseEnter={() => setHoveredBtn("+")}
+        onMouseLeave={() => setHoveredBtn(null)}
+      >
+        <Circle radius={9} fill={hoveredBtn === "+" ? "#2ecc71" : "#333"} />
+        <Text
+          text="+"
+          fontSize={12}
+          fill="white"
+          x={-4}
+          y={-6}
+          listening={false}
+          fontStyle="bold"
+        />
+      </Group>
+
+      {/* HTML OVERLAYS */}
       <Html divProps={{ style: { pointerEvents: "none" } }}>
-        <div style={{ position: "relative", pointerEvents: "auto" }}>
-          {/* INPUT EDITOR */}
+        <div
+          style={{
+            position: "relative",
+            pointerEvents: "auto",
+            fontFamily: "sans-serif",
+          }}
+        >
           <input
             ref={inputRef}
             value={inputValue}
+            autoFocus
             onChange={handleInputChange}
             onBlur={commitInput}
             onKeyDown={(e) => {
@@ -174,33 +203,37 @@ function CounterBadge({ counter, instanceId, index }) {
             style={{
               display: editing ? "block" : "none",
               position: "absolute",
-              top: 0,
-              left: 0,
-              width: "50px",
-              height: "22px",
+              top: "2px",
+              left: "16px",
+              width: "32px",
+              height: "18px",
               fontSize: "12px",
-              background: "#111",
-              color: "white",
-              border: "1px solid #00bfff",
+              fontWeight: "bold",
+              background: "#000",
+              color: "#00d4ff",
+              border: "1px solid #00d4ff",
+              borderRadius: "4px",
               textAlign: "center",
+              outline: "none",
               zIndex: 10,
             }}
           />
 
-          {/* DROPDOWN MENU */}
           <div
             ref={dropdownRef}
             style={{
               display: dropdownOpen ? "block" : "none",
               position: "absolute",
-              top: "28px",
-              left: 0,
-              background: "#222",
-              border: "1px solid #555",
-              borderRadius: "4px",
-              minWidth: "75px",
+              top: "32px",
+              left: "-7px",
+              background: "rgba(20, 20, 20, 0.95)",
+              backdropFilter: "blur(4px)",
+              border: "1px solid #444",
+              borderRadius: "6px",
+              minWidth: "80px",
               zIndex: 100,
-              boxShadow: "0 4px 10px rgba(0,0,0,0.5)",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+              overflow: "hidden",
             }}
           >
             {COUNTER_TYPES.map((type) => (
@@ -211,16 +244,22 @@ function CounterBadge({ counter, instanceId, index }) {
                   actions.updateCounter(instanceId, counter.id, { type });
                   setDropdownOpen(false);
                 }}
-                onMouseEnter={(e) => (e.target.style.background = "#444")}
-                onMouseLeave={(e) =>
-                  (e.target.style.background = "transparent")
-                }
+                onMouseEnter={(e) => {
+                  e.target.style.background = "#00d4ff";
+                  e.target.style.color = "black";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "transparent";
+                  e.target.style.color = "white";
+                }}
                 style={{
-                  padding: "4px 8px",
+                  padding: "6px 10px",
                   color: "white",
-                  fontSize: "11px",
+                  fontSize: "10px",
                   cursor: "pointer",
                   borderBottom: "1px solid #333",
+                  textTransform: "uppercase",
+                  fontWeight: "bold",
                 }}
               >
                 {type}
