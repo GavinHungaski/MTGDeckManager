@@ -173,7 +173,7 @@ export function playtestReducer(state, action) {
         ...state,
         battlefield: state.battlefield.map((c) =>
           action.payload.instanceIds.includes(c.instanceId)
-            ? { ...c, tapped: true }
+            ? { ...c, tapped: !c.tapped }
             : c,
         ),
       };
