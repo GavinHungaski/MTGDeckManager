@@ -76,7 +76,7 @@ function Battlefield() {
       ref={stageRef}
       width={windowSize.width}
       height={windowSize.height}
-      pixelRatio={window.devicePixelRatio}
+      pixelRatio={Math.min(2, window.devicePixelRatio)}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}

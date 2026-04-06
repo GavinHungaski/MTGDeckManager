@@ -70,6 +70,7 @@ function BattlefieldCard({ card }) {
           image={flipped ? back_image : image}
           width={CARD_WIDTH}
           height={CARD_HEIGHT}
+          perfectDrawEnabled={false}
           cornerRadius={10}
         />
       ) : (
