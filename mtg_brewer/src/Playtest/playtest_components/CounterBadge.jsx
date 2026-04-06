@@ -20,17 +20,16 @@ function CounterBadge({ counter, instanceId, index }) {
   const [inputValue, setInputValue] = useState(counter.value);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [hoveredBtn, setHoveredBtn] = useState(null); // "+", "-", label
   const [screenPos, setScreenPos] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
 
   const groupRef = useRef(null);
 
-  useEffect(() => {
-    setInputValue(counter.value);
-  }, [counter.value]);
+  useEffect(() => setInputValue(counter.value), [counter.value]);
 
   const defaultX = CARD_WIDTH - 55;
   const defaultY = 10 + index * 32;
-
   const x = counter.x ?? defaultX;
   const y = counter.y ?? defaultY;
 
@@ -45,29 +44,27 @@ function CounterBadge({ counter, instanceId, index }) {
     const stage = groupRef.current?.getStage();
     const abs = groupRef.current?.getAbsolutePosition();
     const rect = stage.container().getBoundingClientRect();
-
-    return {
-      x: rect.left + abs.x,
-      y: rect.top + abs.y,
-    };
+    return { x: rect.left + abs.x, y: rect.top + abs.y };
   };
 
   const openEditor = () => {
-    setScreenPos(getScreenPos());
-    setEditing(true);
+    requestAnimationFrame(() => {
+      setScreenPos(getScreenPos());
+      setEditing(true);
+    });
   };
 
   const openDropdown = () => {
-    setScreenPos(getScreenPos());
-    setDropdownOpen(true);
+    requestAnimationFrame(() => {
+      setScreenPos(getScreenPos());
+      setDropdownOpen(true);
+    });
   };
 
   const increment = (e) => {
     e.cancelBubble = true;
     e.evt.stopPropagation();
-    actions.updateCounter(instanceId, counter.id, {
-      value: counter.value + 1,
-    });
+    actions.updateCounter(instanceId, counter.id, { value: counter.value + 1 });
   };
 
   const decrement = (e) => {
@@ -81,21 +78,16 @@ function CounterBadge({ counter, instanceId, index }) {
   const handleDragEnd = (e) => {
     e.cancelBubble = true;
     e.evt.stopPropagation();
-
+    setDragging(false);
     const abs = e.target.getAbsolutePosition();
     const local = getLocalPos(abs.x, abs.y);
-
-    actions.updateCounter(instanceId, counter.id, {
-      x: local.x,
-      y: local.y,
-    });
+    actions.updateCounter(instanceId, counter.id, { x: local.x, y: local.y });
   };
 
-  const handleInputChange = (e) => {
-    const val = e.target.value.replace(/[^0-9]/g, "");
-    setInputValue(val);
-  };
+  const handleDragMove = (e) => setDragging(true);
 
+  const handleInputChange = (e) =>
+    setInputValue(e.target.value.replace(/[^0-9]/g, ""));
   const commitInput = () => {
     actions.updateCounter(instanceId, counter.id, {
       value: Number(inputValue) || 0,
@@ -114,14 +106,15 @@ function CounterBadge({ counter, instanceId, index }) {
         onDragStart={(e) => {
           e.cancelBubble = true;
           e.evt.stopPropagation();
+          setDragging(true);
         }}
-        onDragMove={(e) => {
-          e.cancelBubble = true;
-          e.evt.stopPropagation();
-        }}
+        onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
         onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        onMouseLeave={() => {
+          setHovered(false);
+          setHoveredBtn(null);
+        }}
         onMouseDown={(e) => {
           e.cancelBubble = true;
           e.evt.stopPropagation();
@@ -135,7 +128,9 @@ function CounterBadge({ counter, instanceId, index }) {
           e.cancelBubble = true;
           actions.removeCounter(instanceId, counter.id);
         }}
+        cursor={dragging ? "grabbing" : "grab"}
       >
+        {/* BACKGROUND */}
         <Rect
           width={50}
           height={28}
@@ -151,7 +146,9 @@ function CounterBadge({ counter, instanceId, index }) {
           x={18}
           y={2}
           fontSize={12}
-          fill="white"
+          fill={hoveredBtn === "value" ? "#00ffcc" : "white"}
+          onMouseEnter={() => setHoveredBtn("value")}
+          onMouseLeave={() => setHoveredBtn(null)}
           onMouseDown={(e) => e.evt.stopPropagation()}
           onClick={(e) => {
             e.cancelBubble = true;
@@ -160,13 +157,15 @@ function CounterBadge({ counter, instanceId, index }) {
           }}
         />
 
-        {/* LABEL */}
+        {/* LABEL / TYPE */}
         <Text
           text={counter.type}
           x={4}
           y={14}
           fontSize={9}
-          fill="#ccc"
+          fill={hoveredBtn === "label" ? "#00bfff" : "#ccc"}
+          onMouseEnter={() => setHoveredBtn("label")}
+          onMouseLeave={() => setHoveredBtn(null)}
           onMouseDown={(e) => e.evt.stopPropagation()}
           onClick={(e) => {
             e.cancelBubble = true;
@@ -175,24 +174,28 @@ function CounterBadge({ counter, instanceId, index }) {
           }}
         />
 
-        {/* + */}
+        {/* + BUTTON */}
         <Text
           text="+"
           x={38}
           y={2}
           fontSize={12}
-          fill="green"
+          fill={hoveredBtn === "+" ? "#00ff00" : "green"}
+          onMouseEnter={() => setHoveredBtn("+")}
+          onMouseLeave={() => setHoveredBtn(null)}
           onMouseDown={(e) => e.evt.stopPropagation()}
           onClick={increment}
         />
 
-        {/* - */}
+        {/* - BUTTON */}
         <Text
           text="-"
           x={4}
           y={2}
           fontSize={12}
-          fill="red"
+          fill={hoveredBtn === "-" ? "#ff4444" : "red"}
+          onMouseEnter={() => setHoveredBtn("-")}
+          onMouseLeave={() => setHoveredBtn(null)}
           onMouseDown={(e) => e.evt.stopPropagation()}
           onClick={decrement}
         />
@@ -215,6 +218,13 @@ function CounterBadge({ counter, instanceId, index }) {
               top: screenPos.y,
               left: screenPos.x,
               width: "50px",
+              height: "20px",
+              fontSize: "12px",
+              borderRadius: "4px",
+              border: "1px solid #555",
+              background: "#222",
+              color: "white",
+              textAlign: "center",
               zIndex: 9999,
             }}
           />,
@@ -227,11 +237,14 @@ function CounterBadge({ counter, instanceId, index }) {
           <div
             style={{
               position: "fixed",
-              top: screenPos.y + 30,
+              top: screenPos.y + 28,
               left: screenPos.x,
               background: "#222",
               border: "1px solid #555",
+              borderRadius: "4px",
               zIndex: 9999,
+              overflow: "hidden",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
             }}
           >
             {COUNTER_TYPES.map((type) => (
@@ -241,8 +254,16 @@ function CounterBadge({ counter, instanceId, index }) {
                   padding: "4px 8px",
                   cursor: "pointer",
                   color: "white",
+                  fontSize: "12px",
+                  transition: "background 0.15s",
                 }}
                 onMouseDown={(e) => e.stopPropagation()}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "#333")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "transparent")
+                }
                 onClick={() => {
                   actions.updateCounter(instanceId, counter.id, { type });
                   setDropdownOpen(false);
