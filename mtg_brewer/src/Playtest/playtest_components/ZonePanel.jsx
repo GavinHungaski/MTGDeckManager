@@ -42,7 +42,7 @@ const ScrollIndicator = ({ length, currentIndex }) => {
 
 function ZonePanel() {
   const { state, actions } = useContext(PlaytestContext);
-  const [commandOut, setCommandOut] = useState(false);
+  const [commandOut, setCommandOut] = useState(true);
   const [exileOut, setExileOut] = useState(false);
 
   const [graveyardIndex, setGraveyardIndex] = useState(0);
