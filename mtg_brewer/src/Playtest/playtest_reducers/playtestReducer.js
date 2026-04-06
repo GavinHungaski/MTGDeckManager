@@ -398,6 +398,20 @@ export function playtestReducer(state, action) {
       };
     }
 
+    case "BRING_TO_FRONT": {
+      const { instanceIds } = action.payload;
+      const moving = state.battlefield.filter((c) =>
+        instanceIds.includes(c.instanceId),
+      );
+      const others = state.battlefield.filter(
+        (c) => !instanceIds.includes(c.instanceId),
+      );
+      return {
+        ...state,
+        battlefield: [...others, ...moving],
+      };
+    }
+
     default:
       return state;
   }

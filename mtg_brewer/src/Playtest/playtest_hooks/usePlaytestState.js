@@ -92,6 +92,9 @@ export function usePlaytestState() {
         payload: { instanceId, counterId },
       }),
 
+    bringToFront: (instanceId) =>
+      dispatch({ type: "BRING_TO_FRONT", payload: { instanceIds } }),
+
     nextTurn: () => {
       dispatch({ type: "UNTAP_ALL" });
       dispatch({ type: "DRAW_CARD" });
