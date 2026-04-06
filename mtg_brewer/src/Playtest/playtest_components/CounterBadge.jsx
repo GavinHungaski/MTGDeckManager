@@ -83,7 +83,7 @@ function CounterBadge({ counter, instanceId, index }) {
         setHoveredBtn(null);
       }}
     >
-      {/* 1. BACKGROUND */}
+      {/* BACKGROUND */}
       <Rect
         width={BADGE_WIDTH}
         height={BADGE_HEIGHT}
@@ -204,7 +204,7 @@ function CounterBadge({ counter, instanceId, index }) {
               display: editing ? "block" : "none",
               position: "absolute",
               top: "2px",
-              left: "19px",
+              left: "19px", // Centered: (70 - 32) / 2
               width: "32px",
               height: "18px",
               fontSize: "12px",
