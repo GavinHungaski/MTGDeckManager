@@ -19,7 +19,7 @@ function CounterBadge({ counter, instanceId, index }) {
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
 
-  const BADGE_WIDTH = 65;
+  const BADGE_WIDTH = 70;
   const BADGE_HEIGHT = 30;
 
   useEffect(() => setInputValue(counter.value), [counter.value]);
@@ -83,7 +83,7 @@ function CounterBadge({ counter, instanceId, index }) {
         setHoveredBtn(null);
       }}
     >
-      {/* BACKGROUND */}
+      {/* 1. BACKGROUND */}
       <Rect
         width={BADGE_WIDTH}
         height={BADGE_HEIGHT}
@@ -98,10 +98,10 @@ function CounterBadge({ counter, instanceId, index }) {
       />
 
       {/* CENTRAL TEXT AREA */}
-      <Group x={17} width={31}>
+      <Group x={18} width={34}>
         <Text
           text={String(counter.value)}
-          width={31}
+          width={34}
           y={4}
           align="center"
           fontSize={13}
@@ -116,7 +116,7 @@ function CounterBadge({ counter, instanceId, index }) {
         />
         <Text
           text={counter.type.toUpperCase()}
-          width={31}
+          width={34}
           y={18}
           align="center"
           fontSize={7}
@@ -133,7 +133,7 @@ function CounterBadge({ counter, instanceId, index }) {
 
       {/* MINUS (Left) */}
       <Group
-        x={10}
+        x={11}
         y={15}
         onClick={(e) => {
           e.cancelBubble = true;
@@ -158,7 +158,7 @@ function CounterBadge({ counter, instanceId, index }) {
 
       {/* PLUS (Right) */}
       <Group
-        x={55}
+        x={59}
         y={15}
         onClick={(e) => {
           e.cancelBubble = true;
@@ -204,7 +204,7 @@ function CounterBadge({ counter, instanceId, index }) {
               display: editing ? "block" : "none",
               position: "absolute",
               top: "2px",
-              left: "16px",
+              left: "19px",
               width: "32px",
               height: "18px",
               fontSize: "12px",
@@ -225,7 +225,7 @@ function CounterBadge({ counter, instanceId, index }) {
               display: dropdownOpen ? "block" : "none",
               position: "absolute",
               top: "32px",
-              left: "-7px",
+              left: "-5px",
               background: "rgba(20, 20, 20, 0.95)",
               backdropFilter: "blur(4px)",
               border: "1px solid #444",
