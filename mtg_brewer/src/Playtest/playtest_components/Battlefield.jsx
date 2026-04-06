@@ -37,6 +37,7 @@ function Battlefield() {
       ref={stageRef}
       width={windowSize.width}
       height={windowSize.height}
+      pixelRatio={Math.min(2, window.devicePixelRatio)}
       onClick={handleStageClick}
       onContextMenu={(e) => {
         e.evt.preventDefault();

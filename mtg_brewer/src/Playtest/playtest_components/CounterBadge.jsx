@@ -40,8 +40,8 @@ function CounterBadge({ counter, instanceId, index }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [editing, dropdownOpen, inputValue]);
 
-  const x = counter.x ?? CARD_WIDTH - (BADGE_WIDTH + 10);
-  const y = counter.y ?? 15 + index * 36;
+  const x = Math.round(counter.x ?? CARD_WIDTH - (BADGE_WIDTH + 10));
+  const y = Math.round(counter.y ?? 15 + index * 36);
 
   const handleInputChange = (e) =>
     setInputValue(e.target.value.replace(/[^0-9]/g, ""));
