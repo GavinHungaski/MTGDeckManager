@@ -92,7 +92,7 @@ export function usePlaytestState() {
         payload: { instanceId, counterId },
       }),
 
-    bringToFront: (instanceId) =>
+    bringToFront: (instanceIds) =>
       dispatch({ type: "BRING_TO_FRONT", payload: { instanceIds } }),
 
     nextTurn: () => {
