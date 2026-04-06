@@ -146,20 +146,31 @@ function CounterBadge({ counter, instanceId, index }) {
         y={15}
         onClick={(e) => {
           e.cancelBubble = true;
-          actions.updateCounter(instanceId, counter.id, {
-            value: Math.max(0, counter.value - 1),
-          });
+          if (counter.value === 0) {
+            actions.removeCounter(instanceId, counter.id);
+          } else {
+            actions.updateCounter(instanceId, counter.id, {
+              value: counter.value - 1,
+            });
+          }
         }}
         onMouseEnter={() => setHoveredBtn("-")}
         onMouseLeave={() => setHoveredBtn(null)}
       >
-        <Circle radius={9} fill={hoveredBtn === "-" ? "#e74c3c" : "#333"} />
+        <Circle
+          radius={9}
+          fill={hoveredBtn === "-" ? "#e74c3c" : "#333"}
+          stroke={
+            counter.value === 1 && hoveredBtn === "-" ? "white" : "transparent"
+          }
+          strokeWidth={1}
+        />
         <Text
-          text="-"
-          fontSize={14}
+          text={counter.value === 0 ? "×" : "-"}
+          fontSize={counter.value <= 1 ? 16 : 14}
           fill="white"
-          x={-3}
-          y={-7}
+          x={counter.value <= 1 ? -4.5 : -3}
+          y={counter.value <= 1 ? -9 : -7}
           listening={false}
           fontStyle="bold"
         />
