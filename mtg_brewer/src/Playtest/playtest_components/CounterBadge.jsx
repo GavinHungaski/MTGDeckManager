@@ -4,7 +4,7 @@ import { Html } from "react-konva-utils";
 import { PlaytestContext } from "../Playtest";
 import { CARD_WIDTH } from "../playtest_utils/constants";
 
-const COUNTER_TYPES = ["+1/+1", "-1/-1", "Loyalty", "Charge", "Generic"];
+const COUNTER_TYPES = ["+1/+1", "-1/-1", "Loyalty", "Charge", "Count"];
 
 function CounterBadge({ counter, instanceId, index }) {
   const { actions } = useContext(PlaytestContext);
