@@ -52,8 +52,12 @@ function CounterBadge({ counter, instanceId, index }) {
   const x = Math.round(counter.x ?? CARD_WIDTH - (BADGE_WIDTH + 10));
   const y = Math.round(counter.y ?? 15 + index * 36);
 
-  const handleInputChange = (e) =>
-    setInputValue(e.target.value.replace(/[^0-9]/g, ""));
+  const handleInputChange = (e) => {
+    const val = e.target.value.replace(/[^0-9]/g, "");
+    if (val.length <= 4) {
+      setInputValue(val);
+    }
+  };
 
   const commitInput = () => {
     actions.updateCounter(instanceId, counter.id, {
@@ -186,7 +190,7 @@ function CounterBadge({ counter, instanceId, index }) {
         onClick={(e) => {
           e.cancelBubble = true;
           actions.updateCounter(instanceId, counter.id, {
-            value: counter.value + 1,
+            value: Math.min(9999, counter.value + 1),
           });
         }}
         onMouseEnter={() => setHoveredBtn("+")}
