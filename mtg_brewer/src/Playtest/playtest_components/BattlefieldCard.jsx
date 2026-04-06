@@ -23,32 +23,32 @@ function BattlefieldCard({ card }) {
   const offsetX = tapped ? -CARD_WIDTH / 2 : 0;
   const offsetY = tapped ? CARD_HEIGHT : 0;
 
-  const dragStartPos = useRef(null);
-
   const handleDragStart = () => {
-    dragStartPos.current = { x, y };
-    actions.bringToFront([instanceId]);
+    const idsToMove = isSelected ? state.selectedInstanceIds : [instanceId];
+    actions.bringToFront(idsToMove);
   };
 
   const handleDragEnd = (e) => {
-    const pos = e.target.getAbsolutePosition();
-    actions.moveCard(instanceId, pos.x, pos.y);
+    const { x: newX, y: newY } = e.target.position();
+
+    if (isSelected && state.selectedInstanceIds.length > 1) {
+      actions.stackCards(state.selectedInstanceIds, newX, newY);
+    } else {
+      actions.moveCard(instanceId, newX, newY);
+    }
   };
 
   const handleContextMenu = (e) => {
     e.evt.preventDefault();
-    const stage = e.target.getStage();
-    const pos = stage.getPointerPosition();
+    const pos = e.target.getStage().getPointerPosition();
     actions.setContextMenu(pos.x, pos.y, "card", instanceId);
   };
 
   const handleDbClick = (e) => {
     if (e.evt.button === 0) {
-      if (isSelected) {
-        actions.tapMany(state.selectedInstanceIds);
-      } else {
-        actions.tapCard(instanceId);
-      }
+      isSelected
+        ? actions.tapMany(state.selectedInstanceIds)
+        : actions.tapCard(instanceId);
     }
   };
 
@@ -73,7 +73,12 @@ function BattlefieldCard({ card }) {
           cornerRadius={10}
         />
       ) : (
-        <Rect width={CARD_WIDTH} height={CARD_HEIGHT} fill="#1a1a2e" />
+        <Rect
+          width={CARD_WIDTH}
+          height={CARD_HEIGHT}
+          fill="#1a1a2e"
+          cornerRadius={10}
+        />
       )}
 
       {card.counters.map((counter, index) => (
@@ -90,9 +95,10 @@ function BattlefieldCard({ card }) {
           width={CARD_WIDTH}
           height={CARD_HEIGHT}
           stroke="#00bfff"
-          strokeWidth={2}
-          fill="transparent"
+          strokeWidth={3}
+          fill="rgba(0, 191, 255, 0.1)"
           listening={false}
+          cornerRadius={10}
         />
       )}
     </Group>

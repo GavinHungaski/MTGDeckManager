@@ -58,6 +58,9 @@ export function usePlaytestState() {
 
     closeContextMenu: () => dispatch({ type: "CLOSE_CONTEXT_MENU" }),
 
+    stackCards: (instanceIds, x, y) =>
+      dispatch({ type: "STACK_CARDS", payload: { instanceIds, x, y } }),
+
     selectCards: (instanceIds) =>
       dispatch({ type: "SELECT_CARDS", payload: { instanceIds } }),
 

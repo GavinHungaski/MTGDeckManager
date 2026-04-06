@@ -260,6 +260,30 @@ export function playtestReducer(state, action) {
       return { ...state, selectedInstanceIds: merged };
     }
 
+    case "STACK_CARDS": {
+      const { instanceIds, x, y } = action.payload;
+      const OFFSET = 25;
+      const others = state.battlefield.filter(
+        (c) => !instanceIds.includes(c.instanceId),
+      );
+      const moving = state.battlefield.filter((c) =>
+        instanceIds.includes(c.instanceId),
+      );
+      const stacked = moving.map((card, index) => ({
+        ...card,
+        x: x + index * OFFSET,
+        y: y + index * OFFSET,
+      }));
+      return {
+        ...state,
+        battlefield: [...others, ...stacked],
+      };
+    }
+
+    case "SELECT_CARDS": {
+      return { ...state, selectedInstanceIds: action.payload.instanceIds };
+    }
+
     case "CLEAR_SELECTION": {
       return { ...state, selectedInstanceIds: [] };
     }
