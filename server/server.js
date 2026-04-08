@@ -1,20 +1,21 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config();
 
+import { registerUser, loginUser } from "./controllers/userController.js";
 import {
   getAllDecks,
   getDeckById,
   createDeck,
   deleteDeck,
 } from "./controllers/deckController.js";
-
 import {
   addCard,
   removeCard,
   toggleCommander,
 } from "./controllers/cardController.js";
-
-import pool from "./db/db.js";
+import { authenticate } from "./middleware/auth.js";
 
 const PORT = 4000;
 const app = express();
@@ -22,23 +23,30 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Quick check to see if the db is working
-pool.connect().catch((err) => {
-  console.error("Failed to connect to PostgreSQL:", err);
-  process.exit(1);
-});
+// --------------------
+// Auth routes
+// --------------------
+app.post("/api/users/register", registerUser);
+app.post("/api/users/login", loginUser);
 
-/** Deck Routes */
-app.get("/api/decks", getAllDecks);
-app.get("/api/decks/:id", getDeckById);
-app.post("/api/deck", createDeck);
-app.delete("/api/decks/:id", deleteDeck);
+// --------------------
+// Deck routes
+// --------------------
+app.get("/api/decks", authenticate, getAllDecks);
+app.get("/api/decks/:id", authenticate, getDeckById);
+app.post("/api/deck", authenticate, createDeck);
+app.delete("/api/decks/:id", authenticate, deleteDeck);
 
-/** Card Routes */
-app.post("/api/decks/:deckId/card", addCard);
-app.delete("/api/decks/:deckId/card/:cardId", removeCard);
-app.patch("/api/decks/:deckId/card/:cardId/commander", toggleCommander);
+// --------------------
+// Card routes
+// --------------------
+app.post("/api/decks/:deckId/card", authenticate, addCard);
+app.delete("/api/decks/:deckId/card/:cardId", authenticate, removeCard);
+app.patch(
+  "/api/decks/:deckId/card/:cardId/commander",
+  authenticate,
+  toggleCommander,
+);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// --------------------
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

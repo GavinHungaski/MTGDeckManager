@@ -2,10 +2,12 @@ import pool from "../db/db.js";
 
 /**
  * POST /api/decks/:deckId/card
+ * Only allow adding cards to decks owned by the authenticated user
  */
 export const addCard = async (req, res) => {
   let client;
   try {
+    const userId = req.user.id;
     const { deckId } = req.params;
     const { name, scryfall_id, card_data, is_commander } = req.body;
 
@@ -13,34 +15,37 @@ export const addCard = async (req, res) => {
       return res.status(400).json({ error: "Missing card data" });
     }
 
+    // Ensure the deck belongs to the user
+    const deckCheck = await pool.query(
+      `SELECT * FROM decks WHERE id = $1 AND user_id = $2`,
+      [deckId, userId],
+    );
+    if (deckCheck.rows.length === 0) {
+      return res
+        .status(403)
+        .json({ error: "Deck not found or not owned by user" });
+    }
+
     client = await pool.connect();
     await client.query("BEGIN");
 
-    const cardResult = await client.query(
-      `
-      INSERT INTO cards (name, scryfall_id, card_data)
-      VALUES ($1, $2, $3)
-      ON CONFLICT (scryfall_id)
-      DO UPDATE SET card_data = EXCLUDED.card_data
-      RETURNING id
-      `,
+    const cardRes = await client.query(
+      `INSERT INTO cards (name, scryfall_id, card_data)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (scryfall_id) DO UPDATE SET card_data = EXCLUDED.card_data
+       RETURNING id`,
       [name, scryfall_id, card_data],
     );
 
-    const cardId = cardResult.rows[0].id;
+    const cardId = cardRes.rows[0].id;
 
-    const deckCardResult = await client.query(
-      `
-      INSERT INTO deck_cards (deck_id, card_id, count, is_commander)
-      VALUES ($1, $2, 1, $3)
-      ON CONFLICT (deck_id, card_id)
-      DO UPDATE SET count = deck_cards.count + 1
-      RETURNING count
-      `,
+    const deckCardRes = await client.query(
+      `INSERT INTO deck_cards (deck_id, card_id, count, is_commander)
+       VALUES ($1, $2, 1, $3)
+       ON CONFLICT (deck_id, card_id) DO UPDATE SET count = deck_cards.count + 1
+       RETURNING count`,
       [deckId, cardId, !!is_commander],
     );
-
-    const count = deckCardResult.rows[0].count;
 
     await client.query("COMMIT");
 
@@ -49,60 +54,44 @@ export const addCard = async (req, res) => {
       name,
       scryfall_id,
       card_data,
-      count,
+      count: deckCardRes.rows[0].count,
     });
   } catch (err) {
     if (client) await client.query("ROLLBACK");
-    console.error("Database error:", err);
+    console.error(err);
     res.status(500).json({ error: "Database error" });
   } finally {
     if (client) client.release();
   }
 };
 
-/**
- * DELETE /api/decks/:deckId/card/:cardId
- */
 export const removeCard = async (req, res) => {
   try {
     const { deckId, cardId } = req.params;
-
     const result = await pool.query(
-      `
-      UPDATE deck_cards
-      SET count = count - 1
-      WHERE deck_id = $1 AND card_id = $2
-      RETURNING count
-      `,
+      `UPDATE deck_cards SET count=count-1
+       WHERE deck_id=$1 AND card_id=$2
+       RETURNING count`,
       [deckId, cardId],
     );
 
-    if (result.rowCount === 0) {
+    if (!result.rowCount)
       return res.status(404).json({ error: "Card not found in deck" });
-    }
 
-    const newCount = result.rows[0].count;
-
-    if (newCount <= 0) {
+    if (result.rows[0].count <= 0) {
       await pool.query(
-        `
-        DELETE FROM deck_cards
-        WHERE deck_id = $1 AND card_id = $2
-        `,
+        `DELETE FROM deck_cards WHERE deck_id=$1 AND card_id=$2`,
         [deckId, cardId],
       );
     }
 
     res.status(204).send();
   } catch (err) {
-    console.error("Database error:", err);
-    res.status(500).json({ error: "Internal server error" });
+    console.error(err);
+    res.status(500).json({ error: "Database error" });
   }
 };
 
-/**
- * PATCH /api/decks/:deckId/card/:cardId/commander
- */
 export const toggleCommander = async (req, res) => {
   let client;
   try {
@@ -111,24 +100,25 @@ export const toggleCommander = async (req, res) => {
 
     client = await pool.connect();
 
+    const deckCheck = await client.query(
+      `SELECT id FROM decks WHERE id=$1 AND user_id=$2`,
+      [deckId, req.user.id],
+    );
+    if (!deckCheck.rows.length) throw new Error("Deck not found");
+
     const result = await client.query(
-      `
-      UPDATE deck_cards 
-      SET is_commander = $1 
-      WHERE deck_id = $2 AND card_id = $3 
-      RETURNING *
-      `,
+      `UPDATE deck_cards SET is_commander=$1 WHERE deck_id=$2 AND card_id=$3 RETURNING *`,
       [is_commander, deckId, cardId],
     );
 
-    if (result.rowCount === 0) {
+    if (!result.rowCount)
       return res.status(404).json({ error: "Card not found in deck" });
-    }
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("Database error:", err);
-    res.status(500).json({ error: "Internal server error" });
+    if (client) await client.query("ROLLBACK");
+    console.error(err);
+    res.status(500).json({ error: "Database error" });
   } finally {
     if (client) client.release();
   }
