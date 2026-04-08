@@ -1,4 +1,4 @@
-import { useEffect, createContext } from "react";
+import { useEffect, createContext, useContext } from "react";
 import { useParams } from "react-router";
 import { expandAndShuffle } from "./playtest_utils/deckUtils";
 import { usePlaytestState } from "./playtest_hooks/usePlaytestState.js";
@@ -11,6 +11,7 @@ import ContextMenu from "./playtest_components/ContextMenu.jsx";
 import TokenCreator from "./playtest_components/TokenCreator.jsx";
 import DeckSearcher from "./playtest_components/DeckSearcher.jsx";
 import CardCreator from "./playtest_components/CardCreator.jsx";
+import { AuthContext } from "../auth/AuthContext";
 import "./Playtest.css";
 
 export const PlaytestContext = createContext();
@@ -37,12 +38,18 @@ const formatCard = (card) => {
 function Playtest() {
   const { deckId } = useParams();
   const { state, dispatch, actions } = usePlaytestState();
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
     if (!deckId) return;
     const fetchDeckData = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/decks/${deckId}`);
+        const res = await fetch(`http://localhost:4000/api/decks/${deckId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!res.ok) throw new Error("Failed to fetch deck");
         const data = await res.json();
         const formattedCards = data.cards.map(formatCard);

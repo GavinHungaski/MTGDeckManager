@@ -85,7 +85,7 @@ function Decks() {
               className="commander-container"
               style={{ display: "flex", flexDirection: "column", gap: "8px" }}
             >
-              {deck.commanders.map((c, index) => (
+              {(deck.commanders || []).map((c, index) => (
                 <img
                   key={index}
                   style={{

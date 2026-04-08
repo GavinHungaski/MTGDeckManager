@@ -1,9 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useContext } from "react";
 import { useNavigate, useParams } from "react-router";
 import CardSearch from "../components/CardSearch/CardSearch.jsx";
 import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
 import "./DeckDetail.css";
 import ExportDeckButton from "../components/ExportDeckButton.jsx";
+import { AuthContext } from "../auth/AuthContext";
 
 function DeckDetail() {
   const { deckId } = useParams();
@@ -14,12 +15,17 @@ function DeckDetail() {
   const [commanders, setCommanders] = useState(null);
   const [viewingCard, setViewingCard] = useState(null);
   const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
     if (!deckId) return;
     const fetchDeckData = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/decks/${deckId}`);
+        const res = await fetch(`http://localhost:4000/api/decks/${deckId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!res.ok) throw new Error("Failed to fetch deck");
         const data = await res.json();
         const formattedCards = data.cards.map(formatCard);
@@ -108,7 +114,10 @@ function DeckDetail() {
         `http://localhost:4000/api/decks/${deckId}/card`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({
             name: card.name,
             scryfall_id: card.scryfall_id,

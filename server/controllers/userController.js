@@ -23,10 +23,15 @@ export const registerUser = async (req, res) => {
       [username, email, hash],
     );
 
-    res.status(201).json(result.rows[0]);
+    const user = result.rows[0];
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "7d" });
+
+    res.status(201).json({
+      token,
+      user: { id: user.id, username: user.username, email: user.email },
+    });
   } catch (err) {
     if (err.code === "23505") {
-      // unique violation
       return res
         .status(400)
         .json({ error: "Username or email already exists" });

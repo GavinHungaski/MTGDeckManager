@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import CommanderAutocomplete from "../CommanderAutocomplete/CommanderAutocomplete";
 import { useNavigate } from "react-router";
+import { useContext } from "react";
+import { AuthContext } from "../../auth/AuthContext";
 import "./NewDeckForm.css";
 
 function NewDeckForm({ showNewDeckForm, closeNewDeckForm, addDeck }) {
   const [deckName, setDeckName] = useState("");
   const [selectedCommander, setSelectedCommander] = useState(null);
   const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
 
   if (!showNewDeckForm) return null;
 
@@ -17,7 +20,10 @@ function NewDeckForm({ showNewDeckForm, closeNewDeckForm, addDeck }) {
     try {
       const res = await fetch("http://localhost:4000/api/deck", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           name: deckName,
           commander: selectedCommander || { name: "TBD" },
@@ -32,8 +38,6 @@ function NewDeckForm({ showNewDeckForm, closeNewDeckForm, addDeck }) {
       setDeckName("");
       setSelectedCommander(null);
       closeNewDeckForm();
-
-      navigate(`/decks/${newDeck.id}`);
     } catch (err) {
       console.error("Error creating deck:", err);
     }

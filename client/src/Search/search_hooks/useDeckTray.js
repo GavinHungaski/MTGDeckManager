@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useContext } from "react";
+import { AuthContext } from "../../auth/AuthContext";
 
 const SUPERTYPES = [
   "Basic",
@@ -46,17 +48,31 @@ function processCard(card) {
 }
 
 export function useDeckTray() {
+  const { token } = useContext(AuthContext);
   const [decks, setDecks] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/decks")
+    if (!token) {
+      setDecks([]);
+      return;
+    }
+    fetch("http://localhost:4000/api/decks", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-        setDecks(data);
+        if (!Array.isArray(data)) {
+          console.error("Decks fetch returned invalid data:", data);
+          setDecks([]);
+        } else {
+          setDecks(data);
+        }
       })
-      .catch((err) => console.error("Error fetching decks:", err));
-  }, []);
+      .catch((err) => {
+        console.error("Error fetching decks:", err);
+        setDecks([]);
+      });
+  }, [token]);
 
   async function addCardToDeck(card, deckId) {
     const newCard = processCard(card);
@@ -65,7 +81,10 @@ export function useDeckTray() {
         `http://localhost:4000/api/decks/${deckId}/card`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({
             name: newCard.name,
             scryfall_id: newCard.scryfall_id,

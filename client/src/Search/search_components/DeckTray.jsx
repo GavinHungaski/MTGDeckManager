@@ -25,7 +25,7 @@ export function DeckTray({ decks, selectedCards, setSelectedCards, addCard }) {
   return (
     <>
       <div className={`deck-tray ${isOpen ? "open" : ""}`}>
-        {decks.map((deck) => {
+        {decks?.map((deck) => {
           return (
             <div className="deck-item" key={deck.id}>
               <h3>{deck.name}</h3>
