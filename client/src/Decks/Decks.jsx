@@ -1,21 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router";
 import NewDeckForm from "../components/NewDeckForm/NewDeckForm";
+import { AuthContext } from "../auth/AuthContext";
 import "./Decks.css";
 
 function Decks() {
-  let [decks, setDecks] = useState([]);
+  const { token } = useContext(AuthContext);
+  const [decks, setDecks] = useState([]);
   const [showNewDeckForm, setShowNewDeckForm] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/decks")
+    if (!token) return;
+
+    fetch("http://localhost:4000/api/decks", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
-      .then((data) => {
-        setDecks(data);
-      })
+      .then((data) => setDecks(data))
       .catch((err) => console.error("Error fetching decks:", err));
-  }, []);
+  }, [token]);
 
   function handleDeckClick(deck) {
     navigate(`${deck.id}`);
@@ -25,11 +31,13 @@ function Decks() {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this deck?",
     );
-    if (!isConfirmed) {
-      return;
-    }
+    if (!isConfirmed) return;
+
     fetch(`http://localhost:4000/api/decks/${deckId}`, {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then(async (res) => {
         let data;
@@ -40,11 +48,7 @@ function Decks() {
             `Failed to parse response as JSON (status ${res.status})`,
           );
         }
-
-        if (!res.ok) {
-          throw new Error(data?.error || "Failed to delete deck");
-        }
-
+        if (!res.ok) throw new Error(data?.error || "Failed to delete deck");
         return data;
       })
       .then((data) => {

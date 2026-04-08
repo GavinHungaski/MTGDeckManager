@@ -66,3 +66,20 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+/**
+ * GET /api/users/me
+ */
+export const getCurrentUser = async (req, res) => {
+  try {
+    // req.user is set by authenticate middleware
+    res.json({
+      id: req.user.id,
+      username: req.user.username,
+      email: req.user.email,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

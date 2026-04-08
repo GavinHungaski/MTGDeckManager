@@ -3,7 +3,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 
-import { registerUser, loginUser } from "./controllers/userController.js";
+import {
+  registerUser,
+  loginUser,
+  getCurrentUser,
+} from "./controllers/userController.js";
 import {
   getAllDecks,
   getDeckById,
@@ -28,6 +32,7 @@ app.use(cors());
 // --------------------
 app.post("/api/users/register", registerUser);
 app.post("/api/users/login", loginUser);
+app.get("/api/users/me", authenticate, getCurrentUser);
 
 // --------------------
 // Deck routes

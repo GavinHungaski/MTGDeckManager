@@ -1,13 +1,15 @@
 import { useSearch } from "./search_hooks/useSearch";
 import { useDeckTray } from "./search_hooks/useDeckTray.js";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import SearchBar from "./search_components/SearchBar";
 import CardHover from "./search_components/CardHover";
 import { DeckTray } from "./search_components/DeckTray";
 import phyrexianMana from "../assets/phyrexian_mana.png";
+import { AuthContext } from "../auth/AuthContext";
 import "./Search.css";
 
 function Search() {
+  const { user } = useContext(AuthContext);
   const {
     cards,
     loading,
@@ -25,7 +27,7 @@ function Search() {
     getMoreCards,
     clearResults,
   } = useSearch();
-  const { decks, addCardToDeck } = useDeckTray();
+  const { decks, addCardToDeck } = useDeckTray(user?.token);
 
   const [currentCard, setCurrentCard] = useState(null);
   const [mousePos, setMousePos] = useState([null, null]);
@@ -104,7 +106,7 @@ function Search() {
         ))}
       </div>
       <DeckTray
-        decks={decks}
+        decks={user ? decks : []}
         selectedCards={selectedCards}
         setSelectedCards={setSelectedCards}
         addCard={addCardToDeck}

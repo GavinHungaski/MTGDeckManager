@@ -1,21 +1,31 @@
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
+import pool from "../db/db.js";
 
-export const authenticate = (req, res, next) => {
+const JWT_SECRET = process.env.JWT_SECRET || "secret";
+
+export const authenticate = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!authHeader?.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
   const token = authHeader.split(" ")[1];
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: payload.id, email: payload.email };
+    const payload = jwt.verify(token, JWT_SECRET);
+    const userRes = await pool.query(
+      "SELECT id, username, email FROM users WHERE id = $1",
+      [payload.id],
+    );
+
+    if (userRes.rows.length === 0) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    req.user = userRes.rows[0];
     next();
   } catch (err) {
-    return res.status(401).json({ error: "Invalid token" });
+    console.error(err);
+    return res.status(401).json({ error: "Unauthorized" });
   }
 };

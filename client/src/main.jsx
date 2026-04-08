@@ -1,11 +1,14 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import { createRoot } from "react-dom/client";
+import { AuthProvider } from "./auth/AuthContext";
 import Layout from "./Layout";
 import App from "./App";
 import Decks from "./Decks/Decks";
 import DeckDetail from "./DeckDetail/DeckDetail";
 import Search from "./Search/Search";
 import Playtest from "./Playtest/Playtest";
+import Login from "./auth/Login";
+import Register from "./auth/Register";
 
 const router = createBrowserRouter([
   {
@@ -19,8 +22,12 @@ const router = createBrowserRouter([
     ],
   },
   { path: "decks/:deckId/playtest", element: <Playtest /> },
+  { path: "login", element: <Login /> },
+  { path: "register", element: <Register /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router} />,
+  <AuthProvider>
+    <RouterProvider router={router} />
+  </AuthProvider>,
 );
