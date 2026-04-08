@@ -19,7 +19,7 @@ export default function Navbar() {
       <Link to="/search">
         <span className="button-top">Search</span>
       </Link>
-
+      {"|"}
       {user ? (
         <button onClick={logout}>
           <span className="button-top">Logout</span>
