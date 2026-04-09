@@ -84,7 +84,7 @@ function Decks() {
                   marginTop: "10px",
                   marginBottom: "20px",
                 }}
-                className="command-stack"
+                className="commander-stack"
               >
                 {(deck.commanders || []).map((c, index) => (
                   <img
@@ -97,7 +97,7 @@ function Decks() {
                       transition: "transform 0.2s ease",
                       gridArea: "1 / 1",
                     }}
-                    className="command-card"
+                    className="commander-card"
                     src={c?.image || ""}
                     alt={c?.name || ""}
                   />
