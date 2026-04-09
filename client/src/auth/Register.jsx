@@ -25,7 +25,16 @@ export default function Register() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={handleSubmit}
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       {error && <p style={{ color: "red" }}>{error}</p>}
       <input
         type="text"
