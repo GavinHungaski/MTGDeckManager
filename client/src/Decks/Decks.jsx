@@ -77,19 +77,32 @@ function Decks() {
               className="commander-container"
               style={{ display: "flex", flexDirection: "column", gap: "8px" }}
             >
-              {(deck.commanders || []).map((c, index) => (
-                <img
-                  key={index}
-                  style={{
-                    width: "100%",
-                    maxWidth: "220px",
-                    borderRadius: "10px",
-                    alignSelf: "center",
-                  }}
-                  src={c?.image || ""}
-                  alt={c?.name || ""}
-                />
-              ))}
+              <div
+                style={{
+                  display: "grid",
+                  justifyItems: "center",
+                  marginTop: "10px",
+                  marginBottom: "20px",
+                }}
+                className="command-stack"
+              >
+                {(deck.commanders || []).map((c, index) => (
+                  <img
+                    key={index}
+                    style={{
+                      width: "100%",
+                      maxWidth: "220px",
+                      borderRadius: "10px",
+                      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+                      transition: "transform 0.2s ease",
+                      gridArea: "1 / 1",
+                    }}
+                    className="command-card"
+                    src={c?.image || ""}
+                    alt={c?.name || ""}
+                  />
+                ))}
+              </div>
             </div>
             <button onClick={() => deleteDeck(deck.id)}>
               <span className="button-top difBg">Delete</span>
