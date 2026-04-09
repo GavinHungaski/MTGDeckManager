@@ -168,7 +168,10 @@ function DeckDetail() {
         `http://localhost:4000/api/decks/${deckId}/card/${card.id}/commander`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({ is_commander: newStatus }),
         },
       );
