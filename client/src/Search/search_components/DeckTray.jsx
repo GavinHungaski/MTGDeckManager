@@ -45,15 +45,33 @@ export function DeckTray({ decks, selectedCards, setSelectedCards, addCard }) {
               >
                 <span className="button-top">Go to</span>
               </button>
-              {deck.commanders.map((c) => {
-                return (
-                  <img
-                    className="commander-art"
-                    src={c?.image || ""}
-                    alt={c?.name || ""}
-                  />
-                );
-              })}
+              <div
+                style={{
+                  display: "grid",
+                  justifyItems: "center",
+                  marginTop: "10px",
+                  marginBottom: "20px",
+                }}
+                className="commander-stack"
+              >
+                {deck.commanders.map((c) => {
+                  return (
+                    <img
+                      className="commander-art"
+                      src={c?.image || ""}
+                      alt={c?.name || ""}
+                      style={{
+                        width: "100%",
+                        maxWidth: "220px",
+                        borderRadius: "10px",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+                        transition: "transform 0.2s ease",
+                        gridArea: "1 / 1",
+                      }}
+                    />
+                  );
+                })}
+              </div>
             </div>
           );
         })}
