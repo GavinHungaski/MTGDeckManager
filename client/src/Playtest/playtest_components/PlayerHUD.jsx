@@ -7,7 +7,6 @@ import { useNavigate } from "react-router";
 function PlayerHUD() {
   const { state, actions } = useContext(PlaytestContext);
   const navigate = useNavigate();
-  const currentUrl = document.URL;
 
   const activePlayer = state.players.find((p) => p.id === state.activePlayerId);
 

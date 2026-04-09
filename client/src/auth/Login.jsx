@@ -1,11 +1,13 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
+import { useNavigate } from "react-router";
 
 export default function Login() {
   const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,6 +20,7 @@ export default function Login() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Login failed");
       login(data.token, data.user);
+      navigate("/decks");
     } catch (err) {
       setError(err.message);
     }
@@ -38,7 +41,9 @@ export default function Login() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button type="submit">Login</button>
+      <button type="submit">
+        <span className="button-top">Login</span>
+      </button>
     </form>
   );
 }

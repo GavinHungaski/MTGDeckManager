@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
+import { AuthContext } from "../auth/AuthContext";
 
 function DeleteCardBtn({ deckId, cardId, card, onDelete }) {
+  const { token } = useContext(AuthContext);
+
   const handleDelete = async () => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this card?",
@@ -11,7 +14,12 @@ function DeleteCardBtn({ deckId, cardId, card, onDelete }) {
     try {
       const response = await fetch(
         `http://localhost:4000/api/decks/${deckId}/card/${cardId}`,
-        { method: "DELETE" },
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       if (!response.ok) {
         const data =
