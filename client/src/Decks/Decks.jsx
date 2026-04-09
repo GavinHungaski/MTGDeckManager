@@ -68,13 +68,11 @@ function Decks() {
         {decks.map((deck) => (
           <div className="deck-item" key={deck.id}>
             <h2>{deck.name}</h2>
-            <hr />
             <span>{deck.count || 0} cards</span>
             <hr />
             <button onClick={() => handleDeckClick(deck)}>
               <span className="button-top">View</span>
             </button>
-            <hr />
             <div
               className="commander-container"
               style={{ display: "flex", flexDirection: "column", gap: "8px" }}
@@ -93,7 +91,6 @@ function Decks() {
                 />
               ))}
             </div>
-            <hr />
             <button onClick={() => deleteDeck(deck.id)}>
               <span className="button-top difBg">Delete</span>
             </button>
