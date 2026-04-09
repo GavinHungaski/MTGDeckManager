@@ -12,7 +12,6 @@ function Decks() {
 
   useEffect(() => {
     if (!token) return;
-
     fetch("http://localhost:4000/api/decks", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -32,7 +31,6 @@ function Decks() {
       "Are you sure you want to delete this deck?",
     );
     if (!isConfirmed) return;
-
     fetch(`http://localhost:4000/api/decks/${deckId}`, {
       method: "DELETE",
       headers: {
@@ -71,11 +69,7 @@ function Decks() {
           <div className="deck-item" key={deck.id}>
             <h2>{deck.name}</h2>
             <hr />
-            <span>{deck.count}</span>
-            <hr />
-            <span>id: {deck.id}</span>
-            <hr />
-            <span>{Date(deck.created_at)}</span>
+            <span>{deck.count || 0} cards</span>
             <hr />
             <button onClick={() => handleDeckClick(deck)}>
               <span className="button-top">View</span>
