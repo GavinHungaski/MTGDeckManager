@@ -21,7 +21,7 @@ import {
 } from "./controllers/cardController.js";
 import { authenticate } from "./middleware/auth.js";
 
-const PORT = 4000;
+const PORT = process.env.PORT || 8080;
 const app = express();
 
 app.use(express.json());
