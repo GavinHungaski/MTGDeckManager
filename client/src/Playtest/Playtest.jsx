@@ -14,6 +14,7 @@ import CardCreator from "./playtest_components/CardCreator.jsx";
 import { AuthContext } from "../auth/AuthContext";
 import "./Playtest.css";
 import { API_URL } from "../constants.js";
+import { v4 as uuidv4 } from "uuid";
 
 export const PlaytestContext = createContext();
 
@@ -59,7 +60,7 @@ function Playtest() {
 
         const players = [
           {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name: "Player 1",
             life: 40,
             experience: 0,

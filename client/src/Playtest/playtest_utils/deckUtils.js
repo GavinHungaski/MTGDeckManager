@@ -1,4 +1,5 @@
 import { HAND_HEIGHT, HUD_HEIGHT } from "./constants";
+import { v4 as uuidv4 } from "uuid";
 
 export function getPlayPosition() {
   const width = window.innerWidth;
@@ -17,7 +18,7 @@ export function expandAndShuffle(cards) {
 
   for (const card of cards) {
     if (card.is_commander) {
-      const instanceId = crypto.randomUUID();
+      const instanceId = uuidv4();
       library[instanceId] = {
         instanceId,
         is_commander: card.is_commander,
@@ -33,7 +34,7 @@ export function expandAndShuffle(cards) {
       commandZone.push(instanceId);
     } else {
       for (let i = 0; i < (card.count ?? 1); i++) {
-        const instanceId = crypto.randomUUID();
+        const instanceId = uuidv4();
         library[instanceId] = {
           instanceId,
           is_commander: false,
