@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
+import { useNavigate } from "react-router";
 
 export default function Register() {
   const { login } = useContext(AuthContext);
@@ -7,6 +8,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +24,7 @@ export default function Register() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Registration failed");
       login(data.token, data.user);
+      navigate("/decks");
     } catch (err) {
       setError(err.message);
     }
