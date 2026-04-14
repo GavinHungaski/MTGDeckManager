@@ -3,6 +3,7 @@ import CommanderAutocomplete from "../CommanderAutocomplete/CommanderAutocomplet
 import { useNavigate } from "react-router";
 import { useContext } from "react";
 import { AuthContext } from "../../auth/AuthContext";
+import { API_URL } from "../../constants.js";
 import "./NewDeckForm.css";
 
 function NewDeckForm({ showNewDeckForm, closeNewDeckForm, addDeck }) {
@@ -18,20 +19,17 @@ function NewDeckForm({ showNewDeckForm, closeNewDeckForm, addDeck }) {
     if (!deckName) return;
 
     try {
-      const res = await fetch(
-        "http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/deck",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: deckName,
-            commander: selectedCommander || { name: "TBD" },
-          }),
+      const res = await fetch(`${API_URL}/api/deck`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          name: deckName,
+          commander: selectedCommander || { name: "TBD" },
+        }),
+      });
 
       if (!res.ok) throw new Error("Network response was not ok");
 

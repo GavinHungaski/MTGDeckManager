@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
+import { API_URL } from "../constants.js";
 
 function DeleteCardBtn({ deckId, cardId, card, onDelete }) {
   const { token } = useContext(AuthContext);
@@ -13,7 +14,7 @@ function DeleteCardBtn({ deckId, cardId, card, onDelete }) {
     }
     try {
       const response = await fetch(
-        `http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}/card/${cardId}`,
+        `${API_URL}/api/decks/${deckId}/card/${cardId}`,
         {
           method: "DELETE",
           headers: {

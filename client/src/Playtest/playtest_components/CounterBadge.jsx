@@ -231,7 +231,7 @@ function CounterBadge({ counter, instanceId, index }) {
               display: editing ? "block" : "none",
               position: "absolute",
               top: "2px",
-              left: "19px", // Centered: (70 - 32) / 2
+              left: "19px",
               width: "32px",
               height: "18px",
               fontSize: "12px",

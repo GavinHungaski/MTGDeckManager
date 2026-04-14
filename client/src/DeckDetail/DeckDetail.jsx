@@ -5,6 +5,7 @@ import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
 import "./DeckDetail.css";
 import ExportDeckButton from "../components/ExportDeckButton.jsx";
 import { AuthContext } from "../auth/AuthContext";
+import { API_URL } from "../constants.js";
 
 function DeckDetail() {
   const { deckId } = useParams();
@@ -21,7 +22,7 @@ function DeckDetail() {
     if (!deckId) return;
     const fetchDeckData = async () => {
       try {
-        const res = await fetch(`http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}`, {
+        const res = await fetch(`${API_URL}/api/decks/${deckId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -110,22 +111,19 @@ function DeckDetail() {
 
   async function addCard(card) {
     try {
-      const res = await fetch(
-        `http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}/card`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: card.name,
-            scryfall_id: card.scryfall_id,
-            card_data: card,
-            is_commander: false,
-          }),
+      const res = await fetch(`${API_URL}/api/decks/${deckId}/card`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          name: card.name,
+          scryfall_id: card.scryfall_id,
+          card_data: card,
+          is_commander: false,
+        }),
+      });
       if (!res.ok) throw new Error("Network response was not ok");
       const newCard = await res.json();
       const formattedCard = formatCard(newCard);
@@ -165,7 +163,7 @@ function DeckDetail() {
     const newStatus = !card.is_commander;
     try {
       const res = await fetch(
-        `http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}/card/${card.id}/commander`,
+        `${API_URL}/api/decks/${deckId}/card/${card.id}/commander`,
         {
           method: "PATCH",
           headers: {
@@ -183,11 +181,9 @@ function DeckDetail() {
       );
       setCommanders((prev) => {
         if (newStatus) {
-          // Add to list if not already there
           const exists = prev.find((c) => c.id === card.id);
           return exists ? prev : [...prev, { ...card, is_commander: true }];
         } else {
-          // Remove from list
           return prev.filter((c) => c.id !== card.id);
         }
       });

@@ -1,5 +1,5 @@
-// src/context/AuthContext.jsx
 import { createContext, useState, useEffect } from "react";
+import { API_URL } from "../constants.js";
 
 export const AuthContext = createContext();
 
@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user info from backend if token exists
   useEffect(() => {
     const fetchUser = async () => {
       if (!token) {
@@ -18,12 +17,9 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const res = await fetch(
-          "http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/users/me",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const res = await fetch(`${API_URL}/api/users/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (!res.ok) {
           throw new Error("Failed to fetch user");

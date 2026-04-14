@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useContext } from "react";
 import { AuthContext } from "../../auth/AuthContext";
+import { API_URL } from "../../constants.js";
 
 const SUPERTYPES = [
   "Basic",
@@ -56,12 +57,9 @@ export function useDeckTray() {
       setDecks([]);
       return;
     }
-    fetch(
-      "http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks",
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    )
+    fetch(`${API_URL}/api/decks`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (!Array.isArray(data)) {
@@ -80,22 +78,19 @@ export function useDeckTray() {
   async function addCardToDeck(card, deckId) {
     const newCard = processCard(card);
     try {
-      const res = await fetch(
-        `http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}/card`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: newCard.name,
-            scryfall_id: newCard.scryfall_id,
-            card_data: newCard,
-            is_commander: false,
-          }),
+      const res = await fetch(`${API_URL}/api/decks/${deckId}/card`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          name: newCard.name,
+          scryfall_id: newCard.scryfall_id,
+          card_data: newCard,
+          is_commander: false,
+        }),
+      });
       if (!res.ok) throw new Error("Network response was not ok");
       return (result = await res.json());
     } catch (err) {

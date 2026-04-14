@@ -1,5 +1,3 @@
-import React, { useState, useEffect, useRef } from "react";
-
 function ExportDeckButton({ cards }) {
   async function exportDeck() {
     const text = cards.map((card) => `${card.count} ${card.name}`).join("\n");

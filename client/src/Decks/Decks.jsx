@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router";
 import NewDeckForm from "../components/NewDeckForm/NewDeckForm";
 import { AuthContext } from "../auth/AuthContext";
+import { API_URL } from "../constants";
 import "./Decks.css";
 
 function Decks() {
@@ -12,7 +13,7 @@ function Decks() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks", {
+    fetch(`${API_URL}/api/decks`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -31,7 +32,7 @@ function Decks() {
       "Are you sure you want to delete this deck?",
     );
     if (!isConfirmed) return;
-    fetch(`http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}`, {
+    fetch(`${API_URL}/api/decks/${deckId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

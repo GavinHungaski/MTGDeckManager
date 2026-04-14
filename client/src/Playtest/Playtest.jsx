@@ -13,6 +13,7 @@ import DeckSearcher from "./playtest_components/DeckSearcher.jsx";
 import CardCreator from "./playtest_components/CardCreator.jsx";
 import { AuthContext } from "../auth/AuthContext";
 import "./Playtest.css";
+import { API_URL } from "../constants.js";
 
 export const PlaytestContext = createContext();
 
@@ -44,7 +45,7 @@ function Playtest() {
     if (!deckId) return;
     const fetchDeckData = async () => {
       try {
-        const res = await fetch(`http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}`, {
+        const res = await fetch(`${API_URL}/api/decks/${deckId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
