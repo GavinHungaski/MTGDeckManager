@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { PlaytestContext } from "../Playtest";
 import { getPlayPosition } from "../playtest_utils/deckUtils";
+import { v4 as uuidv4 } from "uuid";
 
 function TokenCreator() {
   const { actions } = useContext(PlaytestContext);
@@ -87,7 +88,7 @@ function TokenCreator() {
     const { x, y } = getPlayPosition();
 
     const token = {
-      instanceId: crypto.randomUUID(),
+      instanceId: uuidv4(),
       name: card.name,
       image,
       back_image,

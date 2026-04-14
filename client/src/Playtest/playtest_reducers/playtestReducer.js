@@ -1,4 +1,5 @@
 import { fisherYates } from "../playtest_utils/deckUtils.js";
+import { v4 as uuidv4 } from "uuid";
 
 export const initialState = {
   deck: [],
@@ -402,7 +403,7 @@ export function playtestReducer(state, action) {
                 counters: [
                   ...c.counters,
                   {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     type: "+1/+1",
                     value: 1,
                     x: null,
