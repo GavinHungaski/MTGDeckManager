@@ -11,11 +11,14 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:4000/api/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
-      });
+      const res = await fetch(
+        "http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/users/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password }),
+        },
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Registration failed");
       login(data.token, data.user);

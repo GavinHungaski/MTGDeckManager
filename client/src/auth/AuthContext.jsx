@@ -18,9 +18,12 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const res = await fetch("http://localhost:4000/api/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          "http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/users/me",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
 
         if (!res.ok) {
           throw new Error("Failed to fetch user");
