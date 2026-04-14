@@ -13,7 +13,7 @@ import DeckSearcher from "./playtest_components/DeckSearcher.jsx";
 import CardCreator from "./playtest_components/CardCreator.jsx";
 import { AuthContext } from "../auth/AuthContext";
 import "./Playtest.css";
-import { API_URL } from "../constants.js";
+const API_URL = import.meta.env.VITE_API_URL;
 import { v4 as uuidv4 } from "uuid";
 
 export const PlaytestContext = createContext();

@@ -3,7 +3,7 @@ import CommanderAutocomplete from "../CommanderAutocomplete/CommanderAutocomplet
 import { useNavigate } from "react-router";
 import { useContext } from "react";
 import { AuthContext } from "../../auth/AuthContext";
-import { API_URL } from "../../constants.js";
+const API_URL = import.meta.env.VITE_API_URL;
 import "./NewDeckForm.css";
 
 function NewDeckForm({ showNewDeckForm, closeNewDeckForm, addDeck }) {

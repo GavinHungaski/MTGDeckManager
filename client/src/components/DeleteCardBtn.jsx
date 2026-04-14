@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
-import { API_URL } from "../constants.js";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function DeleteCardBtn({ deckId, cardId, card, onDelete }) {
   const { token } = useContext(AuthContext);

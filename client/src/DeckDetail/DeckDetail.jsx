@@ -5,7 +5,7 @@ import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
 import "./DeckDetail.css";
 import ExportDeckButton from "../components/ExportDeckButton.jsx";
 import { AuthContext } from "../auth/AuthContext";
-import { API_URL } from "../constants.js";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function DeckDetail() {
   const { deckId } = useParams();

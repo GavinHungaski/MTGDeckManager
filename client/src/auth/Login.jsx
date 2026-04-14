@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
 import { useNavigate } from "react-router";
-import { API_URL } from "../constants.js";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Login() {
   const { login } = useContext(AuthContext);

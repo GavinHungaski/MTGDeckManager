@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router";
 import NewDeckForm from "../components/NewDeckForm/NewDeckForm";
 import { AuthContext } from "../auth/AuthContext";
-import { API_URL } from "../constants";
+const API_URL = import.meta.env.VITE_API_URL;
 import "./Decks.css";
 
 function Decks() {
