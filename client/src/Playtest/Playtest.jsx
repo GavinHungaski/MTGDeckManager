@@ -44,7 +44,7 @@ function Playtest() {
     if (!deckId) return;
     const fetchDeckData = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/decks/${deckId}`, {
+        const res = await fetch(`http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

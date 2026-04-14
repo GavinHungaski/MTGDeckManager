@@ -21,7 +21,7 @@ function DeckDetail() {
     if (!deckId) return;
     const fetchDeckData = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/decks/${deckId}`, {
+        const res = await fetch(`http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -111,7 +111,7 @@ function DeckDetail() {
   async function addCard(card) {
     try {
       const res = await fetch(
-        `http://localhost:4000/api/decks/${deckId}/card`,
+        `http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}/card`,
         {
           method: "POST",
           headers: {
@@ -165,7 +165,7 @@ function DeckDetail() {
     const newStatus = !card.is_commander;
     try {
       const res = await fetch(
-        `http://localhost:4000/api/decks/${deckId}/card/${card.id}/commander`,
+        `http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}/card/${card.id}/commander`,
         {
           method: "PATCH",
           headers: {

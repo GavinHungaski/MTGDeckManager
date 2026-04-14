@@ -12,7 +12,7 @@ function Decks() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://localhost:4000/api/decks", {
+    fetch("http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -31,7 +31,7 @@ function Decks() {
       "Are you sure you want to delete this deck?",
     );
     if (!isConfirmed) return;
-    fetch(`http://localhost:4000/api/decks/${deckId}`, {
+    fetch(`http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

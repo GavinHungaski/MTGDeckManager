@@ -13,7 +13,7 @@ function DeleteCardBtn({ deckId, cardId, card, onDelete }) {
     }
     try {
       const response = await fetch(
-        `http://localhost:4000/api/decks/${deckId}/card/${cardId}`,
+        `http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}/card/${cardId}`,
         {
           method: "DELETE",
           headers: {

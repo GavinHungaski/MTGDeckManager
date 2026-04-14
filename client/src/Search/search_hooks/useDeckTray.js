@@ -56,9 +56,12 @@ export function useDeckTray() {
       setDecks([]);
       return;
     }
-    fetch("http://localhost:4000/api/decks", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(
+      "http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
       .then((res) => res.json())
       .then((data) => {
         if (!Array.isArray(data)) {
@@ -78,7 +81,7 @@ export function useDeckTray() {
     const newCard = processCard(card);
     try {
       const res = await fetch(
-        `http://localhost:4000/api/decks/${deckId}/card`,
+        `http://mtg-brewer-backend-env.eba-ajvwwj6w.us-east-2.elasticbeanstalk.com/api/decks/${deckId}/card`,
         {
           method: "POST",
           headers: {
