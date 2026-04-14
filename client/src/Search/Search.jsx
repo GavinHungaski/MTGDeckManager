@@ -4,7 +4,7 @@ import { useState, useContext } from "react";
 import SearchBar from "./search_components/SearchBar";
 import CardHover from "./search_components/CardHover";
 import { DeckTray } from "./search_components/DeckTray";
-import phyrexianMana from "../assets/phyrexian_mana.png";
+import phyrexianMana from "/phyrexian_mana.png";
 import { AuthContext } from "../auth/AuthContext";
 import "./Search.css";
 
