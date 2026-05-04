@@ -88,13 +88,14 @@ function CardSearch({ addCard, color_identity = [] }) {
     const supertypes = leftWords.filter((w) => SUPERTYPES.includes(w));
     const types = leftWords.filter((w) => !SUPERTYPES.includes(w));
     const subtypes = right ? right.split(" ") : [];
+    const color_identity = card.color_identity.join(' ');
     const cardData = {
-      id: card.id, // Scryfall ID used as primary key
+      id: card.id,
       name: card.name,
       image,
       back_image,
       scryfall_id: card.id,
-      color_identity: card.color_identity,
+      color_identity: color_identity,
       cmc: card.cmc,
       mana_cost: card.mana_cost,
       type_line: card.type_line,
@@ -102,7 +103,11 @@ function CardSearch({ addCard, color_identity = [] }) {
       prices: card.prices || null,
       power: card.power,
       toughness: card.toughness,
-      image_uris: card.image_uris || (card.card_faces?.[0]?.image_uris ? { normal: card.card_faces[0].image_uris.normal } : null),
+      image_uris:
+        card.image_uris ||
+        (card.card_faces?.[0]?.image_uris
+          ? { normal: card.card_faces[0].image_uris.normal }
+          : null),
       types: {
         super: supertypes,
         type: types,
@@ -114,6 +119,7 @@ function CardSearch({ addCard, color_identity = [] }) {
       rarity: card.rarity,
       meta_rank: card.edhrec_rank,
     };
+    
     addCard(cardData);
     setSearch("");
     setShowDropdown(false);

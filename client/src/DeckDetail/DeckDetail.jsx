@@ -24,6 +24,7 @@ function DeckDetail() {
       try {
         const res = await deckAPI.getById(deckId);
         const data = res.data;
+        console.log(data);
         const formattedCards = data.cards.map(formatCard);
         const commanders = formattedCards.filter((c) => c.is_commander);
         setDeck({ id: data.id, name: data.name });
@@ -112,17 +113,19 @@ function DeckDetail() {
         id: card.id,
         name: card.name,
         mana_cost: card.mana_cost,
+        color_identity: card.color_identity,
         type_line: card.type_line,
         oracle_text: card.oracle_text,
         power: card.power,
         toughness: card.toughness,
         image_uris: card.image_uris,
       });
-      
+
       // Refetch deck to get updated card list
       const res = await deckAPI.getById(deckId);
       const data = res.data;
       const formattedCards = data.cards.map(formatCard);
+      console.log(formattedCards);
       setCards(formattedCards);
     } catch (err) {
       console.error("Error adding card:", err);

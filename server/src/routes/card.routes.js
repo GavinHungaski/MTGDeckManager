@@ -24,6 +24,21 @@ router.post('/decks/:deckId/card', cardOperationValidation, async (req, res, nex
 });
 
 /**
+ * POST /api/cards/decks/:deckId/cards/batch
+ * Add multiple cards to a deck in batch
+ */
+router.post('/decks/:deckId/cards/batch', cardOperationValidation, async (req, res, next) => {
+  try {
+    const { deckId } = req.params;
+    const { cards } = req.body;
+    const result = await cardService.addCardsToDeckBatch(deckId, cards, req.user.id);
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * DELETE /api/cards/decks/:deckId/card/:cardId
  * Remove a card from a deck
  */

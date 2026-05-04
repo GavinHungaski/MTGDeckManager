@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import "./DeckTray.css";
 
-export function DeckTray({ decks, selectedCards, setSelectedCards, addCard }) {
+export function DeckTray({ decks, selectedCards, setSelectedCards, addCard, addCardsBatch }) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -14,11 +14,28 @@ export function DeckTray({ decks, selectedCards, setSelectedCards, addCard }) {
     if (cards.length < 1) {
       alert("No cards selected");
     } else {
-      for (const card of cards) {
-        await addCard(card, deck.id);
+      try {
+        // Use batch endpoint if available and multiple cards selected
+        if (addCardsBatch && cards.length > 1) {
+          const result = await addCardsBatch(cards, deck.id);
+          if (result.failed > 0) {
+            alert(`Added ${result.success} cards to ${deck.name}. ${result.failed} failed.`);
+            console.error("Failed cards:", result.errors);
+          } else {
+            alert(`Successfully added ${result.success} cards to ${deck.name}`);
+          }
+        } else {
+          // Fall back to individual adds for single card or if batch not available
+          for (const card of cards) {
+            await addCard(card, deck.id);
+          }
+          alert(`Successfully added ${cards.length} card(s) to ${deck.name}`);
+        }
+        setSelectedCards([]);
+      } catch (error) {
+        alert(`Error adding cards: ${error.message}`);
+        console.error("Error adding cards:", error);
       }
-      alert(`Successfully added ${cards.length} to ${deck.name}`);
-      setSelectedCards([]);
     }
   }
 

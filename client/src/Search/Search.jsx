@@ -27,7 +27,7 @@ function Search() {
     getMoreCards,
     clearResults,
   } = useSearch();
-  const { decks, addCardToDeck } = useDeckTray(user?.token);
+  const { decks, addCardToDeck, addCardsToDeckBatch } = useDeckTray(user?.token);
 
   const [currentCard, setCurrentCard] = useState(null);
   const [mousePos, setMousePos] = useState([null, null]);
@@ -110,6 +110,7 @@ function Search() {
         selectedCards={selectedCards}
         setSelectedCards={setSelectedCards}
         addCard={addCardToDeck}
+        addCardsBatch={addCardsToDeckBatch}
       />
 
       {nextPage && (

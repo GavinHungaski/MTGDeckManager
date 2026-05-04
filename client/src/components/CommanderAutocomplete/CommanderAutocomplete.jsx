@@ -76,13 +76,14 @@ function CommanderAutocomplete({ onSelect }) {
     const supertypes = leftWords.filter((w) => SUPERTYPES.includes(w));
     const types = leftWords.filter((w) => !SUPERTYPES.includes(w));
     const subtypes = right ? right.split(" ") : [];
+    const color_identity = card.color_identity.join(' ');
 
     const commanderData = {
       id: card.id,
       name: card.name,
       image_uris: image ? { normal: image } : null,
       back_image,
-      color_identity: card.color_identity,
+      color_identity: color_identity,
       cmc: card.cmc,
       mana_cost: card.mana_cost,
       prices: card.prices || null,

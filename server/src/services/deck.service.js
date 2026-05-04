@@ -67,11 +67,18 @@ class DeckService {
           c.id AS card_id,
           c.name AS card_name,
           c.mana_cost,
+          c.cmc,
           c.card_type,
           c.oracle_text,
           c.power,
           c.toughness,
-          c.image_uris
+          c.image_uris,
+          c.color_identity,
+          c.prices,
+          c.keywords,
+          c.legalities,
+          c.rarity,
+          c.edhrec_rank
         FROM decks d
         LEFT JOIN deck_cards dc ON d.id = dc.deck_id
         LEFT JOIN cards c ON dc.card_id = c.id
@@ -97,7 +104,14 @@ class DeckService {
           toughness: r.toughness,
           image_uris: r.image_uris,
           count: r.quantity || 1,
-          is_commander: r.is_commander
+          is_commander: r.is_commander,
+          color_identity: r.color_identity,
+          cmc: r.cmc,
+          prices: r.prices,
+          keywords: r.keywords,
+          legalities: r.legalities,
+          rarity: r.rarity,
+          edhrec_rank: r.edhrec_rank
         }));
 
       const commanders = cards.filter((c) => c.is_commander);
@@ -139,16 +153,23 @@ class DeckService {
 
       const deckId = deckResult.rows[0].id;
 
+      // Convert color_identity to array format if needed
+      const colorIdentity = commander.color_identity 
+        ? (Array.isArray(commander.color_identity) 
+            ? commander.color_identity 
+            : commander.color_identity.split(' ').filter(c => c))
+        : null;
+
       // Create or update commander card
       const cardResult = await client.query(
         `
-        INSERT INTO cards (id, name, image_uris)
-        VALUES ($1, $2, $3)
+        INSERT INTO cards (id, name, image_uris, color_identity)
+        VALUES ($1, $2, $3, $4)
         ON CONFLICT (id)
         DO UPDATE SET name = EXCLUDED.name, image_uris = EXCLUDED.image_uris
         RETURNING id
         `,
-        [commander.id, commander.name, commander.image_uris || null]
+        [commander.id, commander.name, commander.image_uris, colorIdentity]
       );
 
       const cardId = cardResult.rows[0].id;

@@ -78,28 +78,81 @@ export function useDeckTray() {
   async function addCardToDeck(card, deckId) {
     const newCard = processCard(card);
     try {
-      const res = await fetch(`${API_URL}/api/decks/${deckId}/card`, {
+      const res = await fetch(`${API_URL}/api/cards/decks/${deckId}/card`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          id: newCard.scryfall_id,
           name: newCard.name,
-          scryfall_id: newCard.scryfall_id,
-          card_data: newCard,
-          is_commander: false,
+          mana_cost: newCard.mana_cost,
+          cmc: newCard.cmc,
+          type_line: newCard.types ? `${newCard.types.super.join(' ')} ${newCard.types.type.join(' ')}${newCard.types.sub.length > 0 ? ' — ' + newCard.types.sub.join(' ') : ''}`.trim() : null,
+          oracle_text: newCard.text_box,
+          power: newCard.power,
+          toughness: newCard.toughness,
+          image_uris: newCard.image ? { normal: newCard.image, back: newCard.back_image } : null,
+          color_identity: newCard.color_identity,
+          prices: newCard.prices,
+          keywords: newCard.keywords,
+          legalities: newCard.legalities,
+          rarity: newCard.rarity,
+          meta_rank: newCard.meta_rank,
         }),
       });
       if (!res.ok) throw new Error("Network response was not ok");
-      return (result = await res.json());
+      return await res.json();
     } catch (err) {
       console.error("Error adding card:", err);
+      throw err;
+    }
+  }
+
+  async function addCardsToDeckBatch(cards, deckId) {
+    try {
+      const processedCards = cards.map(card => {
+        const newCard = processCard(card);
+        return {
+          id: newCard.scryfall_id,
+          name: newCard.name,
+          mana_cost: newCard.mana_cost,
+          cmc: newCard.cmc,
+          type_line: newCard.types ? `${newCard.types.super.join(' ')} ${newCard.types.type.join(' ')}${newCard.types.sub.length > 0 ? ' — ' + newCard.types.sub.join(' ') : ''}`.trim() : null,
+          oracle_text: newCard.text_box,
+          power: newCard.power,
+          toughness: newCard.toughness,
+          image_uris: newCard.image ? { normal: newCard.image, back: newCard.back_image } : null,
+          color_identity: newCard.color_identity,
+          prices: newCard.prices,
+          keywords: newCard.keywords,
+          legalities: newCard.legalities,
+          rarity: newCard.rarity,
+          meta_rank: newCard.meta_rank,
+        };
+      });
+
+      const res = await fetch(`${API_URL}/api/cards/decks/${deckId}/cards/batch`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ cards: processedCards }),
+      });
+      
+      if (!res.ok) throw new Error("Network response was not ok");
+      return await res.json();
+    } catch (err) {
+      console.error("Error adding cards in batch:", err);
+      throw err;
     }
   }
 
   return {
     decks,
     addCardToDeck,
+    addCardsToDeckBatch,
   };
 }

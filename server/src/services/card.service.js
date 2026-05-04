@@ -31,45 +31,99 @@ class CardService {
         
         // Create new card with all relevant fields
         const imageUrisJson = cardData.image_uris ? JSON.stringify(cardData.image_uris) : null;
+        const pricesJson = cardData.prices ? JSON.stringify(cardData.prices) : null;
+        const legalitiesJson = cardData.legalities ? JSON.stringify(cardData.legalities) : null;
+        
+        // Convert arrays to PostgreSQL array format
+        const colorIdentityArray = cardData.color_identity 
+          ? (Array.isArray(cardData.color_identity) 
+              ? cardData.color_identity 
+              : cardData.color_identity.split(' ').filter(c => c))
+          : null;
+        const keywordsArray = cardData.keywords 
+          ? (Array.isArray(cardData.keywords) 
+              ? cardData.keywords 
+              : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
+          : null;
         
         cardResult = await client.query(
-          `INSERT INTO cards (id, name, mana_cost, card_type, oracle_text, power, toughness, image_uris)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          `INSERT INTO cards (
+            id, name, mana_cost, cmc, card_type, oracle_text, power, toughness, 
+            image_uris, color_identity, prices, keywords, legalities, rarity, edhrec_rank
+          )
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
            RETURNING id`,
           [
             cardData.id,
             cardData.name,
             cardData.mana_cost || null,
+            cardData.cmc || null,
             cardData.type_line || null,
             cardData.oracle_text || null,
             cardData.power || null,
             cardData.toughness || null,
-            imageUrisJson
+            imageUrisJson,
+            colorIdentityArray,
+            pricesJson,
+            keywordsArray,
+            legalitiesJson,
+            cardData.rarity || null,
+            cardData.meta_rank || cardData.edhrec_rank || null
           ]
         );
         cardId = cardResult.rows[0].id;
       } else {
         cardId = cardResult.rows[0].id;
         
-        // Update card data
+        // Update card data with all fields
+        const imageUrisJson = cardData.image_uris ? JSON.stringify(cardData.image_uris) : null;
+        const pricesJson = cardData.prices ? JSON.stringify(cardData.prices) : null;
+        const legalitiesJson = cardData.legalities ? JSON.stringify(cardData.legalities) : null;
+        
+        // Convert arrays to PostgreSQL array format
+        const colorIdentityArray = cardData.color_identity 
+          ? (Array.isArray(cardData.color_identity) 
+              ? cardData.color_identity 
+              : cardData.color_identity.split(' ').filter(c => c))
+          : null;
+        const keywordsArray = cardData.keywords 
+          ? (Array.isArray(cardData.keywords) 
+              ? cardData.keywords 
+              : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
+          : null;
+        
         await client.query(
           `UPDATE cards SET 
             name = $1,
             mana_cost = $2,
-            card_type = $3,
-            oracle_text = $4,
-            power = $5,
-            toughness = $6,
-            image_uris = $7
-           WHERE id = $8`,
+            cmc = $3,
+            card_type = $4,
+            oracle_text = $5,
+            power = $6,
+            toughness = $7,
+            image_uris = $8,
+            color_identity = $9,
+            prices = $10,
+            keywords = $11,
+            legalities = $12,
+            rarity = $13,
+            edhrec_rank = $14
+           WHERE id = $15`,
           [
             cardData.name,
             cardData.mana_cost || null,
+            cardData.cmc || null,
             cardData.type_line || null,
             cardData.oracle_text || null,
             cardData.power || null,
             cardData.toughness || null,
-            JSON.stringify(cardData.image_uris) || null,
+            imageUrisJson,
+            colorIdentityArray,
+            pricesJson,
+            keywordsArray,
+            legalitiesJson,
+            cardData.rarity || null,
+            cardData.meta_rank || cardData.edhrec_rank || null,
             cardId
           ]
         );
@@ -119,6 +173,197 @@ class CardService {
       });
       console.error('Full error object:', error);
       throw new DatabaseError(`Failed to add card to deck: ${error.message}`);
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
+   * Add multiple cards to a deck in batch
+   */
+  async addCardsToDeckBatch(deckId, cardsData, userId) {
+    const client = await pool.connect();
+
+    try {
+      // Verify deck ownership
+      await deckService.verifyDeckOwnership(deckId, userId);
+
+      if (!Array.isArray(cardsData) || cardsData.length === 0) {
+        throw new ValidationError('Cards data must be a non-empty array');
+      }
+
+      await client.query('BEGIN');
+
+      const results = {
+        success: 0,
+        failed: 0,
+        errors: []
+      };
+
+      for (const cardData of cardsData) {
+        try {
+          // Validate card data
+          if (!cardData.id || !cardData.name) {
+            results.failed++;
+            results.errors.push({ card: cardData.name || 'Unknown', error: 'Missing id or name' });
+            continue;
+          }
+
+          // Check if card exists, create if not
+          let cardResult = await client.query(
+            `SELECT id FROM cards WHERE id = $1`,
+            [cardData.id]
+          );
+
+          let cardId;
+          if (cardResult.rows.length === 0) {
+            // Create new card with all relevant fields
+            const imageUrisJson = cardData.image_uris ? JSON.stringify(cardData.image_uris) : null;
+            const pricesJson = cardData.prices ? JSON.stringify(cardData.prices) : null;
+            const legalitiesJson = cardData.legalities ? JSON.stringify(cardData.legalities) : null;
+            
+            // Convert arrays to PostgreSQL array format
+            const colorIdentityArray = cardData.color_identity 
+              ? (Array.isArray(cardData.color_identity) 
+                  ? cardData.color_identity 
+                  : cardData.color_identity.split(' ').filter(c => c))
+              : null;
+            const keywordsArray = cardData.keywords 
+              ? (Array.isArray(cardData.keywords) 
+                  ? cardData.keywords 
+                  : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
+              : null;
+            
+            cardResult = await client.query(
+              `INSERT INTO cards (
+                id, name, mana_cost, cmc, card_type, oracle_text, power, toughness, 
+                image_uris, color_identity, prices, keywords, legalities, rarity, edhrec_rank
+              )
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+               RETURNING id`,
+              [
+                cardData.id,
+                cardData.name,
+                cardData.mana_cost || null,
+                cardData.cmc || null,
+                cardData.type_line || null,
+                cardData.oracle_text || null,
+                cardData.power || null,
+                cardData.toughness || null,
+                imageUrisJson,
+                colorIdentityArray,
+                pricesJson,
+                keywordsArray,
+                legalitiesJson,
+                cardData.rarity || null,
+                cardData.meta_rank || cardData.edhrec_rank || null
+              ]
+            );
+            cardId = cardResult.rows[0].id;
+          } else {
+            cardId = cardResult.rows[0].id;
+            
+            // Update card data with all fields
+            const imageUrisJson = cardData.image_uris ? JSON.stringify(cardData.image_uris) : null;
+            const pricesJson = cardData.prices ? JSON.stringify(cardData.prices) : null;
+            const legalitiesJson = cardData.legalities ? JSON.stringify(cardData.legalities) : null;
+            
+            // Convert arrays to PostgreSQL array format
+            const colorIdentityArray = cardData.color_identity 
+              ? (Array.isArray(cardData.color_identity) 
+                  ? cardData.color_identity 
+                  : cardData.color_identity.split(' ').filter(c => c))
+              : null;
+            const keywordsArray = cardData.keywords 
+              ? (Array.isArray(cardData.keywords) 
+                  ? cardData.keywords 
+                  : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
+              : null;
+            
+            await client.query(
+              `UPDATE cards SET 
+                name = $1,
+                mana_cost = $2,
+                cmc = $3,
+                card_type = $4,
+                oracle_text = $5,
+                power = $6,
+                toughness = $7,
+                image_uris = $8,
+                color_identity = $9,
+                prices = $10,
+                keywords = $11,
+                legalities = $12,
+                rarity = $13,
+                edhrec_rank = $14
+               WHERE id = $15`,
+              [
+                cardData.name,
+                cardData.mana_cost || null,
+                cardData.cmc || null,
+                cardData.type_line || null,
+                cardData.oracle_text || null,
+                cardData.power || null,
+                cardData.toughness || null,
+                imageUrisJson,
+                colorIdentityArray,
+                pricesJson,
+                keywordsArray,
+                legalitiesJson,
+                cardData.rarity || null,
+                cardData.meta_rank || cardData.edhrec_rank || null,
+                cardId
+              ]
+            );
+          }
+
+          // Check if card is already in deck
+          const existingCard = await client.query(
+            `SELECT quantity FROM deck_cards WHERE deck_id = $1 AND card_id = $2`,
+            [deckId, cardId]
+          );
+
+          if (existingCard.rows.length > 0) {
+            // Update quantity
+            const newQuantity = existingCard.rows[0].quantity + 1;
+            await client.query(
+              `UPDATE deck_cards SET quantity = $1 WHERE deck_id = $2 AND card_id = $3`,
+              [newQuantity, deckId, cardId]
+            );
+          } else {
+            // Add new card to deck
+            await client.query(
+              `INSERT INTO deck_cards (deck_id, card_id, quantity, is_commander)
+               VALUES ($1, $2, 1, false)`,
+              [deckId, cardId]
+            );
+          }
+
+          results.success++;
+        } catch (cardError) {
+          results.failed++;
+          results.errors.push({ 
+            card: cardData.name || 'Unknown', 
+            error: cardError.message 
+          });
+          logger.error(`Error adding card ${cardData.name} in batch: ${cardError.message}`);
+        }
+      }
+
+      await client.query('COMMIT');
+
+      logger.info(`Batch add to deck ${deckId}: ${results.success} succeeded, ${results.failed} failed`);
+
+      return results;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      
+      if (error instanceof NotFoundError || error instanceof AuthorizationError || error instanceof ValidationError) {
+        throw error;
+      }
+      
+      logger.error(`Batch add cards error: ${error.message}`);
+      throw new DatabaseError(`Failed to add cards to deck: ${error.message}`);
     } finally {
       client.release();
     }
