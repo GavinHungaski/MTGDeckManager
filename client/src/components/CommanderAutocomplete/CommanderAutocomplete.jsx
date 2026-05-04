@@ -78,9 +78,9 @@ function CommanderAutocomplete({ onSelect }) {
     const subtypes = right ? right.split(" ") : [];
 
     const commanderData = {
+      id: card.id,
       name: card.name,
-      scryfall_id: card.id,
-      image,
+      image_uris: image ? { normal: image } : null,
       back_image,
       color_identity: card.color_identity,
       cmc: card.cmc,

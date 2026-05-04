@@ -19,7 +19,7 @@ function NewDeckForm({ showNewDeckForm, closeNewDeckForm, addDeck }) {
     if (!deckName) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/deck`, {
+      const res = await fetch(`${API_URL}/api/decks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

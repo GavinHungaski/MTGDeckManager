@@ -89,6 +89,7 @@ function CardSearch({ addCard, color_identity = [] }) {
     const types = leftWords.filter((w) => !SUPERTYPES.includes(w));
     const subtypes = right ? right.split(" ") : [];
     const cardData = {
+      id: card.id, // Scryfall ID used as primary key
       name: card.name,
       image,
       back_image,
@@ -96,9 +97,12 @@ function CardSearch({ addCard, color_identity = [] }) {
       color_identity: card.color_identity,
       cmc: card.cmc,
       mana_cost: card.mana_cost,
+      type_line: card.type_line,
+      oracle_text: card.oracle_text,
       prices: card.prices || null,
       power: card.power,
       toughness: card.toughness,
+      image_uris: card.image_uris || (card.card_faces?.[0]?.image_uris ? { normal: card.card_faces[0].image_uris.normal } : null),
       types: {
         super: supertypes,
         type: types,

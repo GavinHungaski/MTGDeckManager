@@ -5,7 +5,7 @@ import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
 import "./DeckDetail.css";
 import ExportDeckButton from "../components/ExportDeckButton.jsx";
 import { AuthContext } from "../auth/AuthContext";
-const API_URL = import.meta.env.VITE_API_URL;
+import { deckAPI, cardAPI } from "../services/api";
 
 function DeckDetail() {
   const { deckId } = useParams();
@@ -22,13 +22,8 @@ function DeckDetail() {
     if (!deckId) return;
     const fetchDeckData = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/decks/${deckId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!res.ok) throw new Error("Failed to fetch deck");
-        const data = await res.json();
+        const res = await deckAPI.getById(deckId);
+        const data = res.data;
         const formattedCards = data.cards.map(formatCard);
         const commanders = formattedCards.filter((c) => c.is_commander);
         setDeck({ id: data.id, name: data.name });
@@ -43,23 +38,25 @@ function DeckDetail() {
   }, [deckId]);
 
   const formatCard = (card) => {
-    const data = card.card_data;
     return {
       id: card.id,
-      scryfall_id: card.scryfall_id,
       name: card.name,
       count: card.count ?? 1,
       is_commander: card.is_commander,
 
-      image: data?.image,
-      back_image: data?.back_image,
-      cmc: data?.cmc,
-      prices: data?.prices,
-      color_identity: data?.color_identity,
-      types: data?.types,
-      text: data?.text_box,
+      image: card.image_uris?.normal,
+      back_image: card.back_image,
+      cmc: card.cmc,
+      mana_cost: card.mana_cost,
+      prices: card.prices,
+      color_identity: card.color_identity,
+      types: card.types,
+      type_line: card.type_line,
+      text: card.oracle_text,
+      power: card.power,
+      toughness: card.toughness,
 
-      raw: data,
+      raw: card,
     };
   };
 
@@ -111,33 +108,22 @@ function DeckDetail() {
 
   async function addCard(card) {
     try {
-      const res = await fetch(`${API_URL}/api/decks/${deckId}/card`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: card.name,
-          scryfall_id: card.scryfall_id,
-          card_data: card,
-          is_commander: false,
-        }),
+      await cardAPI.add(deckId, {
+        id: card.id,
+        name: card.name,
+        mana_cost: card.mana_cost,
+        type_line: card.type_line,
+        oracle_text: card.oracle_text,
+        power: card.power,
+        toughness: card.toughness,
+        image_uris: card.image_uris,
       });
-      if (!res.ok) throw new Error("Network response was not ok");
-      const newCard = await res.json();
-      const formattedCard = formatCard(newCard);
-      setCards((prev) => {
-        const existing = prev.find((c) => c.name === formattedCard.name);
-        if (existing) {
-          return prev.map((c) =>
-            c.name === formattedCard.name
-              ? { ...c, count: formattedCard.count }
-              : c,
-          );
-        }
-        return [...prev, formattedCard];
-      });
+      
+      // Refetch deck to get updated card list
+      const res = await deckAPI.getById(deckId);
+      const data = res.data;
+      const formattedCards = data.cards.map(formatCard);
+      setCards(formattedCards);
     } catch (err) {
       console.error("Error adding card:", err);
     }
@@ -162,18 +148,7 @@ function DeckDetail() {
   async function handleToggleCommander(card) {
     const newStatus = !card.is_commander;
     try {
-      const res = await fetch(
-        `${API_URL}/api/decks/${deckId}/card/${card.id}/commander`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ is_commander: newStatus }),
-        },
-      );
-      if (!res.ok) throw new Error("Failed to update commander status");
+      await cardAPI.toggleCommander(deckId, card.id);
       setCards((prev) =>
         prev.map((c) =>
           c.id === card.id ? { ...c, is_commander: newStatus } : c,

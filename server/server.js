@@ -1,57 +1,37 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-dotenv.config();
+import app from './src/app.js';
+import { config } from './src/config/environment.js';
+import { testConnection } from './src/config/database.js';
+import logger from './src/utils/logger.js';
 
-import {
-  registerUser,
-  loginUser,
-  getCurrentUser,
-} from "./controllers/userController.js";
-import {
-  getAllDecks,
-  getDeckById,
-  createDeck,
-  deleteDeck,
-} from "./controllers/deckController.js";
-import {
-  addCard,
-  removeCard,
-  toggleCommander,
-} from "./controllers/cardController.js";
-import { authenticate } from "./middleware/auth.js";
+const PORT = config.port;
 
-const PORT = process.env.PORT || 8080;
-const app = express();
+// Test database connection before starting server
+testConnection()
+  .then((connected) => {
+    if (!connected) {
+      logger.error('Failed to connect to database. Exiting...');
+      process.exit(1);
+    }
 
-app.use(express.json());
-app.use(cors());
+    // Start server
+    app.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
+      logger.info(`Environment: ${config.nodeEnv}`);
+      logger.info(`Health check: http://localhost:${PORT}/health`);
+    });
+  })
+  .catch((err) => {
+    logger.error(`Failed to start server: ${err.message}`);
+    process.exit(1);
+  });
 
-// --------------------
-// Auth routes
-// --------------------
-app.post("/api/users/register", registerUser);
-app.post("/api/users/login", loginUser);
-app.get("/api/users/me", authenticate, getCurrentUser);
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM signal received. Closing HTTP server.');
+  process.exit(0);
+});
 
-// --------------------
-// Deck routes
-// --------------------
-app.get("/api/decks", authenticate, getAllDecks);
-app.get("/api/decks/:id", authenticate, getDeckById);
-app.post("/api/deck", authenticate, createDeck);
-app.delete("/api/decks/:id", authenticate, deleteDeck);
-
-// --------------------
-// Card routes
-// --------------------
-app.post("/api/decks/:deckId/card", authenticate, addCard);
-app.delete("/api/decks/:deckId/card/:cardId", authenticate, removeCard);
-app.patch(
-  "/api/decks/:deckId/card/:cardId/commander",
-  authenticate,
-  toggleCommander,
-);
-
-// --------------------
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+process.on('SIGINT', () => {
+  logger.info('SIGINT signal received. Closing HTTP server.');
+  process.exit(0);
+});

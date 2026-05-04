@@ -19,21 +19,27 @@ import { v4 as uuidv4 } from "uuid";
 export const PlaytestContext = createContext();
 
 const formatCard = (card) => {
-  const data = card.card_data;
+  // Extract image URL from image_uris JSONB object
+  const imageUrl = card.image_uris?.normal || card.image_uris?.large || null;
+  
   return {
     id: card.id,
-    scryfall_id: card.scryfall_id,
+    scryfall_id: card.id, // Use card id as scryfall_id
     name: card.name,
     count: card.count ?? 1,
     is_commander: card.is_commander,
-    image: data?.image,
-    back_image: data?.back_image,
-    cmc: data?.cmc,
-    prices: data?.prices,
-    color_identity: data?.color_identity,
-    types: data?.types,
-    text: data?.text_box,
-    raw: data,
+    image: imageUrl,
+    back_image: null, // Back images would need separate handling
+    cmc: card.cmc,
+    prices: card.prices,
+    color_identity: card.color_identity,
+    types: card.types,
+    text: card.oracle_text,
+    mana_cost: card.mana_cost,
+    type_line: card.type_line,
+    power: card.power,
+    toughness: card.toughness,
+    raw: card,
   };
 };
 
@@ -55,7 +61,7 @@ function Playtest() {
         if (!res.ok) throw new Error("Failed to fetch deck");
         const data = await res.json();
         const formattedCards = data.cards.map(formatCard);
-
+        console.log(formattedCards);
         const { library, deck, commandZone } = expandAndShuffle(formattedCards);
 
         const players = [

@@ -1,10 +1,7 @@
-import React, { useContext } from "react";
-import { AuthContext } from "../auth/AuthContext";
-const API_URL = import.meta.env.VITE_API_URL;
+import React from "react";
+import { cardAPI } from "../services/api";
 
 function DeleteCardBtn({ deckId, cardId, card, onDelete }) {
-  const { token } = useContext(AuthContext);
-
   const handleDelete = async () => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this card?",
@@ -13,22 +10,7 @@ function DeleteCardBtn({ deckId, cardId, card, onDelete }) {
       return;
     }
     try {
-      const response = await fetch(
-        `${API_URL}/api/decks/${deckId}/card/${cardId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      if (!response.ok) {
-        const data =
-          response.status !== 204
-            ? await response.json().catch(() => ({}))
-            : {};
-        throw new Error(data.error || `Error: ${response.status}`);
-      }
+      await cardAPI.remove(deckId, cardId);
       if (onDelete) {
         onDelete(card);
       }

@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router";
 import NewDeckForm from "../components/NewDeckForm/NewDeckForm";
 import { AuthContext } from "../auth/AuthContext";
-const API_URL = import.meta.env.VITE_API_URL;
+import { deckAPI } from "../services/api";
 import "./Decks.css";
 
 function Decks() {
@@ -13,13 +13,8 @@ function Decks() {
 
   useEffect(() => {
     if (!token) return;
-    fetch(`${API_URL}/api/decks`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setDecks(data))
+    deckAPI.getAll()
+      .then((res) => setDecks(res.data))
       .catch((err) => console.error("Error fetching decks:", err));
   }, [token]);
 
@@ -32,26 +27,9 @@ function Decks() {
       "Are you sure you want to delete this deck?",
     );
     if (!isConfirmed) return;
-    fetch(`${API_URL}/api/decks/${deckId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(async (res) => {
-        let data;
-        try {
-          data = await res.json();
-        } catch {
-          throw new Error(
-            `Failed to parse response as JSON (status ${res.status})`,
-          );
-        }
-        if (!res.ok) throw new Error(data?.error || "Failed to delete deck");
-        return data;
-      })
-      .then((data) => {
-        console.log(data.message);
+    deckAPI.delete(deckId)
+      .then((res) => {
+        console.log(res.data.message);
         setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckId));
       })
       .catch((err) => console.error("Error deleting deck:", err));
@@ -99,7 +77,7 @@ function Decks() {
                       gridArea: "1 / 1",
                     }}
                     className="commander-card"
-                    src={c?.image || ""}
+                    src={c?.image_uris?.normal || ""}
                     alt={c?.name || ""}
                   />
                 ))}

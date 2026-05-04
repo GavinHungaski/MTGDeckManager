@@ -1,22 +1,35 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
+  "name": "mtg-deck-manager-server",
+  "version": "2.0.0",
+  "description": "Backend API for MTG EDH Deck Manager",
   "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mtg",
+    "magic-the-gathering",
+    "edh",
+    "commander",
+    "deck-builder",
+    "api"
+  ],
+  "author": "MTG Deck Manager Team",
+  "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.4.1",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.20.0"
+    "morgan": "^1.10.1",
+    "pg": "^8.20.0",
+    "winston": "^3.19.0"
   }
 }

@@ -57,8 +57,9 @@ export function DeckTray({ decks, selectedCards, setSelectedCards, addCard }) {
                 {deck.commanders.map((c) => {
                   return (
                     <img
+                      key={c.id}
                       className="commander-art"
-                      src={c?.image || ""}
+                      src={c?.image_uris?.normal || ""}
                       alt={c?.name || ""}
                       style={{
                         width: "100%",
