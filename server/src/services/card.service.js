@@ -59,7 +59,7 @@ class CardService {
           `INSERT INTO cards (
             id, name, mana_cost, cmc, card_type, oracle_text, power, toughness, color_identity, prices, keywords, legalities, rarity, edhrec_rank, types, front_image, back_image
           )
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15::jsonb, $16, $17)
            RETURNING id`,
           [
             cardData.id,
@@ -122,7 +122,7 @@ class CardService {
             edhrec_rank = $13,
             types = $14::jsonb,
             front_image = $15,
-            back_image = $16,
+            back_image = $16
            WHERE id = $17`,
           [
             cardData.name,
@@ -330,7 +330,7 @@ class CardService {
                 edhrec_rank = $13,
                 types = $14::jsonb,
                 front_image = $15,
-                back_image = $16, 
+                back_image = $16
                WHERE id = $17`,
               [
                 cardData.name,
