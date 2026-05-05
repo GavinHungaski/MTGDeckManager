@@ -3,7 +3,7 @@ import CommanderAutocomplete from "../CommanderAutocomplete/CommanderAutocomplet
 import { useNavigate } from "react-router";
 import { useContext } from "react";
 import { AuthContext } from "../../auth/AuthContext";
-const API_URL = import.meta.env.VITE_API_URL;
+import { deckAPI } from "../../services/api";
 import "./NewDeckForm.css";
 
 function NewDeckForm({ showNewDeckForm, closeNewDeckForm, addDeck }) {
@@ -19,21 +19,12 @@ function NewDeckForm({ showNewDeckForm, closeNewDeckForm, addDeck }) {
     if (!deckName) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/decks`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: deckName,
-          commander: selectedCommander || { name: "TBD" },
-        }),
+      const res = await deckAPI.create({
+        name: deckName,
+        commander: selectedCommander || { name: "TBD" },
       });
 
-      if (!res.ok) throw new Error("Network response was not ok");
-
-      const newDeck = await res.json();
+      const newDeck = res.data;
       addDeck(newDeck);
 
       setDeckName("");

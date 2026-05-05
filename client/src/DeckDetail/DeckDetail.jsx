@@ -7,6 +7,16 @@ import ExportDeckButton from "../components/ExportDeckButton.jsx";
 import { AuthContext } from "../auth/AuthContext";
 import { deckAPI, cardAPI } from "../services/api";
 
+const SUPERTYPES = [
+  "Basic",
+  "Legendary",
+  "Snow",
+  "World",
+  "Ongoing",
+  "Elite",
+  "Host",
+];
+
 function DeckDetail() {
   const { deckId } = useParams();
   const [deck, setDeck] = useState(null);
@@ -24,8 +34,8 @@ function DeckDetail() {
       try {
         const res = await deckAPI.getById(deckId);
         const data = res.data;
-        console.log(data);
         const formattedCards = data.cards.map(formatCard);
+        console.log(formattedCards);
         const commanders = formattedCards.filter((c) => c.is_commander);
         setDeck({ id: data.id, name: data.name });
         setCards(formattedCards);
@@ -113,12 +123,18 @@ function DeckDetail() {
         id: card.id,
         name: card.name,
         mana_cost: card.mana_cost,
+        cmc: card.cmc,
         color_identity: card.color_identity,
         type_line: card.type_line,
         oracle_text: card.oracle_text,
         power: card.power,
         toughness: card.toughness,
         image_uris: card.image_uris,
+        prices: card.prices,
+        legalities: card.legalities,
+        edhrec_rank: card.edhrec_rank,
+        back_image: card.back_image,
+        types: card.types,
       });
 
       // Refetch deck to get updated card list
@@ -266,9 +282,9 @@ function DeckDetail() {
               <div className="category-cards">
                 {groupedCards[category].map((card) => {
                   const canBeCommander =
-                    card.types?.super.includes("Legendary") &&
-                    (card.types?.type.includes("Creature") ||
-                      card.types?.sub.includes("Vehicle") ||
+                    card.types?.super?.includes("Legendary") &&
+                    (card.types?.type?.includes("Creature") ||
+                      card.types?.sub?.includes("Vehicle") ||
                       card.text?.includes("can be your commander"));
                   const isInvalid = !card.color_identity?.every((color) =>
                     [

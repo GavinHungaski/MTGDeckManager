@@ -78,7 +78,9 @@ class DeckService {
           c.keywords,
           c.legalities,
           c.rarity,
-          c.edhrec_rank
+          c.edhrec_rank,
+          c.types,
+          c.back_image
         FROM decks d
         LEFT JOIN deck_cards dc ON d.id = dc.deck_id
         LEFT JOIN cards c ON dc.card_id = c.id
@@ -111,7 +113,9 @@ class DeckService {
           keywords: r.keywords,
           legalities: r.legalities,
           rarity: r.rarity,
-          edhrec_rank: r.edhrec_rank
+          edhrec_rank: r.edhrec_rank,
+          types: r.types,
+          back_image: r.back_image
         }));
 
       const commanders = cards.filter((c) => c.is_commander);
@@ -160,16 +164,21 @@ class DeckService {
             : commander.color_identity.split(' ').filter(c => c))
         : null;
 
+      // Prepare types JSONB and back_image for commander
+      const commanderTypes = commander.types ? JSON.stringify(commander.types) : null;
+      const commanderBackImage = commander.back_image || null;
+
       // Create or update commander card
       const cardResult = await client.query(
         `
-        INSERT INTO cards (id, name, image_uris, color_identity)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO cards (id, name, image_uris, color_identity, types, back_image)
+        VALUES ($1, $2, $3, $4, $5, $6)
         ON CONFLICT (id)
-        DO UPDATE SET name = EXCLUDED.name, image_uris = EXCLUDED.image_uris
+        DO UPDATE SET name = EXCLUDED.name, image_uris = EXCLUDED.image_uris,
+                      types = EXCLUDED.types, back_image = EXCLUDED.back_image
         RETURNING id
         `,
-        [commander.id, commander.name, commander.image_uris, colorIdentity]
+        [commander.id, commander.name, commander.image_uris, colorIdentity, commanderTypes, commanderBackImage]
       );
 
       const cardId = cardResult.rows[0].id;

@@ -49,9 +49,9 @@ class CardService {
         cardResult = await client.query(
           `INSERT INTO cards (
             id, name, mana_cost, cmc, card_type, oracle_text, power, toughness, 
-            image_uris, color_identity, prices, keywords, legalities, rarity, edhrec_rank
+            image_uris, color_identity, prices, keywords, legalities, rarity, edhrec_rank, types, back_image
           )
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
            RETURNING id`,
           [
             cardData.id,
@@ -68,7 +68,9 @@ class CardService {
             keywordsArray,
             legalitiesJson,
             cardData.rarity || null,
-            cardData.meta_rank || cardData.edhrec_rank || null
+            cardData.meta_rank || cardData.edhrec_rank || null,
+            cardData.types,
+            cardData.back_image
           ]
         );
         cardId = cardResult.rows[0].id;
@@ -92,6 +94,9 @@ class CardService {
               : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
           : null;
         
+        const typesJson = cardData.types ? JSON.stringify(cardData.types) : null;
+        const backImage = cardData.back_image || null;
+
         await client.query(
           `UPDATE cards SET 
             name = $1,
@@ -107,8 +112,10 @@ class CardService {
             keywords = $11,
             legalities = $12,
             rarity = $13,
-            edhrec_rank = $14
-           WHERE id = $15`,
+            edhrec_rank = $14,
+            types = $15,
+            back_image = $16
+           WHERE id = $17`,
           [
             cardData.name,
             cardData.mana_cost || null,
@@ -124,6 +131,8 @@ class CardService {
             legalitiesJson,
             cardData.rarity || null,
             cardData.meta_rank || cardData.edhrec_rank || null,
+            typesJson,
+            backImage,
             cardId
           ]
         );
@@ -234,12 +243,15 @@ class CardService {
                   : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
               : null;
             
+            const typesJsonInsert = cardData.types ? JSON.stringify(cardData.types) : null;
+            const backImageInsert = cardData.back_image || null;
+
             cardResult = await client.query(
               `INSERT INTO cards (
                 id, name, mana_cost, cmc, card_type, oracle_text, power, toughness, 
-                image_uris, color_identity, prices, keywords, legalities, rarity, edhrec_rank
+                image_uris, color_identity, prices, keywords, legalities, rarity, edhrec_rank, types, back_image
               )
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
                RETURNING id`,
               [
                 cardData.id,
@@ -256,7 +268,9 @@ class CardService {
                 keywordsArray,
                 legalitiesJson,
                 cardData.rarity || null,
-                cardData.meta_rank || cardData.edhrec_rank || null
+                cardData.meta_rank || cardData.edhrec_rank || null,
+                typesJsonInsert,
+                backImageInsert
               ]
             );
             cardId = cardResult.rows[0].id;
@@ -280,6 +294,9 @@ class CardService {
                   : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
               : null;
             
+            const typesJsonUpdate = cardData.types ? JSON.stringify(cardData.types) : null;
+            const backImageUpdate = cardData.back_image || null;
+
             await client.query(
               `UPDATE cards SET 
                 name = $1,
@@ -295,8 +312,10 @@ class CardService {
                 keywords = $11,
                 legalities = $12,
                 rarity = $13,
-                edhrec_rank = $14
-               WHERE id = $15`,
+                edhrec_rank = $14,
+                types = $15,
+                back_image = $16
+               WHERE id = $17`,
               [
                 cardData.name,
                 cardData.mana_cost || null,
@@ -312,6 +331,8 @@ class CardService {
                 legalitiesJson,
                 cardData.rarity || null,
                 cardData.meta_rank || cardData.edhrec_rank || null,
+                typesJsonUpdate,
+                backImageUpdate,
                 cardId
               ]
             );
