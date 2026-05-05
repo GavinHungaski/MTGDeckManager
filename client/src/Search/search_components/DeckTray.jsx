@@ -76,7 +76,7 @@ export function DeckTray({ decks, selectedCards, setSelectedCards, addCard, addC
                     <img
                       key={c.id}
                       className="commander-art"
-                      src={c?.image_uris?.normal || ""}
+                      src={c?.front_image || ""}
                       alt={c?.name || ""}
                       style={{
                         width: "100%",

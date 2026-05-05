@@ -77,7 +77,7 @@ function Decks() {
                       gridArea: "1 / 1",
                     }}
                     className="commander-card"
-                    src={c?.image_uris?.normal || ""}
+                    src={c?.front_image || ""}
                     alt={c?.name || ""}
                   />
                 ))}

@@ -1,7 +1,12 @@
-import pool from '../config/database.js';
-import logger from '../utils/logger.js';
-import { NotFoundError, AuthorizationError, DatabaseError, ValidationError } from '../middleware/errorHandler.js';
-import { deckService } from './deck.service.js';
+import pool from "../config/database.js";
+import logger from "../utils/logger.js";
+import {
+  NotFoundError,
+  AuthorizationError,
+  DatabaseError,
+  ValidationError,
+} from "../middleware/errorHandler.js";
+import { deckService } from "./deck.service.js";
 
 class CardService {
   /**
@@ -14,42 +19,45 @@ class CardService {
       // Verify deck ownership
       await deckService.verifyDeckOwnership(deckId, userId);
 
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // Check if card exists, create if not
       let cardResult = await client.query(
         `SELECT id FROM cards WHERE id = $1`,
-        [cardData.id]
+        [cardData.id],
       );
 
       let cardId;
       if (cardResult.rows.length === 0) {
         // Validate card data
         if (!cardData.id || !cardData.name) {
-          throw new ValidationError('Card must have an id and name');
+          throw new ValidationError("Card must have an id and name");
         }
-        
-        // Create new card with all relevant fields
-        const imageUrisJson = cardData.image_uris ? JSON.stringify(cardData.image_uris) : null;
-        const pricesJson = cardData.prices ? JSON.stringify(cardData.prices) : null;
-        const legalitiesJson = cardData.legalities ? JSON.stringify(cardData.legalities) : null;
-        
-        // Convert arrays to PostgreSQL array format
-        const colorIdentityArray = cardData.color_identity 
-          ? (Array.isArray(cardData.color_identity) 
-              ? cardData.color_identity 
-              : cardData.color_identity.split(' ').filter(c => c))
+
+        const prices = cardData.prices || null;
+        const legalities = cardData.legalities || null;
+        const typesJson = cardData.types
+          ? JSON.stringify(cardData.types)
           : null;
-        const keywordsArray = cardData.keywords 
-          ? (Array.isArray(cardData.keywords) 
-              ? cardData.keywords 
-              : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
+
+        const colorIdentity = cardData.color_identity
+          ? Array.isArray(cardData.color_identity)
+            ? cardData.color_identity
+            : cardData.color_identity.split(" ").filter((c) => c)
           : null;
-        
+
+        const keywords = Array.isArray(cardData.keywords)
+          ? cardData.keywords
+          : typeof cardData.keywords === "string"
+            ? cardData.keywords
+                .split(",")
+                .map((k) => k.trim())
+                .filter((k) => k)
+            : null;
+
         cardResult = await client.query(
           `INSERT INTO cards (
-            id, name, mana_cost, cmc, card_type, oracle_text, power, toughness, 
-            image_uris, color_identity, prices, keywords, legalities, rarity, edhrec_rank, types, back_image
+            id, name, mana_cost, cmc, card_type, oracle_text, power, toughness, color_identity, prices, keywords, legalities, rarity, edhrec_rank, types, front_image, back_image
           )
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
            RETURNING id`,
@@ -62,40 +70,40 @@ class CardService {
             cardData.oracle_text || null,
             cardData.power || null,
             cardData.toughness || null,
-            imageUrisJson,
-            colorIdentityArray,
-            pricesJson,
-            keywordsArray,
-            legalitiesJson,
+            colorIdentity,
+            prices,
+            keywords,
+            legalities,
             cardData.rarity || null,
             cardData.meta_rank || cardData.edhrec_rank || null,
-            cardData.types,
-            cardData.back_image
-          ]
+            typesJson,
+            cardData.front_image,
+            cardData.back_image,
+          ],
         );
         cardId = cardResult.rows[0].id;
       } else {
         cardId = cardResult.rows[0].id;
-        
-        // Update card data with all fields
-        const imageUrisJson = cardData.image_uris ? JSON.stringify(cardData.image_uris) : null;
-        const pricesJson = cardData.prices ? JSON.stringify(cardData.prices) : null;
-        const legalitiesJson = cardData.legalities ? JSON.stringify(cardData.legalities) : null;
-        
-        // Convert arrays to PostgreSQL array format
-        const colorIdentityArray = cardData.color_identity 
-          ? (Array.isArray(cardData.color_identity) 
-              ? cardData.color_identity 
-              : cardData.color_identity.split(' ').filter(c => c))
+
+        const prices = cardData.prices || null;
+        const legalities = cardData.legalities || null;
+        const typesJson = cardData.types
+          ? JSON.stringify(cardData.types)
           : null;
-        const keywordsArray = cardData.keywords 
-          ? (Array.isArray(cardData.keywords) 
-              ? cardData.keywords 
-              : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
-          : null;
-        
-        const typesJson = cardData.types ? JSON.stringify(cardData.types) : null;
-        const backImage = cardData.back_image || null;
+
+        const colorIdentity = Array.isArray(cardData.color_identity)
+          ? cardData.color_identity
+          : typeof cardData.color_identity === "string"
+            ? cardData.color_identity.split(" ").filter((c) => c)
+            : null;
+        const keywords = Array.isArray(cardData.keywords)
+          ? cardData.keywords
+          : typeof cardData.keywords === "string"
+            ? cardData.keywords
+                .split(",")
+                .map((k) => k.trim())
+                .filter((k) => k)
+            : null;
 
         await client.query(
           `UPDATE cards SET 
@@ -106,15 +114,15 @@ class CardService {
             oracle_text = $5,
             power = $6,
             toughness = $7,
-            image_uris = $8,
-            color_identity = $9,
-            prices = $10,
-            keywords = $11,
-            legalities = $12,
-            rarity = $13,
-            edhrec_rank = $14,
-            types = $15,
-            back_image = $16
+            color_identity = $8,
+            prices = $9,
+            keywords = $10,
+            legalities = $11,
+            rarity = $12,
+            edhrec_rank = $13,
+            types = $14::jsonb,
+            front_image = $15,
+            back_image = $16,
            WHERE id = $17`,
           [
             cardData.name,
@@ -124,24 +132,24 @@ class CardService {
             cardData.oracle_text || null,
             cardData.power || null,
             cardData.toughness || null,
-            imageUrisJson,
-            colorIdentityArray,
-            pricesJson,
-            keywordsArray,
-            legalitiesJson,
+            colorIdentity,
+            prices,
+            keywords,
+            legalities,
             cardData.rarity || null,
             cardData.meta_rank || cardData.edhrec_rank || null,
             typesJson,
-            backImage,
-            cardId
-          ]
+            cardData.front_image,
+            cardData.back_image,
+            cardId,
+          ],
         );
       }
 
       // Check if card is already in deck
       const existingCard = await client.query(
         `SELECT quantity FROM deck_cards WHERE deck_id = $1 AND card_id = $2`,
-        [deckId, cardId]
+        [deckId, cardId],
       );
 
       if (existingCard.rows.length > 0) {
@@ -149,38 +157,42 @@ class CardService {
         const newQuantity = existingCard.rows[0].quantity + 1;
         await client.query(
           `UPDATE deck_cards SET quantity = $1 WHERE deck_id = $2 AND card_id = $3`,
-          [newQuantity, deckId, cardId]
+          [newQuantity, deckId, cardId],
         );
       } else {
         // Add new card to deck
         await client.query(
           `INSERT INTO deck_cards (deck_id, card_id, quantity, is_commander)
            VALUES ($1, $2, 1, false)`,
-          [deckId, cardId]
+          [deckId, cardId],
         );
       }
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
       logger.info(`Card ${cardData.name} added to deck ${deckId}`);
 
       return { success: true };
     } catch (error) {
-      await client.query('ROLLBACK');
-      
-      if (error instanceof NotFoundError || error instanceof AuthorizationError || error instanceof ValidationError) {
+      await client.query("ROLLBACK");
+
+      if (
+        error instanceof NotFoundError ||
+        error instanceof AuthorizationError ||
+        error instanceof ValidationError
+      ) {
         throw error;
       }
-      
-      logger.error(`Add card error: ${error.message}`, { 
+
+      logger.error(`Add card error: ${error.message}`, {
         stack: error.stack,
         errorCode: error.code,
         errorDetail: error.detail,
         cardData,
         deckId,
-        userId 
+        userId,
       });
-      console.error('Full error object:', error);
+      console.error("Full error object:", error);
       throw new DatabaseError(`Failed to add card to deck: ${error.message}`);
     } finally {
       client.release();
@@ -198,15 +210,15 @@ class CardService {
       await deckService.verifyDeckOwnership(deckId, userId);
 
       if (!Array.isArray(cardsData) || cardsData.length === 0) {
-        throw new ValidationError('Cards data must be a non-empty array');
+        throw new ValidationError("Cards data must be a non-empty array");
       }
 
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       const results = {
         success: 0,
         failed: 0,
-        errors: []
+        errors: [],
       };
 
       for (const cardData of cardsData) {
@@ -214,44 +226,47 @@ class CardService {
           // Validate card data
           if (!cardData.id || !cardData.name) {
             results.failed++;
-            results.errors.push({ card: cardData.name || 'Unknown', error: 'Missing id or name' });
+            results.errors.push({
+              card: cardData.name || "Unknown",
+              error: "Missing id or name",
+            });
             continue;
           }
 
           // Check if card exists, create if not
           let cardResult = await client.query(
             `SELECT id FROM cards WHERE id = $1`,
-            [cardData.id]
+            [cardData.id],
           );
 
           let cardId;
           if (cardResult.rows.length === 0) {
-            // Create new card with all relevant fields
-            const imageUrisJson = cardData.image_uris ? JSON.stringify(cardData.image_uris) : null;
-            const pricesJson = cardData.prices ? JSON.stringify(cardData.prices) : null;
-            const legalitiesJson = cardData.legalities ? JSON.stringify(cardData.legalities) : null;
-            
-            // Convert arrays to PostgreSQL array format
-            const colorIdentityArray = cardData.color_identity 
-              ? (Array.isArray(cardData.color_identity) 
-                  ? cardData.color_identity 
-                  : cardData.color_identity.split(' ').filter(c => c))
+            const prices = cardData.prices || null;
+            const legalities = cardData.legalities || null;
+            const typesJson = cardData.types
+              ? JSON.stringify(cardData.types)
               : null;
-            const keywordsArray = cardData.keywords 
-              ? (Array.isArray(cardData.keywords) 
-                  ? cardData.keywords 
-                  : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
-              : null;
-            
-            const typesJsonInsert = cardData.types ? JSON.stringify(cardData.types) : null;
-            const backImageInsert = cardData.back_image || null;
+
+            // Pass arrays directly to pg driver; it handles TEXT[] natively
+            const colorIdentity = Array.isArray(cardData.color_identity)
+              ? cardData.color_identity
+              : typeof cardData.color_identity === "string"
+                ? cardData.color_identity.split(" ").filter((c) => c)
+                : null;
+            const keywords = Array.isArray(cardData.keywords)
+              ? cardData.keywords
+              : typeof cardData.keywords === "string"
+                ? cardData.keywords
+                    .split(",")
+                    .map((k) => k.trim())
+                    .filter((k) => k)
+                : null;
 
             cardResult = await client.query(
               `INSERT INTO cards (
-                id, name, mana_cost, cmc, card_type, oracle_text, power, toughness, 
-                image_uris, color_identity, prices, keywords, legalities, rarity, edhrec_rank, types, back_image
+                id, name, mana_cost, cmc, card_type, oracle_text, power, toughness, color_identity, prices, keywords, legalities, rarity, edhrec_rank, types, front_image, back_image
               )
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15::jsonb, $16, $17)
                RETURNING id`,
               [
                 cardData.id,
@@ -262,40 +277,41 @@ class CardService {
                 cardData.oracle_text || null,
                 cardData.power || null,
                 cardData.toughness || null,
-                imageUrisJson,
-                colorIdentityArray,
-                pricesJson,
-                keywordsArray,
-                legalitiesJson,
+                colorIdentity,
+                prices,
+                keywords,
+                legalities,
                 cardData.rarity || null,
                 cardData.meta_rank || cardData.edhrec_rank || null,
-                typesJsonInsert,
-                backImageInsert
-              ]
+                typesJson,
+                cardData.front_image,
+                cardData.back_image,
+              ],
             );
             cardId = cardResult.rows[0].id;
           } else {
             cardId = cardResult.rows[0].id;
-            
-            // Update card data with all fields
-            const imageUrisJson = cardData.image_uris ? JSON.stringify(cardData.image_uris) : null;
-            const pricesJson = cardData.prices ? JSON.stringify(cardData.prices) : null;
-            const legalitiesJson = cardData.legalities ? JSON.stringify(cardData.legalities) : null;
-            
-            // Convert arrays to PostgreSQL array format
-            const colorIdentityArray = cardData.color_identity 
-              ? (Array.isArray(cardData.color_identity) 
-                  ? cardData.color_identity 
-                  : cardData.color_identity.split(' ').filter(c => c))
+
+            const prices = cardData.prices || null;
+            const legalities = cardData.legalities || null;
+            const typesJson = cardData.types
+              ? JSON.stringify(cardData.types)
               : null;
-            const keywordsArray = cardData.keywords 
-              ? (Array.isArray(cardData.keywords) 
-                  ? cardData.keywords 
-                  : cardData.keywords.split(',').map(k => k.trim()).filter(k => k))
-              : null;
-            
-            const typesJsonUpdate = cardData.types ? JSON.stringify(cardData.types) : null;
-            const backImageUpdate = cardData.back_image || null;
+
+            // Pass arrays directly to pg driver; it handles TEXT[] natively
+            const colorIdentity = Array.isArray(cardData.color_identity)
+              ? cardData.color_identity
+              : typeof cardData.color_identity === "string"
+                ? cardData.color_identity.split(" ").filter((c) => c)
+                : null;
+            const keywords = Array.isArray(cardData.keywords)
+              ? cardData.keywords
+              : typeof cardData.keywords === "string"
+                ? cardData.keywords
+                    .split(",")
+                    .map((k) => k.trim())
+                    .filter((k) => k)
+                : null;
 
             await client.query(
               `UPDATE cards SET 
@@ -306,15 +322,15 @@ class CardService {
                 oracle_text = $5,
                 power = $6,
                 toughness = $7,
-                image_uris = $8,
-                color_identity = $9,
-                prices = $10,
-                keywords = $11,
-                legalities = $12,
-                rarity = $13,
-                edhrec_rank = $14,
-                types = $15,
-                back_image = $16
+                color_identity = $8,
+                prices = $9,
+                keywords = $10,
+                legalities = $11,
+                rarity = $12,
+                edhrec_rank = $13,
+                types = $14::jsonb,
+                front_image = $15,
+                back_image = $16, 
                WHERE id = $17`,
               [
                 cardData.name,
@@ -324,24 +340,24 @@ class CardService {
                 cardData.oracle_text || null,
                 cardData.power || null,
                 cardData.toughness || null,
-                imageUrisJson,
-                colorIdentityArray,
-                pricesJson,
-                keywordsArray,
-                legalitiesJson,
+                colorIdentity,
+                prices,
+                keywords,
+                legalities,
                 cardData.rarity || null,
                 cardData.meta_rank || cardData.edhrec_rank || null,
-                typesJsonUpdate,
-                backImageUpdate,
-                cardId
-              ]
+                typesJson,
+                cardData.front_image,
+                cardData.back_image,
+                cardId,
+              ],
             );
           }
 
           // Check if card is already in deck
           const existingCard = await client.query(
             `SELECT quantity FROM deck_cards WHERE deck_id = $1 AND card_id = $2`,
-            [deckId, cardId]
+            [deckId, cardId],
           );
 
           if (existingCard.rows.length > 0) {
@@ -349,40 +365,48 @@ class CardService {
             const newQuantity = existingCard.rows[0].quantity + 1;
             await client.query(
               `UPDATE deck_cards SET quantity = $1 WHERE deck_id = $2 AND card_id = $3`,
-              [newQuantity, deckId, cardId]
+              [newQuantity, deckId, cardId],
             );
           } else {
             // Add new card to deck
             await client.query(
               `INSERT INTO deck_cards (deck_id, card_id, quantity, is_commander)
                VALUES ($1, $2, 1, false)`,
-              [deckId, cardId]
+              [deckId, cardId],
             );
           }
 
           results.success++;
         } catch (cardError) {
           results.failed++;
-          results.errors.push({ 
-            card: cardData.name || 'Unknown', 
-            error: cardError.message 
+          results.errors.push({
+            card: cardData.name || "Unknown",
+            error: cardError.message,
           });
-          logger.error(`Error adding card ${cardData.name} in batch: ${cardError.message}`);
+          logger.error(
+            `Error adding card ${cardData.name} in batch: ${cardError.message}`,
+          );
         }
       }
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
-      logger.info(`Batch add to deck ${deckId}: ${results.success} succeeded, ${results.failed} failed`);
+      logger.info(
+        `Batch add to deck ${deckId}: ${results.success} succeeded, ${results.failed} failed`,
+      );
 
       return results;
     } catch (error) {
-      await client.query('ROLLBACK');
-      
-      if (error instanceof NotFoundError || error instanceof AuthorizationError || error instanceof ValidationError) {
+      await client.query("ROLLBACK");
+
+      if (
+        error instanceof NotFoundError ||
+        error instanceof AuthorizationError ||
+        error instanceof ValidationError
+      ) {
         throw error;
       }
-      
+
       logger.error(`Batch add cards error: ${error.message}`);
       throw new DatabaseError(`Failed to add cards to deck: ${error.message}`);
     } finally {
@@ -400,18 +424,18 @@ class CardService {
       // Verify deck ownership
       await deckService.verifyDeckOwnership(deckId, userId);
 
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // Get card quantity
       const result = await client.query(
         `SELECT quantity FROM deck_cards 
          WHERE deck_id = $1 AND card_id = $2`,
-        [deckId, cardId]
+        [deckId, cardId],
       );
 
       if (result.rows.length === 0) {
-        await client.query('ROLLBACK');
-        throw new NotFoundError('Card not found in deck');
+        await client.query("ROLLBACK");
+        throw new NotFoundError("Card not found in deck");
       }
 
       const quantity = result.rows[0].quantity;
@@ -421,31 +445,34 @@ class CardService {
         await client.query(
           `UPDATE deck_cards SET quantity = quantity - 1 
            WHERE deck_id = $1 AND card_id = $2`,
-          [deckId, cardId]
+          [deckId, cardId],
         );
       } else {
         // Remove card from deck
         await client.query(
           `DELETE FROM deck_cards 
            WHERE deck_id = $1 AND card_id = $2`,
-          [deckId, cardId]
+          [deckId, cardId],
         );
       }
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
       logger.info(`Card ${cardId} removed from deck ${deckId}`);
 
       return { success: true };
     } catch (error) {
-      await client.query('ROLLBACK');
-      
-      if (error instanceof NotFoundError || error instanceof AuthorizationError) {
+      await client.query("ROLLBACK");
+
+      if (
+        error instanceof NotFoundError ||
+        error instanceof AuthorizationError
+      ) {
         throw error;
       }
-      
+
       logger.error(`Remove card error: ${error.message}`);
-      throw new DatabaseError('Failed to remove card from deck');
+      throw new DatabaseError("Failed to remove card from deck");
     } finally {
       client.release();
     }
@@ -461,18 +488,18 @@ class CardService {
       // Verify deck ownership
       await deckService.verifyDeckOwnership(deckId, userId);
 
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // Check if card exists in deck
       const cardResult = await client.query(
         `SELECT is_commander FROM deck_cards 
          WHERE deck_id = $1 AND card_id = $2`,
-        [deckId, cardId]
+        [deckId, cardId],
       );
 
       if (cardResult.rows.length === 0) {
-        await client.query('ROLLBACK');
-        throw new NotFoundError('Card not found in deck');
+        await client.query("ROLLBACK");
+        throw new NotFoundError("Card not found in deck");
       }
 
       const isCommander = cardResult.rows[0].is_commander;
@@ -481,23 +508,26 @@ class CardService {
       await client.query(
         `UPDATE deck_cards SET is_commander = $1 
          WHERE deck_id = $2 AND card_id = $3`,
-        [!isCommander, deckId, cardId]
+        [!isCommander, deckId, cardId],
       );
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
       logger.info(`Card ${cardId} commander status toggled in deck ${deckId}`);
 
       return { success: true, is_commander: !isCommander };
     } catch (error) {
-      await client.query('ROLLBACK');
-      
-      if (error instanceof NotFoundError || error instanceof AuthorizationError) {
+      await client.query("ROLLBACK");
+
+      if (
+        error instanceof NotFoundError ||
+        error instanceof AuthorizationError
+      ) {
         throw error;
       }
-      
+
       logger.error(`Toggle commander error: ${error.message}`);
-      throw new DatabaseError('Failed to toggle commander status');
+      throw new DatabaseError("Failed to toggle commander status");
     } finally {
       client.release();
     }
@@ -514,37 +544,41 @@ class CardService {
       await deckService.verifyDeckOwnership(deckId, userId);
 
       if (count < 1) {
-        throw new ValidationError('Card count must be at least 1');
+        throw new ValidationError("Card count must be at least 1");
       }
 
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       const result = await client.query(
         `UPDATE deck_cards SET quantity = $1 
          WHERE deck_id = $2 AND card_id = $3 
          RETURNING *`,
-        [count, deckId, cardId]
+        [count, deckId, cardId],
       );
 
       if (result.rows.length === 0) {
-        await client.query('ROLLBACK');
-        throw new NotFoundError('Card not found in deck');
+        await client.query("ROLLBACK");
+        throw new NotFoundError("Card not found in deck");
       }
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
       logger.info(`Card quantity updated to ${count} in deck ${deckId}`);
 
       return { success: true };
     } catch (error) {
-      await client.query('ROLLBACK');
-      
-      if (error instanceof NotFoundError || error instanceof AuthorizationError || error instanceof ValidationError) {
+      await client.query("ROLLBACK");
+
+      if (
+        error instanceof NotFoundError ||
+        error instanceof AuthorizationError ||
+        error instanceof ValidationError
+      ) {
         throw error;
       }
-      
+
       logger.error(`Update card count error: ${error.message}`);
-      throw new DatabaseError('Failed to update card count');
+      throw new DatabaseError("Failed to update card count");
     } finally {
       client.release();
     }

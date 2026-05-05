@@ -19,7 +19,8 @@ class DeckService {
               JSON_BUILD_OBJECT(
                 'id', c.id,
                 'name', c.name,
-                'image_uris', c.image_uris
+                'front_image', c.front_image,
+                'back_image', c.back_image
               )
             ) FILTER (WHERE c.id IS NOT NULL), 
             '[]'::json
@@ -72,15 +73,15 @@ class DeckService {
           c.oracle_text,
           c.power,
           c.toughness,
-          c.image_uris,
+          c.front_image,
+          c.back_image,
           c.color_identity,
           c.prices,
           c.keywords,
           c.legalities,
           c.rarity,
           c.edhrec_rank,
-          c.types,
-          c.back_image
+          c.types
         FROM decks d
         LEFT JOIN deck_cards dc ON d.id = dc.deck_id
         LEFT JOIN cards c ON dc.card_id = c.id
@@ -104,7 +105,8 @@ class DeckService {
           oracle_text: r.oracle_text,
           power: r.power,
           toughness: r.toughness,
-          image_uris: r.image_uris,
+          front_image: r.front_image,
+          back_image: r.back_image,
           count: r.quantity || 1,
           is_commander: r.is_commander,
           color_identity: r.color_identity,
@@ -114,8 +116,7 @@ class DeckService {
           legalities: r.legalities,
           rarity: r.rarity,
           edhrec_rank: r.edhrec_rank,
-          types: r.types,
-          back_image: r.back_image
+          types: r.types
         }));
 
       const commanders = cards.filter((c) => c.is_commander);
@@ -171,14 +172,14 @@ class DeckService {
       // Create or update commander card
       const cardResult = await client.query(
         `
-        INSERT INTO cards (id, name, image_uris, color_identity, types, back_image)
+        INSERT INTO cards (id, name, front_image, color_identity, types, back_image)
         VALUES ($1, $2, $3, $4, $5, $6)
         ON CONFLICT (id)
-        DO UPDATE SET name = EXCLUDED.name, image_uris = EXCLUDED.image_uris,
+        DO UPDATE SET name = EXCLUDED.name, front_image = EXCLUDED.front_image,
                       types = EXCLUDED.types, back_image = EXCLUDED.back_image
         RETURNING id
         `,
-        [commander.id, commander.name, commander.image_uris, colorIdentity, commanderTypes, commanderBackImage]
+        [commander.id, commander.name, commander.front_image, colorIdentity, commanderTypes, commanderBackImage]
       );
 
       const cardId = cardResult.rows[0].id;

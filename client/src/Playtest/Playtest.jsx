@@ -19,17 +19,14 @@ import { v4 as uuidv4 } from "uuid";
 export const PlaytestContext = createContext();
 
 const formatCard = (card) => {
-  // Extract image URL from image_uris JSONB object
-  const imageUrl = card.image_uris?.normal || card.image_uris?.large || null;
-  
   return {
     id: card.id,
     scryfall_id: card.id, // Use card id as scryfall_id
     name: card.name,
     count: card.count ?? 1,
     is_commander: card.is_commander,
-    image: imageUrl,
-    back_image: null, // Back images would need separate handling
+    image: card.front_image || null,
+    back_image: card.back_image || null,
     cmc: card.cmc,
     prices: card.prices,
     color_identity: card.color_identity,

@@ -1,0 +1,352 @@
+# MTG EDH Deck Manager — Project Context & Architecture
+
+> This file serves as a quick-reference skill for understanding the MTGDeckManager codebase.
+> Generated: 2026-05-05 | Repo: https://github.com/GavinHungaski/MTGDeckManager
+
+---
+
+## Tech Stack
+
+| Layer | Tech |
+|-------|------|
+| Frontend | React 19, React Router 7, Vite 7, Axios |
+| Backend | Node.js, Express 5, ES Modules (`"type": "module"`) |
+| Database | PostgreSQL 14+ on AWS RDS |
+| External API | Scryfall (card data) |
+| Deployment | Backend: AWS Elastic Beanstalk; DB: AWS RDS; Frontend: Not yet deployed |
+
+---
+
+## Project Structure
+
+```
+MTG_Brewer/
+├── client/                     # Vite React app
+│   ├── src/
+│   │   ├── main.jsx           # Entry: BrowserRouter + AuthProvider + ErrorBoundary
+│   │   ├── App.jsx            # Landing page (minimal)
+│   │   ├── Layout.jsx         # Navbar + Outlet
+│   │   ├── auth/
+│   │   │   ├── AuthContext.jsx   # JWT auth state (localStorage token)
+│   │   │   ├── Login.jsx
+│   │   │   └── Register.jsx
+│   │   ├── services/
+│   │   │   └── api.js         # Axios instance + API wrappers (auth/deck/card/health)
+│   │   ├── hooks/
+│   │   │   ├── useApi.js      # Loading/error state wrapper for API calls
+│   │   │   └── useLocalStorage.js
+│   │   ├── components/
+│   │   │   ├── CardSearch/    # Search bar for adding cards to a deck
+│   │   │   ├── CommanderAutocomplete/
+│   │   │   ├── Navbar/
+│   │   │   ├── NewDeckForm/
+│   │   │   ├── DeleteCardBtn.jsx
+│   │   │   ├── ExportDeckButton.jsx
+│   │   │   └── common/        # Button, Input, Loading
+│   │   ├── Decks/             # Deck list view
+│   │   ├── DeckDetail/        # Deck editor (cards, grouping, sorting)
+│   │   ├── Search/            # Scryfall search page (direct to Scryfall API)
+│   │   │   ├── search_hooks/
+│   │   │   │   ├── useSearch.js     # Scryfall query builder + fetch
+│   │   │   │   └── useDeckTray.js   # Add cards to decks from search
+│   │   │   └── search_components/
+│   │   │       ├── SearchBar.jsx
+│   │   │       ├── CardHover.jsx
+│   │   │       └── DeckTray.jsx
+│   │   └── Playtest/          # Canvas-based game simulator (Konva)
+│   │       ├── playtest_hooks/
+│   │       │   └── usePlaytestState.js   # useReducer wrapper
+│   │       ├── playtest_reducers/
+│   │       │   └── playtestReducer.js    # Game state machine
+│   │       ├── playtest_utils/
+│   │       │   └── deckUtils.js
+│   │       └── playtest_components/
+│   │           ├── Battlefield.jsx, Hand.jsx, DeckPile.jsx
+│   │           ├── ZonePanel.jsx, PlayerHUD.jsx
+│   │           ├── ContextMenu.jsx, TokenCreator.jsx
+│   │           ├── DeckSearcher.jsx, CardCreator.jsx
+│   │           └── BattlefieldCard.jsx, CounterBadge.jsx, Tracker.jsx
+│   ├── .env.development       # VITE_API_URL=http://localhost:8080
+│   ├── .env.production
+│   └── vite.config.js
+│
+├── server/
+│   ├── server.js              # Entry: test DB connection → app.listen()
+│   ├── src/
+│   │   ├── app.js             # Express config: helmet, cors, morgan, rate limit, routes
+│   │   ├── config/
+│   │   │   ├── environment.js # dotenv → config object (DB, JWT, encryption, CORS, rate limits)
+│   │   │   └── database.js    # pg Pool (AWS RDS SSL handling)
+│   │   ├── routes/
+│   │   │   ├── auth.routes.js    # /api/auth (register, login, logout, me)
+│   │   │   ├── deck.routes.js    # /api/decks (CRUD, all auth-required)
+│   │   │   └── card.routes.js    # /api/cards (add, batch, remove, toggle commander, count)
+│   │   ├── services/
+│   │   │   ├── auth.service.js      # Register/login/getCurrentUser, bcrypt, JWT
+│   │   │   ├── deck.service.js      # getAllDecks, getDeckById, createDeck, deleteDeck
+│   │   │   ├── card.service.js      # addCard, batchAdd, remove, toggleCommander, updateCount
+│   │   │   └── encryption.service.js # AES-256-GCM for email encryption
+│   │   ├── middleware/
+│   │   │   ├── auth.js          # JWT verify + attach req.user
+│   │   │   ├── errorHandler.js  # Custom error classes + global handler
+│   │   │   ├── rateLimiter.js   # apiLimiter (100/15min), authLimiter (5/15min)
+│   │   │   └── validation.js    # express-validator rules
+│   │   └── utils/
+│   │       └── logger.js        # Winston logger
+│   └── db/
+│       └── schema.sql           # Full DB schema (users, decks, cards, deck_cards)
+```
+
+---
+
+## Database Schema
+
+### users
+- `id` UUID PK (uuid-ossp)
+- `username` VARCHAR(100) UNIQUE NOT NULL
+- `email` TEXT — **encrypted** (AES-256-GCM)
+- `email_hash` VARCHAR(64) UNIQUE — SHA256 for login lookups
+- `password_hash` TEXT — bcrypt
+- `created_at`, `updated_at` TIMESTAMPZ
+
+### decks
+- `id` UUID PK
+- `user_id` UUID FK → users ON DELETE CASCADE
+- `name` VARCHAR(200)
+- `format` VARCHAR(50) DEFAULT 'Commander'
+- `commander_card_id` VARCHAR(100) — Scryfall ID
+- `is_public` BOOLEAN DEFAULT false
+
+### cards
+- `id` VARCHAR(100) PK — **Scryfall card ID**
+- `name`, `mana_cost`, `cmc`, `card_type`, `oracle_text`, `power`, `toughness`, `loyalty`, `artist`, `rarity`
+- `prices` JSONB, `image_uris` JSONB, `legalities` JSONB, `types` JSONB
+- `color_identity` TEXT[], `keywords` TEXT[]
+- `edhrec_rank` INTEGER, `back_image` TEXT
+
+### deck_cards (junction)
+- `id` UUID PK
+- `deck_id` UUID FK → decks ON DELETE CASCADE
+- `card_id` VARCHAR(100) FK → cards
+- `quantity` INTEGER DEFAULT 1
+- `is_commander` BOOLEAN DEFAULT false
+- `is_sideboard` BOOLEAN DEFAULT false
+- `notes` TEXT
+- UNIQUE(deck_id, card_id)
+
+---
+
+## Data Pathways
+
+### 1. Authentication
+```
+Login/Register
+  → client/services/api.js → authAPI.login/register
+    → POST /api/auth/login or /register
+      → auth.routes.js → auth.service.js
+        → bcrypt compare/hash
+        → JWT sign (7d expiry)
+        → Pool query (users table)
+    ← { token, user }
+  ← localStorage.setItem('token')
+  ← AuthContext updates (token, user, isAuthenticated)
+```
+
+### 2. Deck List
+```
+Decks Page
+  → deckAPI.getAll()
+    → GET /api/decks
+      → authenticate middleware → deck.routes.js
+        → deck.service.js::getAllDecks(userId)
+          → SQL: JOIN decks + deck_cards (is_commander) + cards
+          → JSON_AGG commanders + SUM(card_count)
+    ← [{ id, name, commanders[], count }]
+```
+
+### 3. Deck Detail / Editor
+```
+DeckDetail
+  → deckAPI.getById(deckId)
+    → GET /api/decks/:id
+      → deck.service.js::getDeckById(id, userId)
+        → SQL: LEFT JOIN decks + deck_cards + cards
+        → Returns all card fields (image_uris, prices, types, etc.)
+  ← { id, name, commanders[], cards[] }
+
+Add Card
+  → cardAPI.add(deckId, cardData)
+    → POST /api/cards/decks/:deckId/card
+      → card.service.js::addCardToDeck()
+        → verifyDeckOwnership()
+        → UPSERT cards table (by Scryfall id)
+        → INSERT or UPDATE deck_cards (increment quantity)
+
+Remove Card
+  → cardAPI.remove(deckId, cardId)
+    → DELETE /api/cards/decks/:deckId/card/:cardId
+      → Decrement quantity or DELETE from deck_cards
+
+Toggle Commander
+  → cardAPI.toggleCommander(deckId, cardId)
+    → PATCH /api/cards/decks/:deckId/card/:cardId/commander
+      → Flip is_commander boolean
+```
+
+### 4. Search (Scryfall — No Backend)
+```
+Search Page / CardSearch component
+  → Direct fetch to https://api.scryfall.com/cards/search?q=...
+  → Query built from: text, colors, CMC, types, rarities, sort
+  → Always includes: f:commander -is:digital
+  → Results processed: split type_line into supertypes/types/subtypes
+  → Can add to decks via DeckTray → backend card API
+```
+
+### 5. Playtest
+```
+Playtest Page
+  → Raw fetch to /api/decks/:deckId (not api.js!)
+  → formatCard() extracts image_uris.normal
+  → expandAndShuffle() → library, deck, commandZone
+  → useReducer (playtestReducer) manages:
+     - Zones: deck, hand, graveyard, exile, commandZone, battlefield
+     - Players: life(40), poison, experience, energy, rad, commanderDamage
+     - UI: contextMenu, tokenCreatorOpen, deckSearcherOpen, etc.
+  → React Konva canvas for battlefield
+```
+
+---
+
+## Client-Side Conventions
+
+### API Layer (`client/src/services/api.js`)
+- **Axios instance** with `baseURL` from `VITE_API_URL`
+- **Request interceptor**: attaches `Authorization: Bearer <token>` from localStorage
+- **Response interceptor**: on 401 → clears token + redirects to `/login`
+- **API objects**: `authAPI`, `deckAPI`, `cardAPI`, `healthAPI`
+
+### Auth (`client/src/auth/AuthContext.jsx`)
+- Context provides: `token`, `user`, `loading`, `login`, `register`, `logout`, `isAuthenticated`
+- Token persisted in `localStorage`
+- On mount: fetches `/api/auth/me` to validate token
+
+### Hooks
+- **`useApi(apiFunction)`**: wraps API calls with `data`, `loading`, `error`, `execute`, `reset`
+- **`useLocalStorage`**: persists search filters across sessions
+
+### Routing (`client/src/main.jsx`)
+```
+/              → App (landing)
+/decks         → Decks (list)
+/decks/:id     → DeckDetail (editor)
+/decks/:id/playtest → Playtest (full-screen canvas)
+/search        → Search (Scryfall)
+/login         → Login
+/register      → Register
+```
+
+---
+
+## Server-Side Conventions
+
+### Express Pipeline (`server/src/app.js`)
+```
+helmet → cors → express.json(10mb) → morgan → rateLimiter (/api/) → routes → 404 → errorHandler
+```
+
+### Middleware
+- **`authenticate`**: Verify JWT → query DB → attach `req.user`
+- **`optionalAuth`**: Same but non-blocking
+- **`errorHandler`**: Custom error classes → JSON response. Hides 500 details in production.
+- **`rateLimiter`**: 100 req/15min (api), 5 auth attempts/15min (auth)
+- **`validation`**: express-validator chains for body/param validation
+
+### Services
+- **`auth.service.js`**: bcrypt + JWT + encryptionService for email
+- **`deck.service.js`**: SQL with JSON_AGG for commanders, transactions for create/delete
+- **`card.service.js`**: UPSERT cards, manage deck_cards quantities, batch operations
+- **`encryption.service.js`**: AES-256-GCM with `iv:authTag:ciphertext` format
+
+### Error Classes
+- `ValidationError` (400), `AuthenticationError` (401), `AuthorizationError` (403)
+- `NotFoundError` (404), `DatabaseError` (500)
+- PostgreSQL errors mapped: `23505` → 409 Conflict, `23503` → 400 FK violation
+
+### Logging
+- **Winston** with combined format
+- Logs: errors, auth events, rate limit hits, DB operations
+- Morgan streams to Winston
+
+---
+
+## Environment Variables
+
+### Server (`server/.env`)
+```env
+PORT=8080
+NODE_ENV=development
+PGHOST=...rds.amazonaws.com
+PGUSER=postgres
+PGPASSWORD=...
+PGDATABASE=mtg_brewer
+PGPORT=5432
+JWT_SECRET=...
+ENCRYPTION_KEY=...
+CORS_ORIGIN=http://localhost:5173
+```
+
+### Client
+```env
+VITE_API_URL=http://localhost:8080   # dev
+VITE_API_URL=<EB_URL>                # prod
+```
+
+---
+
+## Security Features
+- JWT token auth (7-day expiry)
+- bcrypt password hashing (saltRounds: 10)
+- AES-256-GCM email encryption
+- Helmet security headers
+- Rate limiting (API + auth endpoints)
+- Input validation (express-validator)
+- Parameterized queries (SQL injection prevention)
+- AWS RDS SSL (`rejectUnauthorized: false` for RDS endpoints)
+
+---
+
+## Known Inconsistencies / Notes
+1. **Playtest uses raw `fetch`** instead of centralized `api.js` axios instance
+2. **No frontend tests** exist yet
+3. **Frontend is not deployed** — only backend (EB) and DB (RDS) are live
+4. **Card data is duplicated**: Stored in local `cards` table once added to any deck; Scryfall is the source of truth for search
+5. **Batch card add** exists on backend (`/cards/batch`) but DeckTray in Search uses it; DeckDetail adds one at a time
+6. **Type processing** happens in multiple places (`CardSearch.jsx`, `useDeckTray.js`, `DeckDetail.jsx`) — could be centralized
+
+## Recently Fixed Bugs
+- **2026-05-05**: Fixed double-faced card (DFC) handling across add-card pathways. Both `CardSearch.jsx` and `useDeckTray.js` now send a consistent `image_uris: { normal, back }` object plus a top-level `back_image`. `DeckDetail.jsx` now falls back to `image_uris.back` when `back_image` DB column is null, restoring back-face hover display.
+- **2026-05-05**: Fixed PostgreSQL "malformed array literal" 500 error. The root cause was that the `pg` driver misinterpreted the `types` object (which contains array values like `{super:[...], type:[...], sub:[]}`) as a PostgreSQL array type instead of JSONB. The fix: explicitly `JSON.stringify()` the `types` object before passing it to the driver, and cast it with `::jsonb` in the SQL query. Other JSONB fields (`image_uris`, `prices`, `legalities`) and TEXT[] fields (`color_identity`, `keywords`) are passed as native JS objects/arrays. Applied to all three code paths (single INSERT, single UPDATE, batch add) in `card.service.js`.
+
+---
+
+## Quick Reference: Adding a Feature
+
+### New API Endpoint
+1. Add route in `server/src/routes/*.routes.js`
+2. Add service method in `server/src/services/*.service.js`
+3. Add validation in `server/src/middleware/validation.js` if needed
+4. Register route in `server/src/app.js`
+5. Add client API method in `client/src/services/api.js`
+
+### New Client Page
+1. Create component in `client/src/<Feature>/`
+2. Add route in `client/src/main.jsx`
+3. Add Navbar link in `client/src/components/Navbar/Navbar.jsx` if needed
+4. Use `useApi()` hook for API calls
+5. Access auth via `useContext(AuthContext)`
+
+### DB Migration
+1. Modify `server/db/schema.sql`
+2. Apply changes to AWS RDS instance manually
+3. Update corresponding service queries

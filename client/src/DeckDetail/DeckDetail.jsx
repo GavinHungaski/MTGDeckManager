@@ -35,7 +35,6 @@ function DeckDetail() {
         const res = await deckAPI.getById(deckId);
         const data = res.data;
         const formattedCards = data.cards.map(formatCard);
-        console.log(formattedCards);
         const commanders = formattedCards.filter((c) => c.is_commander);
         setDeck({ id: data.id, name: data.name });
         setCards(formattedCards);
@@ -55,8 +54,8 @@ function DeckDetail() {
       count: card.count ?? 1,
       is_commander: card.is_commander,
 
-      image: card.image_uris?.normal,
-      back_image: card.back_image,
+      image: card.front_image,
+      back_image: card.back_image || null,
       cmc: card.cmc,
       mana_cost: card.mana_cost,
       prices: card.prices,
@@ -129,11 +128,11 @@ function DeckDetail() {
         oracle_text: card.oracle_text,
         power: card.power,
         toughness: card.toughness,
-        image_uris: card.image_uris,
+        front_image: card.front_image,
+        back_image: card.back_image,
         prices: card.prices,
         legalities: card.legalities,
         edhrec_rank: card.edhrec_rank,
-        back_image: card.back_image,
         types: card.types,
       });
 
@@ -141,7 +140,6 @@ function DeckDetail() {
       const res = await deckAPI.getById(deckId);
       const data = res.data;
       const formattedCards = data.cards.map(formatCard);
-      console.log(formattedCards);
       setCards(formattedCards);
     } catch (err) {
       console.error("Error adding card:", err);

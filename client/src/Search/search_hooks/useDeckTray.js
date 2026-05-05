@@ -16,7 +16,7 @@ const SUPERTYPES = [
 function processCard(card) {
   const image =
     card.image_uris?.normal || card.card_faces?.[0]?.image_uris?.normal || null;
-  const back_image = card.card_faces?.[1].image_uris?.normal || null;
+  const back_image = card.card_faces?.[1]?.image_uris?.normal || null;
   const typeLine = card.type_line || "";
   const [left, right] = typeLine.split("—").map((s) => s.trim());
   const leftWords = left ? left.split(" ") : [];
@@ -93,13 +93,15 @@ export function useDeckTray() {
           oracle_text: newCard.text_box,
           power: newCard.power,
           toughness: newCard.toughness,
-          image_uris: newCard.image ? { normal: newCard.image, back: newCard.back_image } : null,
+          front_image: newCard.image,
+          back_image: newCard.back_image,
           color_identity: newCard.color_identity,
           prices: newCard.prices,
           keywords: newCard.keywords,
           legalities: newCard.legalities,
           rarity: newCard.rarity,
           meta_rank: newCard.meta_rank,
+          types: newCard.types,
         }),
       });
       if (!res.ok) throw new Error("Network response was not ok");
@@ -112,26 +114,28 @@ export function useDeckTray() {
 
   async function addCardsToDeckBatch(cards, deckId) {
     try {
-      const processedCards = cards.map(card => {
-        const newCard = processCard(card);
-        return {
-          id: newCard.scryfall_id,
-          name: newCard.name,
-          mana_cost: newCard.mana_cost,
-          cmc: newCard.cmc,
-          type_line: newCard.types ? `${newCard.types.super.join(' ')} ${newCard.types.type.join(' ')}${newCard.types.sub.length > 0 ? ' — ' + newCard.types.sub.join(' ') : ''}`.trim() : null,
-          oracle_text: newCard.text_box,
-          power: newCard.power,
-          toughness: newCard.toughness,
-          image_uris: newCard.image ? { normal: newCard.image, back: newCard.back_image } : null,
-          color_identity: newCard.color_identity,
-          prices: newCard.prices,
-          keywords: newCard.keywords,
-          legalities: newCard.legalities,
-          rarity: newCard.rarity,
-          meta_rank: newCard.meta_rank,
-        };
-      });
+        const processedCards = cards.map(card => {
+          const newCard = processCard(card);
+          return {
+            id: newCard.scryfall_id,
+            name: newCard.name,
+            mana_cost: newCard.mana_cost,
+            cmc: newCard.cmc,
+            type_line: newCard.types ? `${newCard.types.super.join(' ')} ${newCard.types.type.join(' ')}${newCard.types.sub.length > 0 ? ' — ' + newCard.types.sub.join(' ') : ''}`.trim() : null,
+            oracle_text: newCard.text_box,
+            power: newCard.power,
+            toughness: newCard.toughness,
+            front_image: newCard.image,
+            back_image: newCard.back_image,
+            color_identity: newCard.color_identity,
+            prices: newCard.prices,
+            keywords: newCard.keywords,
+            legalities: newCard.legalities,
+            rarity: newCard.rarity,
+            meta_rank: newCard.meta_rank,
+            types: newCard.types,
+          };
+        });
 
       const res = await fetch(`${API_URL}/api/cards/decks/${deckId}/cards/batch`, {
         method: "POST",

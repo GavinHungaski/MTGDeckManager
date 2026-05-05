@@ -81,21 +81,17 @@ function CardSearch({ addCard, color_identity = [] }) {
       card.image_uris?.normal ||
       card.card_faces?.[0]?.image_uris?.normal ||
       null;
-    const back_image = card.card_faces?.[1].image_uris?.normal || null;
+    const back_image = card.card_faces?.[1]?.image_uris?.normal || null;
     const typeLine = card.type_line || "";
     const [left, right] = typeLine.split("—").map((s) => s.trim());
     const leftWords = left ? left.split(" ") : [];
     const supertypes = leftWords.filter((w) => SUPERTYPES.includes(w));
     const types = leftWords.filter((w) => !SUPERTYPES.includes(w));
     const subtypes = right ? right.split(" ") : [];
-    const color_identity = card.color_identity.join(' ');
     const cardData = {
       id: card.id,
       name: card.name,
-      image,
-      back_image,
-      scryfall_id: card.id,
-      color_identity: color_identity,
+      color_identity: card.color_identity,
       cmc: card.cmc,
       mana_cost: card.mana_cost,
       type_line: card.type_line,
@@ -103,11 +99,8 @@ function CardSearch({ addCard, color_identity = [] }) {
       prices: card.prices || null,
       power: card.power,
       toughness: card.toughness,
-      image_uris:
-        card.image_uris ||
-        (card.card_faces?.[0]?.image_uris
-          ? { normal: card.card_faces[0].image_uris.normal }
-          : null),
+      front_image: image,
+      back_image: back_image,
       types: {
         super: supertypes,
         type: types,
@@ -119,7 +112,7 @@ function CardSearch({ addCard, color_identity = [] }) {
       rarity: card.rarity,
       meta_rank: card.edhrec_rank,
     };
-    
+
     addCard(cardData);
     setSearch("");
     setShowDropdown(false);

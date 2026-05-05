@@ -81,7 +81,7 @@ function CommanderAutocomplete({ onSelect }) {
     const commanderData = {
       id: card.id,
       name: card.name,
-      image_uris: image ? { normal: image } : null,
+      front_image: image,
       back_image,
       color_identity: color_identity,
       cmc: card.cmc,
