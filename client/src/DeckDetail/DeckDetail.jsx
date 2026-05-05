@@ -286,16 +286,17 @@ function DeckDetail() {
                     (card.types?.type?.includes("Creature") ||
                       card.types?.sub?.includes("Vehicle") ||
                       card.text?.includes("can be your commander"));
-                  const isInvalid = !card.color_identity?.every((color) =>
-                    [
-                      ...new Set(
-                        commanders.flatMap((c) => c.color_identity || []),
-                      ),
-                    ]?.includes(color),
-                  );
+                  const isValid =
+                    card.color_identity?.every((color) =>
+                      [
+                        ...new Set(
+                          commanders.flatMap((c) => c.color_identity || []),
+                        ),
+                      ]?.includes(color),
+                    ) || card.color_identity == null;
                   return (
                     <div
-                      className={`card-item ${isInvalid ? "invalid-identity" : ""}`}
+                      className={`card-item ${isValid ? "" : "invalid-identity"}`}
                       key={card.id}
                     >
                       <img
