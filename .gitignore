@@ -28,3 +28,6 @@ dist-ssr
 
 # SQL files
 *.sql
+
+# Cline Rules
+.clinerules
