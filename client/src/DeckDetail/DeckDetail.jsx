@@ -1,7 +1,10 @@
-import { useEffect, useState, useMemo, useContext } from "react";
+import { useEffect, useState, useMemo, useContext, useCallback, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import CardSearch from "../components/CardSearch/CardSearch.jsx";
 import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
+import DeckImportModal from "../components/DeckImportModal/DeckImportModal.jsx";
+import DeckStats from "./DeckStats.jsx";
+import CardListView from "./CardListView.jsx";
 import "./DeckDetail.css";
 import ExportDeckButton from "../components/ExportDeckButton.jsx";
 import { AuthContext } from "../auth/AuthContext";
@@ -25,27 +28,38 @@ function DeckDetail() {
   const [cards, setCards] = useState([]);
   const [commanders, setCommanders] = useState(null);
   const [viewingCard, setViewingCard] = useState(null);
+  const [showImport, setShowImport] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [viewMode, setViewMode] = useState("cards");
+  const [showStats, setShowStats] = useState(false);
   const navigate = useNavigate();
   const { token } = useContext(AuthContext);
+  const hasSetInitialCard = useRef(false);
+  const nameInputRef = useRef(null);
+
+  const fetchDeckData = useCallback(async () => {
+    if (!deckId) return;
+    try {
+      const res = await deckAPI.getById(deckId);
+      const data = res.data;
+      const formattedCards = data.cards.map(formatCard);
+      const commanders = formattedCards.filter((c) => c.is_commander);
+      setDeck({ id: data.id, name: data.name });
+      setCards(formattedCards);
+      setCommanders(commanders);
+      if (!hasSetInitialCard.current && commanders.length > 0) {
+        setViewingCard(commanders[0]);
+        hasSetInitialCard.current = true;
+      }
+    } catch (err) {
+      console.error("Error fetching deck:", err);
+    }
+  }, [deckId]);
 
   useEffect(() => {
-    if (!deckId) return;
-    const fetchDeckData = async () => {
-      try {
-        const res = await deckAPI.getById(deckId);
-        const data = res.data;
-        const formattedCards = data.cards.map(formatCard);
-        const commanders = formattedCards.filter((c) => c.is_commander);
-        setDeck({ id: data.id, name: data.name });
-        setCards(formattedCards);
-        setCommanders(commanders);
-        setViewingCard(commanders[0]);
-      } catch (err) {
-        console.error("Error fetching deck:", err);
-      }
-    };
     fetchDeckData();
-  }, [deckId]);
+  }, [fetchDeckData]);
 
   const formatCard = (card) => {
     return {
@@ -136,13 +150,34 @@ function DeckDetail() {
         types: card.types,
       });
 
-      // Refetch deck to get updated card list
-      const res = await deckAPI.getById(deckId);
-      const data = res.data;
-      const formattedCards = data.cards.map(formatCard);
-      setCards(formattedCards);
+      await fetchDeckData();
     } catch (err) {
       console.error("Error adding card:", err);
+    }
+  }
+
+  async function handleIncrementCard(card) {
+    try {
+      await cardAPI.add(deckId, {
+        id: card.id,
+        name: card.name,
+        mana_cost: card.mana_cost,
+        cmc: card.cmc,
+        color_identity: card.color_identity,
+        type_line: card.type_line,
+        oracle_text: card.text,
+        power: card.power,
+        toughness: card.toughness,
+        front_image: card.image,
+        back_image: card.back_image,
+        prices: card.prices,
+        legalities: card.raw?.legalities,
+        edhrec_rank: card.raw?.edhrec_rank,
+        types: card.types,
+      });
+      await fetchDeckData();
+    } catch (err) {
+      console.error("Error incrementing card:", err);
     }
   }
 
@@ -187,12 +222,75 @@ function DeckDetail() {
     }
   }
 
+  function handleStartRename() {
+    setEditName(deck.name);
+    setIsEditingName(true);
+    setTimeout(() => nameInputRef.current?.focus(), 0);
+  }
+
+  async function handleSaveName() {
+    const trimmed = editName.trim();
+    if (!trimmed || trimmed === deck.name) {
+      setIsEditingName(false);
+      return;
+    }
+    try {
+      await deckAPI.update(deckId, { name: trimmed });
+      setDeck((prev) => ({ ...prev, name: trimmed }));
+      setIsEditingName(false);
+    } catch (err) {
+      console.error("Error renaming deck:", err);
+      alert("Failed to rename deck. Please try again.");
+    }
+  }
+
+  function handleCancelRename() {
+    setIsEditingName(false);
+    setEditName("");
+  }
+
+  function handleNameKeyDown(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSaveName();
+    } else if (e.key === "Escape") {
+      handleCancelRename();
+    }
+  }
+
   return (
     <div className="deck-detail">
+      {showImport && (
+        <DeckImportModal
+          deckId={deckId}
+          onClose={() => setShowImport(false)}
+          onSuccess={fetchDeckData}
+        />
+      )}
+
       <div className="info-side">
-        <h1 className="roboto-font deck-name">
-          <b>{deck.name}</b>
-        </h1>
+        {isEditingName ? (
+          <div className="deck-name-edit">
+            <input
+              ref={nameInputRef}
+              className="deck-name-input"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              onBlur={handleSaveName}
+              onKeyDown={handleNameKeyDown}
+              maxLength={100}
+            />
+          </div>
+        ) : (
+          <h1
+            className="roboto-font deck-name deck-name-clickable"
+            onClick={handleStartRename}
+            title="Click to rename"
+          >
+            <b>{deck.name}</b>
+            <span className="rename-hint">✎</span>
+          </h1>
+        )}
         {viewingCard?.image && (
           <img
             className="viewing-img"
@@ -218,6 +316,11 @@ function DeckDetail() {
               ...new Set(commanders.flatMap((c) => c.color_identity || [])),
             ]}
           />
+          <button onClick={() => setShowImport(true)}>
+            <span className="button-top" style={{ color: "black" }}>
+              Import List
+            </span>
+          </button>
           <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
             <option value="type">Group by Types</option>
             <option value="mana">Group By Mana Value</option>
@@ -239,9 +342,18 @@ function DeckDetail() {
               Playtester
             </span>
           </button>
+          <button
+            onClick={() => setViewMode((m) => (m === "cards" ? "list" : "cards"))}
+            title={viewMode === "cards" ? "Switch to list view" : "Switch to card view"}
+          >
+            <span className="button-top" style={{ color: "black" }}>
+              {viewMode === "cards" ? "List View" : "Card View"}
+            </span>
+          </button>
         </div>
 
-        <div className="card-display">
+        {viewMode === "cards" ? (
+          <div className="card-display">
           <div className="category">
             <span className="roboto-font">
               <b>Commander</b>
@@ -304,6 +416,13 @@ function DeckDetail() {
                         onMouseEnter={() => setViewingCard(card)}
                       />
                       <span className="card-count">{card.count}</span>
+                      <button
+                        className="increment-btn"
+                        onClick={() => handleIncrementCard(card)}
+                        aria-label="Add copy"
+                      >
+                        +
+                      </button>
                       <DeleteCardBtn
                         deckId={deck.id}
                         cardId={card.id}
@@ -327,7 +446,29 @@ function DeckDetail() {
             </div>
           ))}
         </div>
+      ) : (
+        <CardListView
+          deckId={deck.id}
+          cards={cards}
+          commanders={commanders}
+          groupedCards={groupedCards}
+          groupBy={groupBy}
+          viewingCard={viewingCard}
+          setViewingCard={setViewingCard}
+          handleIncrementCard={handleIncrementCard}
+          handleRemoveCard={handleRemoveCard}
+          handleToggleCommander={handleToggleCommander}
+        />
+      )}
       </div>
+      {showStats && <DeckStats cards={cards} onClose={() => setShowStats(false)} />}
+      <button
+        className="stats-toggle-btn"
+        onClick={() => setShowStats((s) => !s)}
+        title={showStats ? "Hide stats" : "Show stats"}
+      >
+        {showStats ? "Hide Stats" : "Show Stats"}
+      </button>
     </div>
   );
 }

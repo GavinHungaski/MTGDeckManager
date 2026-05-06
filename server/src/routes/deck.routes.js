@@ -50,6 +50,21 @@ router.post('/', createDeckValidation, async (req, res, next) => {
 });
 
 /**
+ * PATCH /api/decks/:id
+ * Update a deck
+ */
+router.patch('/:id', deckIdParamValidation, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+    const result = await deckService.updateDeck(id, req.user.id, updates);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * DELETE /api/decks/:id
  * Delete a deck
  */

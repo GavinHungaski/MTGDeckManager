@@ -159,27 +159,78 @@ class DeckService {
       const deckId = deckResult.rows[0].id;
 
       // Convert color_identity to array format if needed
-      const colorIdentity = commander.color_identity 
-        ? (Array.isArray(commander.color_identity) 
-            ? commander.color_identity 
+      const colorIdentity = commander.color_identity
+        ? (Array.isArray(commander.color_identity)
+            ? commander.color_identity
             : commander.color_identity.split(' ').filter(c => c))
         : null;
 
-      // Prepare types JSONB and back_image for commander
+      // Prepare JSONB fields
       const commanderTypes = commander.types ? JSON.stringify(commander.types) : null;
+      const commanderPrices = commander.prices || null;
+      const commanderLegalities = commander.legalities || null;
+      const commanderKeywords = Array.isArray(commander.keywords)
+        ? commander.keywords
+        : typeof commander.keywords === 'string'
+          ? commander.keywords.split(',').map(k => k.trim()).filter(k => k)
+          : null;
+
+      // Derive type_line if not provided
+      const typeLine = commander.type_line || null;
+
+      // Derive oracle_text from either oracle_text or text_box
+      const oracleText = commander.oracle_text || commander.text_box || null;
+
       const commanderBackImage = commander.back_image || null;
 
-      // Create or update commander card
+      // Create or update commander card with full data
       const cardResult = await client.query(
         `
-        INSERT INTO cards (id, name, front_image, color_identity, types, back_image)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO cards (
+          id, name, mana_cost, cmc, card_type, oracle_text, power, toughness,
+          color_identity, prices, keywords, legalities, rarity, edhrec_rank,
+          types, front_image, back_image
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15::jsonb, $16, $17)
         ON CONFLICT (id)
-        DO UPDATE SET name = EXCLUDED.name, front_image = EXCLUDED.front_image,
-                      types = EXCLUDED.types, back_image = EXCLUDED.back_image
+        DO UPDATE SET
+          name = EXCLUDED.name,
+          mana_cost = EXCLUDED.mana_cost,
+          cmc = EXCLUDED.cmc,
+          card_type = EXCLUDED.card_type,
+          oracle_text = EXCLUDED.oracle_text,
+          power = EXCLUDED.power,
+          toughness = EXCLUDED.toughness,
+          color_identity = EXCLUDED.color_identity,
+          prices = EXCLUDED.prices,
+          keywords = EXCLUDED.keywords,
+          legalities = EXCLUDED.legalities,
+          rarity = EXCLUDED.rarity,
+          edhrec_rank = EXCLUDED.edhrec_rank,
+          types = EXCLUDED.types,
+          front_image = EXCLUDED.front_image,
+          back_image = EXCLUDED.back_image
         RETURNING id
         `,
-        [commander.id, commander.name, commander.front_image, colorIdentity, commanderTypes, commanderBackImage]
+        [
+          commander.id,
+          commander.name,
+          commander.mana_cost || null,
+          commander.cmc || null,
+          typeLine,
+          oracleText,
+          commander.power || null,
+          commander.toughness || null,
+          colorIdentity,
+          commanderPrices,
+          commanderKeywords,
+          commanderLegalities,
+          commander.rarity || null,
+          commander.meta_rank || commander.edhrec_rank || null,
+          commanderTypes,
+          commander.front_image,
+          commanderBackImage,
+        ]
       );
 
       const cardId = cardResult.rows[0].id;
@@ -201,6 +252,65 @@ class DeckService {
       
       logger.error(`Create deck error: ${error.message}`);
       throw new DatabaseError('Failed to create deck');
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
+   * Update a deck
+   */
+  async updateDeck(deckId, userId, updates) {
+    const { ValidationError } = await import('../middleware/errorHandler.js');
+    const client = await pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      const allowedFields = ['name', 'description', 'format', 'is_public'];
+      const setClauses = [];
+      const values = [];
+      let paramIndex = 1;
+
+      for (const [key, value] of Object.entries(updates)) {
+        if (allowedFields.includes(key) && value !== undefined) {
+          setClauses.push(`${key} = $${paramIndex}`);
+          values.push(value);
+          paramIndex++;
+        }
+      }
+
+      if (setClauses.length === 0) {
+        throw new ValidationError('No valid fields to update');
+      }
+
+      values.push(deckId, userId);
+
+      const result = await client.query(
+        `UPDATE decks
+         SET ${setClauses.join(', ')}
+         WHERE id = $${paramIndex} AND user_id = $${paramIndex + 1}
+         RETURNING id, name, description, format, is_public, updated_at`,
+        values
+      );
+
+      if (result.rows.length === 0) {
+        await client.query('ROLLBACK');
+        throw new NotFoundError('Deck not found');
+      }
+
+      await client.query('COMMIT');
+
+      logger.info(`Deck updated: ${deckId} by user ${userId}`);
+
+      return result.rows[0];
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error;
+      }
+      await client.query('ROLLBACK');
+      logger.error(`Update deck error: ${error.message}`);
+      throw new DatabaseError('Failed to update deck');
     } finally {
       client.release();
     }

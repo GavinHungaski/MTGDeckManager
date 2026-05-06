@@ -131,3 +131,108 @@ hr {
   border-top: 1px solid var(--border);
   margin: 8px 0;
 }
+
+/* ── Homepage ─────────────────────────────────────────────── */
+.home-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem 3rem;
+  gap: 2.5rem;
+}
+
+/* Hero */
+.home-hero {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.home-title {
+  font-family: "Cinzel", serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--gold-light);
+  text-shadow: 0 0 18px rgba(201, 168, 76, 0.35);
+  margin: 0;
+}
+
+.home-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 560px;
+}
+
+.home-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Feature grid */
+.home-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.feature-card:hover {
+  border-color: var(--gold-dim);
+  box-shadow: var(--glow);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  color: var(--gold);
+}
+
+.feature-title {
+  font-family: "Cinzel", serif;
+  font-size: 1.15rem;
+  color: var(--gold-light);
+  margin: 0;
+}
+
+.feature-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+/* Bottom section */
+.home-bottom {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.home-bottom a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.home-bottom a:hover {
+  color: var(--gold-light);
+}

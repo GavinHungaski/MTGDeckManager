@@ -1,0 +1,147 @@
+.import-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.import-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 520px;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.import-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.import-modal-header h2 {
+  margin: 0;
+  font-family: "Cinzel", serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+}
+
+.import-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.import-modal-close:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.import-modal-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.import-modal-body label {
+  font-family: "Crimson Pro", Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.import-modal-body textarea {
+  width: 100%;
+  min-height: 220px;
+  resize: vertical;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--text);
+  font-family: monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.import-modal-body textarea:focus {
+  border-color: var(--gold-dim);
+}
+
+.import-modal-body .hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.import-modal-footer {
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.import-modal-footer .status {
+  font-family: "Crimson Pro", Georgia, serif;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.import-modal-footer .status.error {
+  color: var(--red);
+}
+
+.import-modal-footer .status.success {
+  color: var(--green);
+}
+
+.import-modal-footer button {
+  padding: 8px 18px;
+  border-radius: var(--button_radius);
+  border: none;
+  cursor: pointer;
+  font-family: "Crimson Pro", Georgia, serif;
+  font-size: 0.95rem;
+  transition: opacity 0.15s;
+}
+
+.import-modal-footer .import-btn {
+  background: var(--gold);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.import-modal-footer .import-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.import-modal-footer .cancel-btn {
+  background: var(--surface-2);
+  color: var(--text);
+}

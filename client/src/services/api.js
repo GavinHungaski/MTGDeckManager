@@ -53,12 +53,14 @@ export const deckAPI = {
   getAll: () => api.get('/api/decks'),
   getById: (id) => api.get(`/api/decks/${id}`),
   create: (deckData) => api.post('/api/decks', deckData),
+  update: (id, updates) => api.patch(`/api/decks/${id}`, updates),
   delete: (id) => api.delete(`/api/decks/${id}`),
 };
 
 // Card API
 export const cardAPI = {
   add: (deckId, cardData) => api.post(`/api/cards/decks/${deckId}/card`, cardData),
+  addBatch: (deckId, cardsData) => api.post(`/api/cards/decks/${deckId}/cards/batch`, { cards: cardsData }, { timeout: 60000 }),
   remove: (deckId, cardId) => api.delete(`/api/cards/decks/${deckId}/card/${cardId}`),
   toggleCommander: (deckId, cardId) => 
     api.patch(`/api/cards/decks/${deckId}/card/${cardId}/commander`),
