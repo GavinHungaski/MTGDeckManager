@@ -521,10 +521,6 @@
 
 /* ── Stats Toggle Button (fixed bottom) ───────────────────── */
 .stats-toggle-btn {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
   z-index: 100;
   padding: 10px 24px;
   border-radius: 8px;

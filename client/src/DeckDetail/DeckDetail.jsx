@@ -1,4 +1,11 @@
-import { useEffect, useState, useMemo, useContext, useCallback, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  useContext,
+  useCallback,
+  useRef,
+} from "react";
 import { useNavigate, useParams } from "react-router";
 import CardSearch from "../components/CardSearch/CardSearch.jsx";
 import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
@@ -343,132 +350,140 @@ function DeckDetail() {
             </span>
           </button>
           <button
-            onClick={() => setViewMode((m) => (m === "cards" ? "list" : "cards"))}
-            title={viewMode === "cards" ? "Switch to list view" : "Switch to card view"}
+            onClick={() =>
+              setViewMode((m) => (m === "cards" ? "list" : "cards"))
+            }
+            title={
+              viewMode === "cards"
+                ? "Switch to list view"
+                : "Switch to card view"
+            }
           >
             <span className="button-top" style={{ color: "black" }}>
               {viewMode === "cards" ? "List View" : "Card View"}
             </span>
           </button>
+          <button
+            className="stats-toggle-btn"
+            onClick={() => setShowStats((s) => !s)}
+            title={showStats ? "Hide stats" : "Show stats"}
+          >
+            {showStats ? "Hide Stats" : "Show Stats"}
+          </button>
         </div>
 
         {viewMode === "cards" ? (
           <div className="card-display">
-          <div className="category">
-            <span className="roboto-font">
-              <b>Commander</b>
-            </span>
-            <div className="category-cards">
-              {commanders.map((commander) => {
-                return (
-                  <div className="card-item" key={commander.id}>
-                    <img
-                      className="card-item-image"
-                      src={commander.image}
-                      alt={commander.name}
-                      onMouseEnter={() => setViewingCard(commander)}
-                    />
-                    <button
-                      onClick={() => handleToggleCommander(commander)}
-                      className="rmv-commander-btn"
-                    >
-                      R
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {Object.keys(groupedCards).map((category) => (
-            <div className="category" key={category}>
+            <div className="category">
               <span className="roboto-font">
-                <b>{category}</b>{" "}
-                {groupedCards[category].reduce(
-                  (sum, card) => sum + card.count,
-                  0,
-                )}
+                <b>Commander</b>
               </span>
               <div className="category-cards">
-                {groupedCards[category].map((card) => {
-                  const canBeCommander =
-                    card.types?.super?.includes("Legendary") &&
-                    (card.types?.type?.includes("Creature") ||
-                      card.types?.sub?.includes("Vehicle") ||
-                      card.text?.includes("can be your commander"));
-                  const isValid =
-                    card.color_identity?.every((color) =>
-                      [
-                        ...new Set(
-                          commanders.flatMap((c) => c.color_identity || []),
-                        ),
-                      ]?.includes(color),
-                    ) || card.color_identity == null;
+                {commanders.map((commander) => {
                   return (
-                    <div
-                      className={`card-item ${isValid ? "" : "invalid-identity"}`}
-                      key={card.id}
-                    >
+                    <div className="card-item" key={commander.id}>
                       <img
                         className="card-item-image"
-                        src={card.image}
-                        alt={card.name}
-                        onMouseEnter={() => setViewingCard(card)}
+                        src={commander.image}
+                        alt={commander.name}
+                        onMouseEnter={() => setViewingCard(commander)}
                       />
-                      <span className="card-count">{card.count}</span>
                       <button
-                        className="increment-btn"
-                        onClick={() => handleIncrementCard(card)}
-                        aria-label="Add copy"
+                        onClick={() => handleToggleCommander(commander)}
+                        className="rmv-commander-btn"
                       >
-                        +
+                        R
                       </button>
-                      <DeleteCardBtn
-                        deckId={deck.id}
-                        cardId={card.id}
-                        card={card}
-                        onDelete={handleRemoveCard}
-                      />
-                      {canBeCommander && (
-                        <button
-                          onClick={() => {
-                            handleToggleCommander(card);
-                          }}
-                          className="set-commander-btn"
-                        >
-                          C
-                        </button>
-                      )}
                     </div>
                   );
                 })}
               </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        <CardListView
-          deckId={deck.id}
-          cards={cards}
-          commanders={commanders}
-          groupedCards={groupedCards}
-          groupBy={groupBy}
-          viewingCard={viewingCard}
-          setViewingCard={setViewingCard}
-          handleIncrementCard={handleIncrementCard}
-          handleRemoveCard={handleRemoveCard}
-          handleToggleCommander={handleToggleCommander}
-        />
-      )}
+
+            {Object.keys(groupedCards).map((category) => (
+              <div className="category" key={category}>
+                <span className="roboto-font">
+                  <b>{category}</b>{" "}
+                  {groupedCards[category].reduce(
+                    (sum, card) => sum + card.count,
+                    0,
+                  )}
+                </span>
+                <div className="category-cards">
+                  {groupedCards[category].map((card) => {
+                    const canBeCommander =
+                      card.types?.super?.includes("Legendary") &&
+                      (card.types?.type?.includes("Creature") ||
+                        card.types?.sub?.includes("Vehicle") ||
+                        card.text?.includes("can be your commander"));
+                    const isValid =
+                      card.color_identity?.every((color) =>
+                        [
+                          ...new Set(
+                            commanders.flatMap((c) => c.color_identity || []),
+                          ),
+                        ]?.includes(color),
+                      ) || card.color_identity == null;
+                    return (
+                      <div
+                        className={`card-item ${isValid ? "" : "invalid-identity"}`}
+                        key={card.id}
+                      >
+                        <img
+                          className="card-item-image"
+                          src={card.image}
+                          alt={card.name}
+                          onMouseEnter={() => setViewingCard(card)}
+                        />
+                        <span className="card-count">{card.count}</span>
+                        <button
+                          className="increment-btn"
+                          onClick={() => handleIncrementCard(card)}
+                          aria-label="Add copy"
+                        >
+                          +
+                        </button>
+                        <DeleteCardBtn
+                          deckId={deck.id}
+                          cardId={card.id}
+                          card={card}
+                          onDelete={handleRemoveCard}
+                        />
+                        {canBeCommander && (
+                          <button
+                            onClick={() => {
+                              handleToggleCommander(card);
+                            }}
+                            className="set-commander-btn"
+                          >
+                            C
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <CardListView
+            deckId={deck.id}
+            cards={cards}
+            commanders={commanders}
+            groupedCards={groupedCards}
+            groupBy={groupBy}
+            viewingCard={viewingCard}
+            setViewingCard={setViewingCard}
+            handleIncrementCard={handleIncrementCard}
+            handleRemoveCard={handleRemoveCard}
+            handleToggleCommander={handleToggleCommander}
+          />
+        )}
       </div>
-      {showStats && <DeckStats cards={cards} onClose={() => setShowStats(false)} />}
-      <button
-        className="stats-toggle-btn"
-        onClick={() => setShowStats((s) => !s)}
-        title={showStats ? "Hide stats" : "Show stats"}
-      >
-        {showStats ? "Hide Stats" : "Show Stats"}
-      </button>
+      {showStats && (
+        <DeckStats cards={cards} onClose={() => setShowStats(false)} />
+      )}
     </div>
   );
 }
