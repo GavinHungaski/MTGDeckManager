@@ -457,7 +457,7 @@ function TypeDistribution({ cards }) {
 }
 
 /* ── Main Export ──────────────────────────────────────────── */
-export default function DeckStats({ cards, onClose }) {
+export default function DeckStats({ cards, isOpen, onClose }) {
   const commanders = useMemo(
     () => cards.filter((c) => c.is_commander),
     [cards],
@@ -506,17 +506,19 @@ export default function DeckStats({ cards, onClose }) {
   }, [cards, commanderIdentity]);
 
   return (
-    <div className="stats-modal-overlay" onClick={onClose}>
-      <div className="stats-modal" onClick={(e) => e.stopPropagation()}>
-        <button
-          className="stats-modal-close"
-          onClick={onClose}
-          aria-label="Close stats"
-        >
-          ×
-        </button>
-        <h3 className="stats-title">Deck Statistics</h3>
-        <div className="stats-modal-content">
+    <div className={`stats-panel-wrapper ${isOpen ? "open" : ""}`}>
+      <div className="stats-panel-inner">
+        <div className="stats-panel-header">
+          <h3 className="stats-title">Deck Statistics</h3>
+          <button
+            className="stats-panel-close"
+            onClick={onClose}
+            aria-label="Close stats"
+          >
+            ×
+          </button>
+        </div>
+        <div className="stats-panel-scroll">
           <KeyMetrics cards={cards} commanders={commanders} />
           <div className="stats-grid">
             <ManaCurve cards={cards} />

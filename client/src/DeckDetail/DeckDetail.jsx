@@ -481,9 +481,7 @@ function DeckDetail() {
           />
         )}
       </div>
-      {showStats && (
-        <DeckStats cards={cards} onClose={() => setShowStats(false)} />
-      )}
+      <DeckStats cards={cards} isOpen={showStats} onClose={() => setShowStats(false)} />
     </div>
   );
 }
