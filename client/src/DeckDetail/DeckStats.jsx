@@ -143,45 +143,63 @@ function countCardRoles(cards) {
     const qty = card.count || 1;
 
     // Draw
-    if (
-      /\bdraw (?:a|two|three|four|five|x|\d+|that many|cards equal to)\b/.test(
-        text,
-      ) &&
-      !text.includes("opponent draws") &&
-      !text.includes("each player draws") &&
-      !text.includes("target opponent draws")
-    ) {
+    const isDraw = (text) => {
+      const drawRegex =
+        /draws? (?:a|two|three|four|five|x|\d+|that many|cards?)/i;
+      const selectionRegex =
+        /look at the top .* put (?:one|a|two|.*) into your hand/i;
+      // Exclude Cycling
+      if (text.includes("Cycling {")) return false;
+      return (
+        (drawRegex.test(text) || selectionRegex.test(text)) &&
+        !text.includes("opponent draws") &&
+        !text.includes("each player draws")
+      );
+    };
+    // Usage in your loop
+    if (isDraw(text)) {
       draw += qty;
     }
 
     // Ramp
-    const isNonBasicLand =
-      typeLine.includes("land") && !typeLine.includes("basic");
-    const rampPatterns = [
-      /search your library for (?:a|up to (?:one|two|three|x)) land/,
-      /search your library for .* land/,
-      /put .* land .* onto the battlefield/,
-      /explore/,
-      /cascade/,
-      /adds? \{c\}\{c\}/,
-      /adds? \{[wubrg]\}\{[wubrg]\}/,
-      /add .* mana of any color/,
+    const isNotFetchLand = !card.type_line.includes("Land");
+    // 1. Specific Land Search (Requires "onto the battlefield")
+    const landSearch =
+      /search your library for .* land .* onto the battlefield/i;
+    // 2. The Rest of the Ramp Patterns (No "battlefield" required)
+    const otherRampPatterns = [
+      /\{T\}: Add (?:\{[\w/]+\}|mana)/i, // Mana dorks/rocks ({T}: Add {G})
+      /add (?:one )?mana of any color/i, // Fixing (Birds of Paradise)
+      /spells you cast cost .* less to cast/i, // Reducers (Cloud Key)
+      /you may play an additional land/i, // Extra drops (Exploration)
+      /whenever .* tap .* for mana, add/i, // Doublers (Mana Reflection)
     ];
-    if (isNonBasicLand || rampPatterns.some((p) => p.test(text))) {
+    // Determine if it's ramp
+    const isLandRamp = landSearch.test(text);
+    const isOtherRamp = otherRampPatterns.some((p) => p.test(text));
+    if (isNotFetchLand && (isLandRamp || isOtherRamp)) {
       ramp += qty;
     }
 
     // Removal
     const removalPatterns = [
-      /destroy target (?:creature|permanent|artifact|enchantment|land|planeswalker)/,
-      /exile target (?:creature|permanent|artifact|enchantment)/,
-      /return target (?:creature|permanent) to its owner's hand/,
-      /deals? \d+ damage to target (?:creature|player|planeswalker)/,
-      /-[\d+x]\/-[\d+x]/,
-      /counter target/,
-      /destroy all (?:creatures|artifacts|enchantments)/,
-      /exile all (?:creatures|permanents)/,
-      /target (?:creature|permanent) gets -/,
+      // 1. Destroy / Exile (Catching adjectives like "nonland" or "attacking")
+      /(?:destroy|exile) target (?:.* )?(?:creature|permanent|artifact|enchantment|land|planeswalker|nonland)/i,
+      // 2. Board Wipes (Catching "all" effects)
+      /(?:destroy|exile) all (?:.* )?(?:creatures|artifacts|enchantments|permanents|nonland)/i,
+      // 3. Damage-based removal (Catches "5 damage" and "X damage")
+      /deals? (?:[\d+|X]) damage to (?:target|each) (?:creature|planeswalker|any target)/i,
+      // 4. Shrinking / Debuffs (Catches -N/-N effects)
+      /gets? -[\d+|X]\/-[\d+|X]/i,
+      // 5. Interaction / Bounce / Counters
+      /counter target (?:spell|activated|triggered)/i,
+      /return target (?:.* )?(?:creature|permanent) to its owner's hand/i,
+      // 6. Sacrifice (Edicts)
+      /(?:player|opponent) sacrifices (?:a|one|two|a|.*) (?:creature|permanent|artifact|enchantment)/i,
+      // 7. Fight / Bite (Green's removal)
+      /(?:fights target|damage equal to its power to target)/i,
+      // 8. Transformation (Auras that "remove" the threat)
+      /enchanted creature loses all abilities and (?:is a|becomes)/i,
     ];
     if (removalPatterns.some((p) => p.test(text))) {
       removal += qty;
