@@ -327,6 +327,33 @@
   filter: sepia(0.4) hue-rotate(-50deg) saturate(1.8);
 }
 
+/* ── Highlighted Cards (stats hover) ──────────────────────── */
+.card-item.highlighted {
+  z-index: 50;
+  outline: 4px solid var(--gold);
+  border-radius: 10px;
+  transition: outline 0.2s ease;
+}
+
+.card-item.highlighted .card-item-image {
+  box-shadow:
+    0 0 20px rgba(212, 175, 55, 0.7),
+    0 0 60px rgba(212, 175, 55, 0.35);
+}
+
+
+/* ── Highlighted List Rows ────────────────────────────────── */
+.list-card-row.highlighted {
+  background: rgba(212, 175, 55, 0.15) !important;
+  border-left: 4px solid var(--gold);
+  padding-left: 4px;
+}
+
+.list-card-row.highlighted .list-card-name {
+  color: var(--gold-light);
+}
+
+
 /* ── Deck Name Editing ────────────────────────────────────── */
 .deck-name-clickable {
   cursor: pointer;
@@ -517,6 +544,32 @@
   background: var(--bg);
   color: var(--red);
   border: 1px solid var(--red);
+}
+
+/* Override card-delete-btn for list view */
+.list-card-actions .card-delete-btn {
+  position: static;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  visibility: visible;
+  background-color: rgba(180, 40, 40, 0.92);
+  color: #fff;
+  transform: none;
+  transition: transform 0.12s;
+}
+
+.list-card-actions .card-delete-btn:hover {
+  background-color: var(--red) !important;
+  transform: scale(1.1) !important;
 }
 
 /* ── Stats Toggle Button (fixed bottom) ───────────────────── */
@@ -833,6 +886,11 @@
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 16px 12px;
+}
+
+.stat-deck-info {
+  display: flex;
+  flex-direction: row;
 }
 
 .key-metric {

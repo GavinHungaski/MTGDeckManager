@@ -10,6 +10,7 @@ export default function CardListView({
   handleIncrementCard,
   handleRemoveCard,
   handleToggleCommander,
+  highlightedIds,
 }) {
   const commanderColorSet = new Set(
     commanders?.flatMap((c) => c.color_identity || []) || []
@@ -29,7 +30,7 @@ export default function CardListView({
     return (
       <div
         key={card.id}
-        className={`list-card-row ${isValid ? "" : "invalid-identity"}`}
+        className={`list-card-row ${isValid ? "" : "invalid-identity"} ${highlightedIds?.has(card.id) ? "highlighted" : ""}`}
         onMouseEnter={() => setViewingCard(card)}
       >
         <span className="list-card-count">{card.count}x</span>

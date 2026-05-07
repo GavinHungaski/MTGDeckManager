@@ -12,22 +12,14 @@ import DeleteCardBtn from "../components/DeleteCardBtn.jsx";
 import DeckImportModal from "../components/DeckImportModal/DeckImportModal.jsx";
 import DeckStats from "./DeckStats.jsx";
 import CardListView from "./CardListView.jsx";
+import { classifyCard } from "./statsUtils";
 import "./DeckDetail.css";
 import ExportDeckButton from "../components/ExportDeckButton.jsx";
 import { AuthContext } from "../auth/AuthContext";
 import { deckAPI, cardAPI } from "../services/api";
 
-const SUPERTYPES = [
-  "Basic",
-  "Legendary",
-  "Snow",
-  "World",
-  "Ongoing",
-  "Elite",
-  "Host",
-];
-
 function DeckDetail() {
+
   const { deckId } = useParams();
   const [deck, setDeck] = useState(null);
   const [groupBy, setGroupBy] = useState("type");
@@ -39,7 +31,8 @@ function DeckDetail() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editName, setEditName] = useState("");
   const [viewMode, setViewMode] = useState("cards");
-  const [showStats, setShowStats] = useState(false);
+  const [showStats, setShowStats] = useState(true);
+  const [highlightFilter, setHighlightFilter] = useState(null);
   const navigate = useNavigate();
   const { token } = useContext(AuthContext);
   const hasSetInitialCard = useRef(false);
@@ -134,6 +127,48 @@ function DeckDetail() {
     });
     return groups;
   }, [cards, groupBy, sortBy, commanders]);
+
+  /* ── Highlight matching cards ─────────────────────────────── */
+  const highlightedIds = useMemo(() => {
+    if (!highlightFilter) return new Set();
+    const ids = new Set();
+    for (const card of cards) {
+      const cls = classifyCard(card);
+      let match = false;
+      switch (highlightFilter.type) {
+        case "role":
+          match = cls.roles.includes(highlightFilter.role);
+          break;
+        case "cmc": {
+          if (card.is_commander) break;
+          const typeLine = (card.type_line || "").toLowerCase();
+          if (typeLine.includes("land")) break;
+          const cmc = Number(card.cmc ?? 0);
+          const label = highlightFilter.value;
+          if (label === "8+") {
+            match = cmc >= 8;
+          } else {
+            match = cmc === Number(label);
+          }
+          break;
+        }
+        case "manaCost":
+          match = cls.manaCostColors.includes(highlightFilter.color);
+          break;
+        case "manaProduced":
+          match = cls.manaProducedColors.includes(highlightFilter.color);
+          break;
+        case "type":
+          if (card.is_commander) break;
+          match = cls.typeCategory === highlightFilter.category;
+          break;
+        default:
+          break;
+      }
+      if (match) ids.add(card.id);
+    }
+    return ids;
+  }, [cards, highlightFilter]);
 
   if (!deck) return <div>Loading...</div>;
 
@@ -340,9 +375,6 @@ function DeckDetail() {
           <span>
             Count: <b>{cards.reduce((sum, card) => sum + card.count, 0)}</b>
           </span>
-          <span>
-            Cost: <b>${totalPrice}</b>
-          </span>
           <ExportDeckButton cards={cards} />
           <button onClick={() => navigate("playtest")}>
             <span className="button-top" style={{ color: "black" }}>
@@ -381,7 +413,10 @@ function DeckDetail() {
               <div className="category-cards">
                 {commanders.map((commander) => {
                   return (
-                    <div className="card-item" key={commander.id}>
+                    <div
+                      className={`card-item ${highlightedIds.has(commander.id) ? "highlighted" : ""}`}
+                      key={commander.id}
+                    >
                       <img
                         className="card-item-image"
                         src={commander.image}
@@ -426,7 +461,7 @@ function DeckDetail() {
                       ) || card.color_identity == null;
                     return (
                       <div
-                        className={`card-item ${isValid ? "" : "invalid-identity"}`}
+                        className={`card-item ${isValid ? "" : "invalid-identity"} ${highlightedIds.has(card.id) ? "highlighted" : ""}`}
                         key={card.id}
                       >
                         <img
@@ -478,10 +513,16 @@ function DeckDetail() {
             handleIncrementCard={handleIncrementCard}
             handleRemoveCard={handleRemoveCard}
             handleToggleCommander={handleToggleCommander}
+            highlightedIds={highlightedIds}
           />
         )}
       </div>
-      <DeckStats cards={cards} isOpen={showStats} onClose={() => setShowStats(false)} />
+      <DeckStats
+        cards={cards}
+        isOpen={showStats}
+        onClose={() => setShowStats(false)}
+        onHighlight={setHighlightFilter}
+      />
     </div>
   );
 }
