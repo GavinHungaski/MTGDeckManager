@@ -81,4 +81,19 @@ router.put('/decks/:deckId/card/:cardId/count', cardOperationValidation, async (
   }
 });
 
+/**
+ * PATCH /api/cards/decks/:deckId/prices/batch
+ * Batch update card prices for a deck
+ */
+router.patch('/decks/:deckId/prices/batch', cardOperationValidation, async (req, res, next) => {
+  try {
+    const { deckId } = req.params;
+    const { updates } = req.body;
+    const result = await cardService.batchUpdatePrices(deckId, updates, req.user.id);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

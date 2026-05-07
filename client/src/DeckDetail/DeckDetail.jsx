@@ -19,7 +19,6 @@ import { AuthContext } from "../auth/AuthContext";
 import { deckAPI, cardAPI } from "../services/api";
 
 function DeckDetail() {
-
   const { deckId } = useParams();
   const [deck, setDeck] = useState(null);
   const [groupBy, setGroupBy] = useState("type");
@@ -33,6 +32,9 @@ function DeckDetail() {
   const [viewMode, setViewMode] = useState("cards");
   const [showStats, setShowStats] = useState(true);
   const [highlightFilter, setHighlightFilter] = useState(null);
+  const [minimizingPrices, setMinimizingPrices] = useState(false);
+  const [minimizeProgress, setMinimizeProgress] = useState({ current: 0, total: 0, phase: "" });
+  const [minimizeResult, setMinimizeResult] = useState(null);
   const navigate = useNavigate();
   const { token } = useContext(AuthContext);
   const hasSetInitialCard = useRef(false);
@@ -60,6 +62,13 @@ function DeckDetail() {
   useEffect(() => {
     fetchDeckData();
   }, [fetchDeckData]);
+
+  // Auto-dismiss minimize result toast after 5 seconds
+  useEffect(() => {
+    if (!minimizeResult) return;
+    const timer = setTimeout(() => setMinimizeResult(null), 5000);
+    return () => clearTimeout(timer);
+  }, [minimizeResult]);
 
   const formatCard = (card) => {
     return {
@@ -300,6 +309,204 @@ function DeckDetail() {
     }
   }
 
+  async function fetchScryfallPrices(cardIds) {
+    const MAX_BATCH = 75;
+    const results = new Map();
+
+    for (let i = 0; i < cardIds.length; i += MAX_BATCH) {
+      const batch = cardIds.slice(i, i + MAX_BATCH);
+      setMinimizeProgress({ current: i, total: cardIds.length, phase: "fetching" });
+
+      const res = await fetch("https://api.scryfall.com/cards/collection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifiers: batch.map((id) => ({ id })) }),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Scryfall batch error (${res.status}): ${errText}`);
+      }
+
+      const data = await res.json();
+
+      if (data.data) {
+        for (const card of data.data) {
+          results.set(card.id, card.prices);
+        }
+      }
+
+      // Rate limit respect: small delay between batches
+      if (i + MAX_BATCH < cardIds.length) {
+        await new Promise((r) => setTimeout(r, 100));
+      }
+    }
+
+    return results;
+  }
+
+  async function fetchFallbackPrice(cardName) {
+    const query = encodeURIComponent(`!"${cardName}"`);
+    const res = await fetch(
+      `https://api.scryfall.com/cards/search?q=${query}&unique=prints&order=usd&dir=asc`,
+    );
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.warn(`Scryfall fallback error for "${cardName}" (${res.status}): ${errText}`);
+      return null;
+    }
+
+    const data = await res.json();
+    if (!data.data || data.data.length === 0) return null;
+
+    // Scan all printings and pick the cheapest one with a USD price
+    let cheapest = null;
+    let cheapestPrice = Infinity;
+
+    for (const card of data.data) {
+      const usd = card.prices?.usd != null ? parseFloat(card.prices.usd) : null;
+      if (usd != null && usd < cheapestPrice) {
+        cheapestPrice = usd;
+        cheapest = card.prices;
+      }
+    }
+
+    // If no non-foil price found, try usd_foil as a last resort
+    if (!cheapest) {
+      for (const card of data.data) {
+        const usdFoil = card.prices?.usd_foil != null ? parseFloat(card.prices.usd_foil) : null;
+        if (usdFoil != null && usdFoil < cheapestPrice) {
+          cheapestPrice = usdFoil;
+          cheapest = card.prices;
+        }
+      }
+    }
+
+    return cheapest;
+  }
+
+  function getMinimizedPrices(current, fresh) {
+    const keys = ["usd", "usd_foil", "eur", "eur_foil", "tix", "usd_etched"];
+    const result = {};
+    let changed = false;
+    let oldTotal = 0;
+    let newTotal = 0;
+
+    for (const key of keys) {
+      const currentVal = current?.[key] != null ? parseFloat(current[key]) : null;
+      const freshVal = fresh?.[key] != null ? parseFloat(fresh[key]) : null;
+
+      if (currentVal == null && freshVal != null) {
+        result[key] = fresh[key];
+        changed = true;
+        // Don't count first-time price assignments toward savings
+      } else if (currentVal != null && freshVal != null && freshVal < currentVal) {
+        result[key] = fresh[key];
+        changed = true;
+        if (key === "usd") {
+          oldTotal += currentVal;
+          newTotal += freshVal;
+        }
+      } else {
+        result[key] = current?.[key];
+        if (key === "usd" && currentVal != null) {
+          oldTotal += currentVal;
+          newTotal += currentVal;
+        }
+      }
+    }
+
+    return { prices: result, changed, oldTotal, newTotal };
+  }
+
+  async function handleMinimizePrices() {
+    if (!cards || cards.length === 0) return;
+    setMinimizingPrices(true);
+    setMinimizeResult(null);
+
+    try {
+      const uniqueCards = [...new Map(cards.map((c) => [c.id, c])).values()];
+      const cardIds = uniqueCards.map((c) => c.id);
+
+      setMinimizeProgress({ current: 0, total: cardIds.length, phase: "fetching" });
+      const freshPrices = await fetchScryfallPrices(cardIds);
+
+      // ── Fallback for cards with no price data on their stored printing ──
+      const missingPriceCards = uniqueCards.filter(
+        (c) => !freshPrices.get(c.id)?.usd,
+      );
+      if (missingPriceCards.length > 0) {
+        setMinimizeProgress({
+          current: 0,
+          total: missingPriceCards.length,
+          phase: "fetching",
+        });
+        for (let i = 0; i < missingPriceCards.length; i++) {
+          const card = missingPriceCards[i];
+          const fallback = await fetchFallbackPrice(card.name);
+          if (fallback) {
+            freshPrices.set(card.id, fallback);
+          }
+          setMinimizeProgress({
+            current: i + 1,
+            total: missingPriceCards.length,
+            phase: "fetching",
+          });
+          // Rate limit respect
+          if (i < missingPriceCards.length - 1) {
+            await new Promise((r) => setTimeout(r, 100));
+          }
+        }
+      }
+
+      setMinimizeProgress({ current: 0, total: uniqueCards.length, phase: "comparing" });
+      const updates = [];
+
+      for (let i = 0; i < uniqueCards.length; i++) {
+        const card = uniqueCards[i];
+        const fresh = freshPrices.get(card.id);
+        if (!fresh) continue;
+
+        const { prices, changed, oldTotal, newTotal } = getMinimizedPrices(card.prices, fresh);
+
+        if (changed) {
+          updates.push({
+            cardId: card.id,
+            prices,
+            oldPrice: oldTotal,
+            newPrice: newTotal,
+          });
+        }
+
+        setMinimizeProgress({ current: i + 1, total: uniqueCards.length, phase: "comparing" });
+      }
+
+      if (updates.length === 0) {
+        setMinimizeResult({ type: "info", message: "All prices are already minimized!" });
+        setMinimizingPrices(false);
+        return;
+      }
+
+      setMinimizeProgress({ current: 0, total: updates.length, phase: "updating" });
+      const res = await cardAPI.minimizePrices(deckId, updates);
+      const data = res.data;
+
+      setMinimizeResult({
+        type: "success",
+        message: `Updated ${data.updatedCount} cards · Saved $${data.savings}`,
+      });
+
+      await fetchDeckData();
+    } catch (err) {
+      console.error("Error minimizing prices:", err);
+      setMinimizeResult({ type: "error", message: err.message || "Failed to minimize prices." });
+    } finally {
+      setMinimizingPrices(false);
+      setMinimizeProgress({ current: 0, total: 0, phase: "" });
+    }
+  }
+
   return (
     <div className="deck-detail">
       {showImport && (
@@ -402,7 +609,61 @@ function DeckDetail() {
           >
             {showStats ? "Hide Stats" : "Show Stats"}
           </button>
+          <button
+            onClick={handleMinimizePrices}
+            disabled={minimizingPrices}
+            title="Fetch lowest prices from Scryfall"
+          >
+            <span className="button-top" style={{ color: "black" }}>
+              {minimizingPrices ? "Minimizing..." : "Minimize Prices"}
+            </span>
+          </button>
         </div>
+
+        {minimizingPrices && (
+          <div className="minimize-progress-bar">
+            {minimizeProgress.phase === "updating" ? (
+              <div className="minimize-updating-row">
+                <span className="minimize-spinner" />
+                <span className="minimize-progress-label">
+                  Updating database...
+                </span>
+              </div>
+            ) : (
+              <>
+                <div className="minimize-progress-track">
+                  <div
+                    className="minimize-progress-fill"
+                    style={{
+                      width: `${minimizeProgress.total > 0 ? (minimizeProgress.current / minimizeProgress.total) * 100 : 0}%`,
+                    }}
+                  />
+                </div>
+                <span className="minimize-progress-label">
+                  {minimizeProgress.phase === "fetching" &&
+                    (minimizeProgress.total > 75
+                      ? `Fetching prices: ${minimizeProgress.current} / ${minimizeProgress.total}`
+                      : `Finding alternate printings: ${minimizeProgress.current} / ${minimizeProgress.total}`)}
+                  {minimizeProgress.phase === "comparing" &&
+                    `Comparing prices: ${minimizeProgress.current} / ${minimizeProgress.total}`}
+                </span>
+              </>
+            )}
+          </div>
+        )}
+
+        {minimizeResult && (
+          <div className={`minimize-result minimize-result-${minimizeResult.type}`}>
+            <button
+              className="minimize-result-close"
+              onClick={() => setMinimizeResult(null)}
+              aria-label="Dismiss"
+            >
+              ×
+            </button>
+            {minimizeResult.message}
+          </div>
+        )}
 
         {viewMode === "cards" ? (
           <div className="card-display">
@@ -442,7 +703,14 @@ function DeckDetail() {
                   {groupedCards[category].reduce(
                     (sum, card) => sum + card.count,
                     0,
-                  )}
+                  )}{" "}
+                  · $
+                  {groupedCards[category]
+                    .reduce((sum, card) => {
+                      const price = Number(card.prices?.usd) || 0;
+                      return sum + price * (card.count || 1);
+                    }, 0)
+                    .toFixed(2)}
                 </span>
                 <div className="category-cards">
                   {groupedCards[category].map((card) => {

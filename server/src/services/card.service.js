@@ -534,6 +534,73 @@ class CardService {
   }
 
   /**
+   * Batch update card prices
+   */
+  async batchUpdatePrices(deckId, updates, userId) {
+    const client = await pool.connect();
+
+    try {
+      // Verify deck ownership
+      await deckService.verifyDeckOwnership(deckId, userId);
+
+      if (!Array.isArray(updates) || updates.length === 0) {
+        return { updatedCount: 0, totalOldPrice: "0.00", totalNewPrice: "0.00", savings: "0.00" };
+      }
+
+      await client.query("BEGIN");
+
+      let updatedCount = 0;
+      let totalOldPrice = 0;
+      let totalNewPrice = 0;
+
+      for (const update of updates) {
+        const { cardId, prices, oldPrice, newPrice } = update;
+
+        const result = await client.query(
+          `UPDATE cards SET prices = $1 WHERE id = $2 RETURNING id`,
+          [prices, cardId],
+        );
+
+        if (result.rows.length > 0) {
+          updatedCount++;
+          totalOldPrice += parseFloat(oldPrice || 0);
+          totalNewPrice += parseFloat(newPrice || 0);
+        }
+      }
+
+      await client.query("COMMIT");
+
+      const savings = Math.max(0, totalOldPrice - totalNewPrice);
+
+      logger.info(
+        `Batch updated ${updatedCount} card prices for deck ${deckId}. Savings: $${savings.toFixed(2)}`,
+      );
+
+      return {
+        updatedCount,
+        totalOldPrice: totalOldPrice.toFixed(2),
+        totalNewPrice: totalNewPrice.toFixed(2),
+        savings: savings.toFixed(2),
+      };
+    } catch (error) {
+      await client.query("ROLLBACK");
+
+      if (
+        error instanceof NotFoundError ||
+        error instanceof AuthorizationError ||
+        error instanceof ValidationError
+      ) {
+        throw error;
+      }
+
+      logger.error(`Batch update prices error: ${error.message}`);
+      throw new DatabaseError("Failed to update card prices");
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
    * Update card quantity in deck
    */
   async updateCardCount(deckId, cardId, count, userId) {

@@ -66,6 +66,8 @@ export const cardAPI = {
     api.patch(`/api/cards/decks/${deckId}/card/${cardId}/commander`),
   updateCount: (deckId, cardId, count) => 
     api.put(`/api/cards/decks/${deckId}/card/${cardId}/count`, { count }),
+  minimizePrices: (deckId, updates) =>
+    api.patch(`/api/cards/decks/${deckId}/prices/batch`, { updates }),
 };
 
 // Health check
