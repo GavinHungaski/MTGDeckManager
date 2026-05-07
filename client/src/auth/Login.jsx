@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 
 export default function Login() {
   const { login } = useContext(AuthContext);
@@ -66,7 +66,12 @@ export default function Login() {
       await login({ email, password });
       navigate("/decks");
     } catch (err) {
-      setError(err.message || "Login failed");
+      const serverMessage = err.response?.data?.message;
+      const isRateLimited = err.response?.status === 429;
+      setError({
+        message: serverMessage || err.message || "Login failed",
+        isRateLimited,
+      });
     }
   };
 
@@ -88,16 +93,16 @@ export default function Login() {
       
       {error && (
         <div style={{
-          color: "#dc3545",
-          backgroundColor: "#f8d7da",
-          border: "1px solid #f5c6cb",
+          color: error.isRateLimited ? "#856404" : "#dc3545",
+          backgroundColor: error.isRateLimited ? "#fff3cd" : "#f8d7da",
+          border: `1px solid ${error.isRateLimited ? "#ffc107" : "#f5c6cb"}`,
           padding: "0.75rem 1rem",
           borderRadius: "4px",
           width: "100%",
           maxWidth: "400px",
           textAlign: "center",
         }}>
-          {error}
+          {error.message}
         </div>
       )}
 
@@ -176,6 +181,13 @@ export default function Login() {
       >
         <span className="button-top">Login</span>
       </button>
+
+      <p style={{ color: "#666", fontSize: "0.9rem", marginTop: "0.5rem" }}>
+        Don't have an account?{" "}
+        <Link to="/register" style={{ color: "#007bff", textDecoration: "none" }}>
+          Register
+        </Link>
+      </p>
     </form>
   );
 }
