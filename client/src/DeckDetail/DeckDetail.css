@@ -901,6 +901,10 @@
   text-align: center;
 }
 
+.stat-type-distribution {
+  margin-bottom: 30px;
+}
+
 .pie-svg {
   width: 100%;
   max-width: 100%;
