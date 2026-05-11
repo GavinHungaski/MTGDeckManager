@@ -1,261 +1,184 @@
-# MTG EDH Deck Manager
+# MTG Commander Deck Manager
 
-Welcome to the Ultimate MTG EDH Deck Brewing Tool!
+> A full-stack web application for building, analyzing, and playtesting Magic: The Gathering — Commander (EDH) decks.
 
-A full-stack web application for building, managing, and playtesting Magic: The Gathering Commander (EDH) decks.
+[![Deployed on Railway](https://img.shields.io/badge/Deployed%20on-Railway-0B0D0E?logo=railway)](https://railway.com/project/3c14ab9c-0271-4066-93b5-069337ca38e2/service/1aeb22e5-5fa5-451b-9708-ed27111ac8c0?environmentId=bf1bfc0d-c3a0-4c18-a184-f36e1f3d1bb2)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
+![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite)
+![Express](https://img.shields.io/badge/Express-5-000000?logo=express)
+![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?logo=nodedotjs)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql)
+
+---
+
+## Live Demo
+
+The app is deployed and live on Railway:
+
+**https://railway.com/project/3c14ab9c-0271-4066-93b5-069337ca38e2/service/1aeb22e5-5fa5-451b-9708-ed27111ac8c0?environmentId=bf1bfc0d-c3a0-4c18-a184-f36e1f3d1bb2**
+
+---
+
+## What is this?
+
+MTG Commander Deck Manager is a purpose-built tool for **Commander/EDH players** who want more than a spreadsheet. Create an account, build unlimited decks with real-time card search powered by Scryfall, dive into rich analytics that break down your mana curve, color identity, and card roles, then **playtest your deck right in the browser** with a full drag-and-drop battlefield simulator.
+
+No more guessing if your deck has enough ramp or removal — the app automatically classifies every card and surfaces the numbers.
+
+---
 
 ## Features
 
-- 🃏 **Deck Management** - Create, edit, and organize your Commander decks
-- 🔍 **Card Search** - Search and browse cards using the Scryfall API
-- 👤 **User Authentication** - Secure user accounts with JWT authentication
-- 🎮 **Playtest Mode** - Simulate games with your decks
-- 💰 **Price Tracking** - View deck prices from Scryfall data
-- 🎨 **Color Identity** - Automatic color identity validation
-- 📊 **Deck Statistics** - Card counts, mana curves, and more
+### Deck Dashboard
+- **My Decks** — Manage all your decks in one place with sortable columns (name, color identity, tags, price, last updated).
+- **Smart Filtering** — Filter by text, color identity, and tags.
+- **Bulk Actions** — Select multiple decks to delete or tag at once.
+- **Tag System** — Create and assign custom tags to organize your collection.
+- **Price Tracking** — Automatically fetches and displays deck value in USD using Scryfall pricing data.
+- **Guest Mode** — Try the app without creating an account; your data persists for the session.
+
+### Deck Builder
+- **Intelligent Card Search** — Search the entire Scryfall database with powerful filters: card name, oracle text, card type, color identity, CMC, power/toughness, set, rarity, keyword abilities, and more.
+- **Commander Assignment** — Set commanders with a single click. The app validates color identity and enforces singleton rules for non-basic lands.
+- **Quantity Controls** — Easily adjust card counts with inline steppers.
+- **Rich Card Previews** — Hover over any card name to see a full-size preview popup.
+
+### Advanced Deck Analytics
+- **Mana Curve** — Visual bar chart of converted mana costs across the deck.
+- **Color Pip Distribution** — Interactive donut charts showing mana cost colors vs. mana production.
+- **Type Distribution** — Breakdown of creatures, instants, sorceries, artifacts, enchantments, lands, planeswalkers, and more.
+- **Auto-Detected Card Roles** — Every card is intelligently analyzed and classified into key Commander roles:
+  - **Draw** — Card advantage engines
+  - **Ramp** — Mana acceleration (lands, treasures, mana rocks, cost reduction)
+  - **Removal** — Targeted and mass removal
+  - **Protection** — Hexproof, indestructible, ward, counterspells for your board
+  - **Tutor** — Library searching (non-land)
+  - **Recursion** — Graveyard synergy, reanimation, flashback, dredge, unearth
+- **Color Identity Validation** — Automatically flags cards outside your commander's color identity.
+- **Interactive Highlighting** — Hover over any stat to highlight the corresponding cards in your decklist in real time.
+
+### Full Playtest Simulator
+- **Complete Game Zones** — Deck, hand, battlefield, graveyard, exile, and command zone — all fully functional.
+- **Drag & Drop Battlefield** — Arrange your permanents freely on an infinite pan-and-zoom battlefield.
+- **Card Manipulation** — Tap/untap, flip, transform, attach (equip/aura), and add custom counters to any card.
+- **Token & Counter Creator** — Generate tokens and custom permanents on the fly with a searchable token database.
+- **Life & Resource Tracking** — Track life total, energy, poison, experience, and commander damage.
+- **Library Manipulation** — Draw, shuffle, scry, and surveil with interactive choice dialogs.
+- **Context Menus** — Right-click any card for zone-to-zone movement and game actions.
+
+---
 
 ## Tech Stack
 
-### Backend
-- **Node.js** with Express 5
-- **PostgreSQL** (AWS RDS)
-- **JWT** authentication
-- **bcrypt** for password hashing
-- **AES-256-GCM** encryption for sensitive data
-- **Winston** logging
-- **Helmet** security headers
-- **Rate limiting** with express-rate-limit
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 19, Vite 6, React Router 7, Vanilla CSS |
+| **Backend** | Express 5, Node.js 20+ |
+| **Database** | PostgreSQL 15 (via `pg`) |
+| **Authentication** | JWT (access + refresh tokens), bcrypt |
+| **External API** | Scryfall REST API |
+| **Deployment** | Railway |
+| **Security** | Helmet, CORS, Express Rate Limit, input validation |
 
-### Frontend
-- **React 19** with React Router
-- **Vite** build tool
-- **Axios** for API calls
-- **React Konva** for playtest canvas
-- **Mana Font** for MTG mana symbols
+---
 
-### Database
-- **PostgreSQL** on AWS RDS
-- UUID primary keys
-- Encrypted user emails
-- JSONB for card data storage
+## Architecture
 
-## Project Structure
+This is a **monorepo** with a clear client/server split:
 
 ```
-MTGDeckManager/
-├── server/                 # Backend API
-│   ├── server.js          # Entry point
+mtg-deck-manager/
+├── client/          # React 19 + Vite SPA
 │   ├── src/
-│   │   ├── app.js         # Express configuration
-│   │   ├── config/        # Database & environment config
-│   │   ├── routes/        # API routes
-│   │   ├── services/      # Business logic
-│   │   ├── middleware/    # Auth, validation, error handling
-│   │   └── utils/         # Logger utilities
-│   └── db/
-│       └── init_db.sql    # Database schema
-├── client/                # Frontend React app
+│   │   ├── Dashboard/
+│   │   ├── DeckBuilder/
+│   │   ├── DeckDetail/
+│   │   ├── Playtest/
+│   │   ├── Search/
+│   │   └── common/  # Reusable components, hooks, context
+│   └── dist/        # Production build (served by backend)
+├── server/          # Express 5 API
 │   ├── src/
-│   │   ├── main.jsx       # App entry point
-│   │   ├── auth/          # Authentication components
-│   │   ├── services/      # API service layer
-│   │   ├── Decks/         # Deck list view
-│   │   ├── DeckDetail/    # Deck editor
-│   │   ├── Search/        # Card search
-│   │   └── Playtest/      # Game simulator
-│   └── vite.config.js
-└── REFACTORING_NOTES.md   # Detailed architecture docs
+│   │   ├── routes/     # Auth, Deck, Card endpoints
+│   │   ├── middleware/ # Auth, rate limiting, error handling
+│   │   └── db/         # PostgreSQL schema & seed data
+│   └── server.js
+├── package.json     # Root workspace scripts
+└── railway.json     # Railway deployment config
 ```
+
+**Production Mode:** The backend serves the built React SPA as static files and handles all API routes under `/api/*`, enabling same-origin deployment with no CORS headaches.
+
+---
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL 14+
-- npm or yarn
+- [Node.js](https://nodejs.org/) >= 20.0.0
+- [PostgreSQL](https://www.postgresql.org/) 15+
+- A [Scryfall](https://scryfall.com/) API key (optional — public read endpoints work without auth)
 
 ### Installation
 
-1. **Clone the repository**
+1. **Clone the repo**
    ```bash
    git clone https://github.com/GavinHungaski/MTGDeckManager.git
    cd MTGDeckManager
    ```
 
-2. **Set up the database**
+2. **Install dependencies** (installs both client and server)
    ```bash
-   # Create PostgreSQL database
-   createdb mtg_brewer
-   
-   # Run the schema
-   psql -d mtg_brewer -f server/db/init_db.sql
-   ```
-
-3. **Configure environment variables**
-   
-   Create `server/.env`:
-   ```env
-   PORT=8080
-   NODE_ENV=development
-   
-   # Database
-   PGUSER=postgres
-   PGPASSWORD=your_password
-   PGHOST=localhost
-   PGPORT=5432
-   PGDATABASE=mtg_brewer
-   
-   # Security (generate secure random strings!)
-   JWT_SECRET=your-super-secret-jwt-key-min-32-chars
-   ENCRYPTION_KEY=your-32-character-encryption-key
-   
-   # CORS
-   CORS_ORIGIN=http://localhost:5173
-   ```
-
-4. **Install dependencies**
-   ```bash
-   # Backend
-   cd server
-   npm install
-   
-   # Frontend
-   cd ../client
    npm install
    ```
 
-5. **Run the application**
+3. **Set up environment variables**
    ```bash
-   # Terminal 1 - Backend
-   cd server
-   npm run dev
-   
-   # Terminal 2 - Frontend
-   cd client
-   npm run dev
+   cp server/.env.example server/.env
+   # Edit server/.env with your PostgreSQL credentials and JWT secret
    ```
 
-6. **Open your browser**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:8080
-   - Health check: http://localhost:8080/health
+4. **Run the database migrations**
+   ```bash
+   cd server
+   node db/migrate.js
+   ```
 
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/logout` - Logout user
-- `GET /api/auth/me` - Get current user
-
-### Decks
-- `GET /api/decks` - Get all user's decks
-- `GET /api/decks/:id` - Get specific deck
-- `POST /api/decks` - Create new deck
-- `DELETE /api/decks/:id` - Delete deck
-
-### Cards
-- `POST /api/cards/decks/:deckId/card` - Add card to deck
-- `DELETE /api/cards/decks/:deckId/card/:cardId` - Remove card
-- `PATCH /api/cards/decks/:deckId/card/:cardId/commander` - Toggle commander
-- `PUT /api/cards/decks/:deckId/card/:cardId/count` - Update quantity
-
-## Deployment
-
-### Railway Deployment (Recommended)
-This application is configured for easy deployment on [Railway](https://railway.app/).
-
-#### 1. Prerequisites
-- A Railway account (sign up at [railway.app](https://railway.app))
-- Your code pushed to a GitHub repository
-
-#### 2. Create a PostgreSQL Database
-- In your Railway dashboard, create a new **PostgreSQL** project.
-- Railway will automatically provide a `DATABASE_URL` environment variable.
-- Initialize the database by running the `schema.sql` script against your Railway Postgres instance.
-
-#### 3. Deploy the Application
-- Create a new **Empty Project** in Railway.
-- Choose **Deploy from GitHub repo** and select your repository.
-- Railway will detect the `railway.json` and root `package.json` to handle the build and start process automatically.
-
-#### 4. Environment Variables
-In your Railway project dashboard, go to the **Variables** tab and add the following:
-
-| Variable | Value | Notes |
-|---|---|---|
-| `NODE_ENV` | `production` | Required |
-| `JWT_SECRET` | `<generate-a-strong-secret>` | Used for signing auth tokens |
-| `ENCRYPTION_KEY` | `<32-character-key>` | Used for encrypting sensitive data |
-| `DATABASE_URL` | *Provided by Railway Postgres* | Should already exist if you linked Postgres |
-
-> **Note:** You do **not** need to set `PGHOST`, `PGPORT`, `PGUSER`, etc., manually. The app is configured to automatically parse the `DATABASE_URL` provided by Railway.
-
-#### 5. Link the Database
-- In your Railway project, go to the service settings.
-- Under **Networking**, link your PostgreSQL service to your app service. This injects the `DATABASE_URL` into the app's environment.
-
-#### 6. Generate Domain
-- Once deployed, go to your app service settings in Railway.
-- Under **Networking**, click **Generate Domain** to get a public URL for your application.
-
-Your app will be live at the generated domain, with the frontend and backend served from the same origin.
-
-## Security Features
-
-- 🔐 JWT token authentication
-- 🔒 AES-256-GCM email encryption
-- 🛡️ Helmet security headers
-- ⏱️ Rate limiting on API endpoints
-- 🔑 bcrypt password hashing
-- ✅ Input validation with express-validator
-- 🚫 SQL injection prevention with parameterized queries
-
-## Development
-
-### Running Tests
-```bash
-# Backend tests (when implemented)
-cd server
-npm test
-
-# Frontend tests (when implemented)
-cd client
-npm test
-```
-
-### Code Style
-- ESLint for JavaScript/React
-- Prettier for formatting
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Useful Links
-
-- [Scryfall API Documentation](https://scryfall.com/docs/api)
-- [Mana Font Icons](https://mana.andrewgioia.com/index.html)
-- [MTG Commander Format Rules](https://mtgcommander.net/index.php/rules/)
-
-## License
-
-ISC
-
-## Acknowledgments
-
-- Card data provided by [Scryfall](https://scryfall.com/)
-- Mana symbols from [Mana Font](https://mana.andrewgioia.com/)
-- Built with ❤️ for the MTG Commander community
-
-## Support
-
-For issues, questions, or suggestions, please open an issue on GitHub.
+5. **Start the development servers**
+   ```bash
+   cd ..
+   npm run dev
+   ```
+   This concurrently starts:
+   - Backend API on `http://localhost:3000`
+   - Frontend dev server on `http://localhost:5173`
 
 ---
 
-**Note:** This project is not affiliated with or endorsed by Wizards of the Coast.
+## Deployment
+
+This project is configured for seamless deployment on **Railway** via `railway.json`:
+
+```json
+{
+  "build": { "builder": "RAILPACK", "buildCommand": "npm run build" },
+  "deploy": { "startCommand": "npm start", "restartPolicyType": "ON_FAILURE" }
+}
+```
+
+**Deploy steps:**
+1. Connect your GitHub repo to a new Railway project.
+2. Add a PostgreSQL service in Railway.
+3. Set the required environment variables (`DATABASE_URL`, `JWT_SECRET`, etc.).
+4. Railway automatically builds (`npm run build`) and starts (`npm start`) the app.
+
+---
+
+## Screenshots
+
+*Screenshots coming soon — check out the [live demo](https://railway.com/project/3c14ab9c-0271-4066-93b5-069337ca38e2/service/1aeb22e5-5fa5-451b-9708-ed27111ac8c0?environmentId=bf1bfc0d-c3a0-4c18-a184-f36e1f3d1bb2) in the meantime!*
+
+---
+
+## License
+
+ISC © MTG Deck Manager Team
