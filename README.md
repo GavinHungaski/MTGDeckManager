@@ -162,22 +162,44 @@ MTGDeckManager/
 
 ## Deployment
 
-### Current Status
-- ✅ Database: AWS RDS PostgreSQL
-- ✅ Backend: AWS Elastic Beanstalk
-- ❌ Frontend: Not yet deployed
+### Railway Deployment (Recommended)
+This application is configured for easy deployment on [Railway](https://railway.app/).
 
-### Deploy Backend to AWS Elastic Beanstalk
-1. Install EB CLI: `pip install awsebcli`
-2. Initialize: `eb init`
-3. Create environment: `eb create mtg-brewer-env`
-4. Deploy: `eb deploy`
+#### 1. Prerequisites
+- A Railway account (sign up at [railway.app](https://railway.app))
+- Your code pushed to a GitHub repository
 
-### Deploy Frontend to AWS Amplify/S3
-1. Build: `npm run build`
-2. Upload `dist/` folder to S3
-3. Configure CloudFront distribution
-4. Update `VITE_API_URL` in production
+#### 2. Create a PostgreSQL Database
+- In your Railway dashboard, create a new **PostgreSQL** project.
+- Railway will automatically provide a `DATABASE_URL` environment variable.
+- Initialize the database by running the `schema.sql` script against your Railway Postgres instance.
+
+#### 3. Deploy the Application
+- Create a new **Empty Project** in Railway.
+- Choose **Deploy from GitHub repo** and select your repository.
+- Railway will detect the `railway.json` and root `package.json` to handle the build and start process automatically.
+
+#### 4. Environment Variables
+In your Railway project dashboard, go to the **Variables** tab and add the following:
+
+| Variable | Value | Notes |
+|---|---|---|
+| `NODE_ENV` | `production` | Required |
+| `JWT_SECRET` | `<generate-a-strong-secret>` | Used for signing auth tokens |
+| `ENCRYPTION_KEY` | `<32-character-key>` | Used for encrypting sensitive data |
+| `DATABASE_URL` | *Provided by Railway Postgres* | Should already exist if you linked Postgres |
+
+> **Note:** You do **not** need to set `PGHOST`, `PGPORT`, `PGUSER`, etc., manually. The app is configured to automatically parse the `DATABASE_URL` provided by Railway.
+
+#### 5. Link the Database
+- In your Railway project, go to the service settings.
+- Under **Networking**, link your PostgreSQL service to your app service. This injects the `DATABASE_URL` into the app's environment.
+
+#### 6. Generate Domain
+- Once deployed, go to your app service settings in Railway.
+- Under **Networking**, click **Generate Domain** to get a public URL for your application.
+
+Your app will be live at the generated domain, with the frontend and backend served from the same origin.
 
 ## Security Features
 

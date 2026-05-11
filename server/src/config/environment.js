@@ -2,6 +2,25 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Parse DATABASE_URL if provided (Railway format)
+function parseDatabaseUrl(url) {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    return {
+      host: parsed.hostname,
+      port: parsed.port || 5432,
+      user: parsed.username,
+      password: parsed.password,
+      database: parsed.pathname.replace('/', ''),
+    };
+  } catch {
+    return null;
+  }
+}
+
+const dbUrlConfig = parseDatabaseUrl(process.env.DATABASE_URL);
+
 export const config = {
   // Server
   port: process.env.PORT || 8080,
@@ -9,14 +28,12 @@ export const config = {
   
   // Database
   database: {
-    host: process.env.PGHOST,
-    port: process.env.PGPORT,
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE,
-    ssl: process.env.PGHOST && process.env.PGHOST.includes('rds.amazonaws.com') ? {
-      rejectUnauthorized: false
-    } : process.env.NODE_ENV === 'production' ? {
+    host: dbUrlConfig?.host || process.env.PGHOST,
+    port: dbUrlConfig?.port || process.env.PGPORT,
+    user: dbUrlConfig?.user || process.env.PGUSER,
+    password: dbUrlConfig?.password || process.env.PGPASSWORD,
+    database: dbUrlConfig?.database || process.env.PGDATABASE,
+    ssl: process.env.NODE_ENV === 'production' ? {
       rejectUnauthorized: false
     } : false
   },
