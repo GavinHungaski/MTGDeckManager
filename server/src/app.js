@@ -72,7 +72,7 @@ if (config.nodeEnv === 'production') {
   app.use(express.static(clientDistPath));
 
   // Handle React Router - serve index.html for all non-API routes
-  app.get('*', (req, res) => {
+  app.get(/.*/, (req, res) => {
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 } else {
