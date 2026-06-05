@@ -2,7 +2,6 @@
 
 > A full-stack web application for building, analyzing, and playtesting Magic: The Gathering — Commander (EDH) decks.
 
-[![Deployed on Railway](https://img.shields.io/badge/Deployed%20on-Railway-0B0D0E?logo=railway)](https://railway.com/project/3c14ab9c-0271-4066-93b5-069337ca38e2/service/1aeb22e5-5fa5-451b-9708-ed27111ac8c0?environmentId=bf1bfc0d-c3a0-4c18-a184-f36e1f3d1bb2)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite)
 ![Express](https://img.shields.io/badge/Express-5-000000?logo=express)
@@ -13,7 +12,7 @@
 
 ## Live Demo
 
-The app is deployed and live on Railway:
+The app is deployed and live:
 
 **https://artificealley.cloud**
 
@@ -173,12 +172,6 @@ This project is configured for seamless deployment on **Railway** via `railway.j
 
 ---
 
-## Screenshots
-
-*Screenshots coming soon — check out the [live demo](https://railway.com/project/3c14ab9c-0271-4066-93b5-069337ca38e2/service/1aeb22e5-5fa5-451b-9708-ed27111ac8c0?environmentId=bf1bfc0d-c3a0-4c18-a184-f36e1f3d1bb2) in the meantime!*
-
----
-
 ## License
 
-ISC © MTG Deck Manager Team
+ISC © Gavin Hungaski
